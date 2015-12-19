@@ -24,9 +24,15 @@ include( cxx11_check.cmake )
 
 check_cxx11( CXX11_ENABLED )
 
-if( NOT CXX11_ENABLED )
+if(NOT CXX11_ENABLED)
     message( FATAL_ERROR "Compiler has no C++11 support" )
-endif( )
+endif(NOT CXX11_ENABLED)
+
+#find_package(OpenSSL REQUIRED)
+
+if(NOT VTRC_OPENSSL_ENABLED)
+    message( FATAL_ERROR "OpenSSL is require" )
+endif(NOT VTRC_OPENSSL_ENABLED)
 
 message( "static link: " ${VTRC_LINK_TYPE_STATIC} )
 
