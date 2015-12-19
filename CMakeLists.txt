@@ -141,7 +141,8 @@ configure_file ("${PROJECT_SOURCE_DIR}/teranyina-config.h.in"
 
 add_subdirectory( protocol )
 add_subdirectory( client-core )
-add_subdirectory( server-core )
+#add_subdirectory( server-core )
+
 
 if(LUA_FOUND)
     add_subdirectory( lua-client )
