@@ -1,0 +1,4 @@
+# teranyina
+server-core
+
+

@@ -1,0 +1,4 @@
+# teranyina
+client-core
+
+
