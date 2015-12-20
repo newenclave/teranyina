@@ -63,6 +63,7 @@ else( MSVC )
                     thread
                     program_options
                     filesystem
+                    date_time
                     regex
                     #context
                   REQUIRED)

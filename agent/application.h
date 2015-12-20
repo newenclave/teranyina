@@ -9,6 +9,7 @@
 #include "vtrc-common/vtrc-rtti-wrapper.h"
 
 #include "subsys-iface.h"
+#include "logger.h"
 
 namespace ta { namespace agent {
 
