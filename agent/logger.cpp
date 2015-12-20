@@ -12,8 +12,7 @@ namespace ta { namespace agent {
 
     void logger::send_data( level lev, const std::string &data )
     {
-        static const bpt::ptime
-                epoch(bpt::ptime::date_type(1970, 1, 1));
+        static const bpt::ptime epoch(bpt::ptime::date_type(1970, 1, 1));
 
         bpt::ptime local_time = bpt::microsec_clock::local_time( );
         bpt::time_duration td( local_time - epoch );
