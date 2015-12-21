@@ -3,9 +3,14 @@
 
 #include "logger.h"
 
+#include "boost/program_options.hpp"
+
 namespace ta { namespace agent {
 
     namespace {
+
+        namespace po = boost::program_options;
+
         namespace vcomm = vtrc::common;
 
         typedef std::map<vcomm::rtti_wrapper, subsystem_sptr> subsys_map;
@@ -18,9 +23,11 @@ namespace ta { namespace agent {
     }
 
     struct application::impl {
+
         subsystem_comtrainer    subsystems_;
         vcomm::pool_pair        pools_;
         logger                  logger_;
+
         impl( )
             :pools_(0, 0)
             ,logger_(pools_.get_io_service( ), logger::level::info)
@@ -54,8 +61,8 @@ namespace ta { namespace agent {
         }
     }
 
-    const subsystem_iface *application::subsystem(
-                                             const std::type_info &info ) const
+    const
+    subsystem_iface *application::subsystem( const std::type_info &info ) const
     {
         auto f = impl_->subsystems_.subsys_.find( vcomm::rtti_wrapper(info) );
 

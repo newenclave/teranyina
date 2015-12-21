@@ -13,7 +13,7 @@ int main( int argc, const char **argv )
         ta::agent::application tapp;
         tapp.run( argc, argv );
     } catch( const std::exception &ex ) {
-        std::cerr << "failed to start: " << ex.what( );
+        std::cerr << "Application failed to run: " << ex.what( );
     }
     return 0;
 }
