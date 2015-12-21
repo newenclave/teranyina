@@ -24,7 +24,7 @@ namespace ta { namespace agent {
         void get_options( po::options_description& desc )
         {
             desc.add_options( )
-                ( "help,?", "help message" )
+                ( "help,h", "help message" )
             ;
         }
 
@@ -86,14 +86,15 @@ namespace ta { namespace agent {
         delete impl_;
     }
 
-    void application::add_subsystem( const std::type_info &info,
-                                     subsystem_sptr inst )
+    void application::add_subsys( const std::type_info &info,
+                                  subsystem_sptr inst )
     {
         impl_->subsystems_.subsys_[vcomm::rtti_wrapper(info)] = inst;
         impl_->subsystems_.subsys_order_.push_back( inst );
     }
 
-    subsystem_iface *application::subsystem( const std::type_info &info )
+    subsystem_iface *
+    application::get_subsys( const std::type_info &info ) noexcept
     {
         auto f = impl_->subsystems_.subsys_.find( vcomm::rtti_wrapper(info) );
 
@@ -104,8 +105,8 @@ namespace ta { namespace agent {
         }
     }
 
-    const
-    subsystem_iface *application::subsystem( const std::type_info &info ) const
+    const subsystem_iface *
+    application::get_subsys( const std::type_info &info ) const noexcept
     {
         auto f = impl_->subsystems_.subsys_.find( vcomm::rtti_wrapper(info) );
 

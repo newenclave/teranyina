@@ -37,20 +37,20 @@ namespace ta { namespace agent {
         void add_subsystem( )
         {
             subsystem_sptr subsys ( T::create( this ) );
-            add_subsystem( typeid( T ), subsys );
+            add_subsys( typeid( T ), subsys );
         }
 
         template <typename T, typename ... Args >
         void add_subsystem( const Args & ... pars )
         {
             subsystem_sptr subsys ( T::create( this, pars ... ) );
-            add_subsystem( typeid( T ), subsys );
+            add_subsys( typeid( T ), subsys );
         }
 
         template <typename T>
         T &subsystem( )
         {
-            subsystem_iface *subsys = subsystem( typeid(T) );
+            subsystem_iface *subsys = get_subsys( typeid(T) );
             if( NULL == subsys ) {
                 throw std::runtime_error( "Invalid subsystem" );
             }
@@ -60,7 +60,7 @@ namespace ta { namespace agent {
         template <typename T>
         const T &subsystem( ) const
         {
-            const subsystem_iface *subsys = subsystem( typeid(T) );
+            const subsystem_iface *subsys = get_subsys( typeid(T) );
             if( NULL == subsys ) {
                 throw std::runtime_error( "Invalid subsystem" );
             }
@@ -70,14 +70,14 @@ namespace ta { namespace agent {
         template <typename T>
         T *subsystem_safe( )
         {
-            subsystem_iface *subsys = subsystem( typeid(T) );
+            subsystem_iface *subsys = get_subsys( typeid(T) );
             return poly_downcast<const T *>( subsys );
         }
 
         template <typename T>
         const T *subsystem_safe( ) const
         {
-            const subsystem_iface *subsys = subsystem( typeid(T) );
+            const subsystem_iface *subsys = get_subsys( typeid(T) );
             return poly_downcast<const T *>( subsys );
         }
 
@@ -88,14 +88,15 @@ namespace ta { namespace agent {
 
     private:
 
-        void add_subsystem( const std::type_info &info, subsystem_sptr inst );
+        void add_subsys( const std::type_info &info, subsystem_sptr inst );
 
         /* === nothrow === */
         /*
          * returns NULL if not found
         */
-        subsystem_iface *subsystem( const std::type_info &info );
-        const subsystem_iface *subsystem( const std::type_info &info ) const;
+        subsystem_iface *get_subsys( const std::type_info &info ) noexcept;
+        const
+        subsystem_iface *get_subsys( const std::type_info &info) const noexcept;
         /* =============== */
     };
 }}
