@@ -68,14 +68,14 @@ namespace ta { namespace agent {
         }
 
         template <typename T>
-        T *subsystem_safe( )
+        T *subsystem_safe( ) noexcept
         {
             subsystem_iface *subsys = get_subsys( typeid(T) );
             return poly_downcast<const T *>( subsys );
         }
 
         template <typename T>
-        const T *subsystem_safe( ) const
+        const T *subsystem_safe( ) const noexcept
         {
             const subsystem_iface *subsys = get_subsys( typeid(T) );
             return poly_downcast<const T *>( subsys );
@@ -92,11 +92,15 @@ namespace ta { namespace agent {
 
         /* === nothrow === */
         /*
-         * returns NULL if not found
+         * returns nullptr if not found
         */
-        subsystem_iface *get_subsys( const std::type_info &info ) noexcept;
-        const
-        subsystem_iface *get_subsys( const std::type_info &info) const noexcept;
+
+        subsystem_iface *
+        get_subsys( const std::type_info &info ) noexcept;
+
+        const subsystem_iface *
+        get_subsys( const std::type_info &info) const noexcept;
+
         /* =============== */
     };
 }}
