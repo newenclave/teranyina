@@ -84,7 +84,7 @@ namespace ta { namespace agent {
         void start_all( );
         void stop_all( );
 
-        void run( int argc, const char **argv );
+        void run( int argc, const char *argv[ ] );
 
     private:
 

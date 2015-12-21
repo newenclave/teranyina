@@ -20,6 +20,33 @@ namespace ta { namespace agent {
             subsys_map      subsys_;
             subsys_vector   subsys_order_;
         };
+
+        void get_options( po::options_description& desc )
+        {
+            desc.add_options( )
+                ( "help,?", "help message" )
+            ;
+        }
+
+        po::variables_map create_cmd_params( int argc, const char *argv[ ],
+                                             po::options_description const dsc )
+        {
+            po::variables_map vm;
+            po::parsed_options parsed (
+                po::command_line_parser(argc, argv)
+                    .options(dsc)
+                    .allow_unregistered( )
+                    .run( ));
+            po::store(parsed, vm);
+            po::notify(vm);
+            return vm;
+        }
+
+        void show_help( po::options_description const &desc )
+        {
+            std::cout << "Usage: ./teranyina_agent <options>\n"
+                      << "Options: \n" << desc;
+        }
     }
 
     struct application::impl {
@@ -28,10 +55,26 @@ namespace ta { namespace agent {
         vcomm::pool_pair        pools_;
         logger                  logger_;
 
+        unsigned                io_count_;
+        unsigned                rpc_count_;
+
         impl( )
             :pools_(0, 0)
             ,logger_(pools_.get_io_service( ), logger::level::info)
+            ,io_count_(1)
+            ,rpc_count_(1)
         { }
+
+        void get_agent_options( po::options_description& desc )
+        {
+            desc.add_options( )
+            ( "io,i", po::value<unsigned>(&io_count_)->default_value(1),
+                      "io threads count" )
+            ( "rpc,r", po::value<unsigned>(&rpc_count_)->default_value(1),
+                      "rpc threads count" )
+            ;
+        }
+
     };
 
     application::application( )
@@ -98,9 +141,22 @@ namespace ta { namespace agent {
 
     }
 
-    void application::run( int argc, const char **argv )
+    void application::run( int argc, const char *argv[ ] )
     {
-        impl_->pools_.get_io_pool( ).add_thread( );
+        po::options_description desc;
+
+        get_options( desc );
+        impl_->get_agent_options( desc );
+
+        auto params = create_cmd_params( argc, argv, desc );
+        if( params.count( "help" ) ) {
+            show_help( desc );
+            return;
+        }
+
+        impl_->pools_.get_io_pool( ).add_threads( impl_->io_count_ - 1 );
+        impl_->pools_.get_rpc_pool( ).add_threads( impl_->rpc_count_ );
+
         impl_->pools_.get_io_pool( ).attach( );
     }
 
