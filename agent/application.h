@@ -14,13 +14,14 @@
 namespace ta { namespace agent {
 
     class application: public vtrc::server::application {
-        struct impl;
-        std::unique_ptr<impl> impl_;
+        struct  impl;
+        impl   *impl_;
     public:
         application( application & ) = delete;
         application & operator = ( application & ) = delete;
 
         application( );
+        ~application( );
     private:
 
         template <class Tgt, class Src>
@@ -82,6 +83,8 @@ namespace ta { namespace agent {
 
         void start_all( );
         void stop_all( );
+
+        void run( int argc, const char **argv );
 
     private:
 

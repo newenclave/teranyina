@@ -6,28 +6,29 @@
 
 namespace ta { namespace common {
 
-    enum log_level {
-         zero    = 0
-        ,error   = 1
-        ,warning = 2
-        ,info    = 3
-        ,debug   = 4
-    };
-
     class logger {
+
+    public:
+        enum level {
+             zero    = 0
+            ,error   = 1
+            ,warning = 2
+            ,info    = 3
+            ,debug   = 4
+        };
 
     private:
 
-        log_level level_;
+        level level_;
 
         struct string_accumulator {
 
             logger                 &parent_;
-            log_level               level_;
+            level                   level_;
             std::ostringstream      oss_;
             bool                    act_;
 
-            string_accumulator( logger &parent, log_level lev )
+            string_accumulator( logger &parent, level lev )
                 :parent_(parent)
                 ,level_(lev)
                 ,act_(true)
@@ -67,9 +68,9 @@ namespace ta { namespace common {
 
     public:
 
-        virtual void send_data( log_level lev, const std::string &data ) = 0;
+        virtual void send_data( level lev, const std::string &data ) = 0;
 
-        string_accumulator operator ( )( log_level lev )
+        string_accumulator operator ( )( level lev )
         {
             string_accumulator res( *this, lev );
             return res;
@@ -81,19 +82,19 @@ namespace ta { namespace common {
             return res;
         }
 
-        logger( log_level lev )
+        logger( level lev )
             :level_(lev)
         { }
 
         virtual ~logger( )
         { }
 
-        log_level get_level( ) const
+        level get_level( ) const
         {
             return level_;
         }
 
-        void set_level( log_level lev )
+        void set_level( level lev )
         {
             level_ = lev;
         }

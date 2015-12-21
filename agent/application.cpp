@@ -1,10 +1,13 @@
 #include "application.h"
 #include "vtrc-common/vtrc-pool-pair.h"
 
+#include "logger.h"
+
 namespace ta { namespace agent {
 
     namespace {
         namespace vcomm = vtrc::common;
+
         typedef std::map<vcomm::rtti_wrapper, subsystem_sptr> subsys_map;
         typedef std::vector<subsystem_sptr>                   subsys_vector;
 
@@ -15,16 +18,23 @@ namespace ta { namespace agent {
     }
 
     struct application::impl {
-        subsystem_comtrainer     subsystems_;
+        subsystem_comtrainer    subsystems_;
+        vcomm::pool_pair        pools_;
+        logger                  logger_;
         impl( )
-        {
-
-        }
+            :pools_(0, 0)
+            ,logger_(pools_.get_io_service( ), logger::level::info)
+        { }
     };
 
     application::application( )
         :impl_(new impl)
     { }
+
+    application::~application( )
+    {
+        delete impl_;
+    }
 
     void application::add_subsystem( const std::type_info &info,
                                      subsystem_sptr inst )
@@ -79,6 +89,12 @@ namespace ta { namespace agent {
             (*b)->stop( );
         }
 
+    }
+
+    void application::run( int argc, const char **argv )
+    {
+        impl_->pools_.get_io_pool( ).add_thread( );
+        impl_->pools_.get_io_pool( ).attach( );
     }
 
 }}
