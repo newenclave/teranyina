@@ -1,11 +1,11 @@
 
-#include "subsys-clients.h"
+#include "subsys-multicast.h"
 #include "../application.h"
 //#include "subsys-log.h"
 
 //#include "vtrc-memory.h"
 
-//#define LOG(lev) log_(lev) << "[clients] "
+//#define LOG(lev) log_(lev) << "[multicast] "
 //#define LOGINF   LOG(logger::info)
 //#define LOGDBG   LOG(logger::debug)
 //#define LOGERR   LOG(logger::error)
@@ -14,10 +14,10 @@
 namespace ta { namespace agent { namespace subsys {
 
     namespace {
+        const std::string subsys_name( "multicast" );
 
-        const std::string subsys_name( "clients" );
-
-        application::service_wrapper_sptr create_service( application * /*app*/,
+        application::service_wrapper_sptr create_service(
+                                      ta::agent::application * /*app*/,
                                       vtrc::common::connection_iface_wptr cl )
         {
             ///auto inst = std::make_shared<impl_type_here>( app, cl );
@@ -27,7 +27,7 @@ namespace ta { namespace agent { namespace subsys {
         }
     }
 
-    struct clients::impl {
+    struct multicast::impl {
 
         application     *app_;
 //        logger          &log_;
@@ -51,38 +51,38 @@ namespace ta { namespace agent { namespace subsys {
     };
 
 
-    clients::clients( application *app )
+    multicast::multicast( application *app )
         :impl_(new impl(app))
     { }
 
-    clients::~clients( )
+    multicast::~multicast( )
     {
         delete impl_;
     }
 
     /// static
-    vtrc::shared_ptr<clients> clients::create( application *app )
+    vtrc::shared_ptr<multicast> multicast::create( application *app )
     {
-        vtrc::shared_ptr<clients> new_inst(new clients(app));
+        vtrc::shared_ptr<multicast> new_inst(new multicast(app));
         return new_inst;
     }
 
-    const std::string &clients::name( )  const
+    const std::string &multicast::name( )  const
     {
         return subsys_name;
     }
 
-    void clients::init( )
+    void multicast::init( )
     {
 
     }
 
-    void clients::start( )
+    void multicast::start( )
     {
 //        impl_->LOGINF << "Started.";
     }
 
-    void clients::stop( )
+    void multicast::stop( )
     {
 //        impl_->LOGINF << "Stopped.";
     }
