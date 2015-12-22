@@ -53,6 +53,7 @@ namespace ta { namespace agent {
         void init_subsystems( agent::application *app )
         {
             using namespace agent::subsys;
+            app->add_subsystem<subsys::multicast>( );
             app->add_subsystem<subsys::listerens>( );
         }
 
@@ -95,7 +96,8 @@ namespace ta { namespace agent {
     };
 
     application::application( )
-        :impl_(new impl)
+        :vtrc::server::application( )
+        ,impl_(new impl)
     { }
 
     application::~application( )
@@ -238,10 +240,11 @@ namespace ta { namespace agent {
             return;
         }
 
-        init_subsystems( this );
+//        impl_->pools_.get_io_pool( ).add_threads( impl_->io_count_ - 1 );
+//        impl_->pools_.get_rpc_pool( ).add_threads( impl_->rpc_count_ );
 
-        impl_->pools_.get_io_pool( ).add_threads( impl_->io_count_ - 1 );
-        impl_->pools_.get_rpc_pool( ).add_threads( impl_->rpc_count_ );
+        init_subsystems( this );
+        start_all( );
 
         impl_->pools_.get_io_pool( ).attach( );
     }
