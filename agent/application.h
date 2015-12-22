@@ -8,7 +8,7 @@
 #include "vtrc-common/vtrc-signal-declaration.h"
 #include "vtrc-common/vtrc-rtti-wrapper.h"
 
-#include "subsys-iface.h"
+#include "subsystems/subsys-iface.h"
 #include "logger.h"
 
 namespace ta { namespace agent {
@@ -51,7 +51,7 @@ namespace ta { namespace agent {
         T &subsystem( )
         {
             subsystem_iface *subsys = get_subsys( typeid(T) );
-            if( NULL == subsys ) {
+            if( nullptr == subsys ) {
                 throw std::runtime_error( "Invalid subsystem" );
             }
             return *(poly_downcast<T *>( subsys ));
@@ -61,7 +61,7 @@ namespace ta { namespace agent {
         const T &subsystem( ) const
         {
             const subsystem_iface *subsys = get_subsys( typeid(T) );
-            if( NULL == subsys ) {
+            if( nullptr == subsys ) {
                 throw std::runtime_error( "Invalid subsystem" );
             }
             return *(poly_downcast<const T *>( subsys ));

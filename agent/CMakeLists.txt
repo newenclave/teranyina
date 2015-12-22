@@ -1,5 +1,6 @@
 list( APPEND src_dirs
         .
+        ./subsystems
     )
 
 foreach( dir ${src_dirs} )
