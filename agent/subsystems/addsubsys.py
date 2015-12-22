@@ -9,7 +9,7 @@ def header_file( ):
 #ifndef TA_SUBSYS_%ss-name%_H
 #define TA_SUBSYS_%ss-name%_H
 
-#include "subsystem-iface.h"
+#include "subsys-iface.h"
 
 namespace ta { namespace agent {
 
@@ -69,8 +69,7 @@ namespace ta { namespace agent { namespace subsys {
                                       ta::agent::application * /*app*/,
                                       vtrc::common::connection_iface_wptr cl )
         {
-            ///vtrc::shared_ptr<impl_type_here>
-            ///        inst(vtrc::make_shared<impl_type_here>( app, cl ));
+            ///auto inst = std::make_shared<impl_type_here>( app, cl );
             ///return app->wrap_service( cl, inst );
 
             return application::service_wrapper_sptr( );

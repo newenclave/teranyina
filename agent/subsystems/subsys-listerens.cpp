@@ -1,6 +1,13 @@
+#include <list>
 
 #include "subsys-listerens.h"
 #include "../application.h"
+
+#include "vtrc-server/vtrc-listener.h"
+#include "vtrc-server/vtrc-listener-tcp.h"
+#include "vtrc-server/vtrc-listener-ssl.h"
+#include "vtrc-server/vtrc-listener-local.h"
+
 //#include "subsys-log.h"
 
 //#include "vtrc-memory.h"
@@ -16,6 +23,9 @@ namespace ta { namespace agent { namespace subsys {
     namespace {
 
         namespace vcomm = vtrc::common;
+        namespace vserv = vtrc::server;
+
+        using listerens_list = std::list<vserv::listener_sptr>;
 
         const std::string subsys_name( "listerens" );
 
@@ -23,8 +33,7 @@ namespace ta { namespace agent { namespace subsys {
                                       ta::agent::application * /*app*/,
                                       vcomm::connection_iface_wptr cl )
         {
-            ///vtrc::shared_ptr<impl_type_here>
-            ///        inst(vtrc::make_shared<impl_type_here>( app, cl ));
+            ///auto inst(vtrc::make_shared<impl_type_here>( app, cl ));
             ///return app->wrap_service( cl, inst );
 
             return application::service_wrapper_sptr( );
@@ -71,7 +80,7 @@ namespace ta { namespace agent { namespace subsys {
         return new_inst;
     }
 
-    const std::string &listerens::name( )  const
+    const std::string &listerens::name( ) const
     {
         return subsys_name;
     }
@@ -83,6 +92,7 @@ namespace ta { namespace agent { namespace subsys {
 
     void listerens::start( )
     {
+
 //        impl_->LOGINF << "Started.";
     }
 

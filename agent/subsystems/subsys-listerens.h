@@ -4,6 +4,8 @@
 
 #include "subsys-iface.h"
 
+#include "vtrc-common/vtrc-signal-declaration.h"
+
 namespace ta { namespace agent {
 
     class application;
