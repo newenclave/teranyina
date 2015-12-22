@@ -1,2 +1,10 @@
 package ta.proto.multicast;
 
+message ping {
+    optional string mesage = 1;
+}
+
+message pong {
+    optional string mesage = 1;
+}
+

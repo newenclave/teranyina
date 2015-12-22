@@ -1,6 +1,8 @@
 
 #include "subsys-multicast.h"
 #include "../application.h"
+#include "protocol/protocol-constants.h"
+
 //#include "subsys-log.h"
 
 //#include "vtrc-memory.h"
