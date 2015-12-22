@@ -7,6 +7,8 @@
 #include "vtrc-server/vtrc-application.h"
 #include "vtrc-common/vtrc-signal-declaration.h"
 #include "vtrc-common/vtrc-rtti-wrapper.h"
+#include "vtrc-common/vtrc-connection-iface.h"
+#include "vtrc-function.h"
 
 #include "subsystems/subsys-iface.h"
 #include "logger.h"
@@ -22,14 +24,60 @@ namespace ta { namespace agent {
 
         application( );
         ~application( );
-    private:
 
-        template <class Tgt, class Src>
-        static Tgt poly_downcast ( Src * x )
-        {
-            assert( dynamic_cast<Tgt>(x) == x );
-            return static_cast<Tgt>(x);
-        }
+        class service_wrapper_impl: public vtrc::common::rpc_service_wrapper {
+
+            application *app_;
+            vtrc::common::connection_iface_wptr client_;
+
+            typedef vtrc::common::rpc_service_wrapper super_type;
+
+        public:
+
+            typedef super_type::service_type service_type;
+            typedef super_type::service_ptr  service_ptr;
+            typedef super_type::service_sptr service_sptr;
+
+            typedef super_type::method_type  method_type;
+
+            service_wrapper_impl( application *app,
+                                  vtrc::common::connection_iface_wptr c,
+                                  service_sptr serv );
+
+            ~service_wrapper_impl( );
+
+        protected:
+
+            const method_type *get_method ( const std::string &name ) const;
+            application *get_application( );
+            const application *get_application( ) const;
+        };
+
+        typedef vtrc::common::rpc_service_wrapper     parent_service_type;
+        typedef std::shared_ptr<parent_service_type>  parent_service_sptr;
+
+        typedef service_wrapper_impl              service_wrapper;
+        typedef std::shared_ptr<service_wrapper>  service_wrapper_sptr;
+
+        ///
+        /// func( app, connection )
+        ///
+        typedef vtrc::function<
+            service_wrapper_sptr ( ta::agent::application *,
+                                   vtrc::common::connection_iface_wptr )
+        > service_getter_type;
+
+        service_wrapper_sptr wrap_service (
+                                    vtrc::common::connection_iface_wptr c,
+                                    service_wrapper_impl::service_sptr serv );
+    public: // services
+
+        void register_service_creator( const std::string &name,
+                                       service_getter_type func );
+
+        void unregister_service_creator( const std::string &name );
+
+        void quit( );
 
     public: // subsystems
 
@@ -87,6 +135,13 @@ namespace ta { namespace agent {
         void run( int argc, const char *argv[ ] );
 
     private:
+
+        template <class Tgt, class Src>
+        static Tgt poly_downcast ( Src * x )
+        {
+            assert( dynamic_cast<Tgt>(x) == x );
+            return static_cast<Tgt>(x);
+        }
 
         void add_subsys( const std::type_info &info, subsystem_sptr inst );
 

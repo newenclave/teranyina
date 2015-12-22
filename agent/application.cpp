@@ -1,9 +1,13 @@
 #include "application.h"
 #include "vtrc-common/vtrc-pool-pair.h"
 
+#include "vtrc-mutex.h"
+
 #include "logger.h"
 
 #include "boost/program_options.hpp"
+
+#include "subsystems/subsys-list.hxx"
 
 namespace ta { namespace agent {
 
@@ -12,9 +16,13 @@ namespace ta { namespace agent {
         namespace po = boost::program_options;
 
         namespace vcomm = vtrc::common;
+        namespace gpb   = google::protobuf;
 
         typedef std::map<vcomm::rtti_wrapper, subsystem_sptr> subsys_map;
         typedef std::vector<subsystem_sptr>                   subsys_vector;
+
+        typedef std::map<std::string,
+                         application::service_getter_type > service_map;
 
         struct subsystem_comtrainer {
             subsys_map      subsys_;
@@ -42,6 +50,12 @@ namespace ta { namespace agent {
             return vm;
         }
 
+        void init_subsystems( agent::application *app )
+        {
+            using namespace agent::subsys;
+            app->add_subsystem<subsys::listerens>( );
+        }
+
         void show_help( po::options_description const &desc )
         {
             std::cout << "Usage: ./teranyina_agent <options>\n"
@@ -54,6 +68,9 @@ namespace ta { namespace agent {
         subsystem_comtrainer    subsystems_;
         vcomm::pool_pair        pools_;
         logger                  logger_;
+
+        service_map             services_;
+        vtrc::mutex             services_lock_;
 
         unsigned                io_count_;
         unsigned                rpc_count_;
@@ -142,6 +159,72 @@ namespace ta { namespace agent {
 
     }
 
+    //////// service wrapper
+
+    application::service_wrapper_impl::service_wrapper_impl( application *app,
+                              vcomm::connection_iface_wptr c,
+                              vtrc::shared_ptr<gpb::Service> serv)
+        :vcomm::rpc_service_wrapper( serv )
+        ,app_(app)
+        ,client_(c)
+    { }
+
+    application::service_wrapper_impl::~service_wrapper_impl( )
+    { }
+
+    const
+    application::service_wrapper_impl::method_type *
+                application::service_wrapper_impl
+                           ::get_method( const std::string &name ) const
+    {
+        const method_type* m = super_type::find_method( name );
+        return m;
+    }
+
+    application
+    *application::service_wrapper_impl::get_application( )
+    {
+        return app_;
+    }
+
+    const application
+    *application::service_wrapper_impl::get_application( ) const
+    {
+        return app_;
+    }
+
+    /////////////////////////////
+
+    application::service_wrapper_sptr
+    application::wrap_service ( vtrc::common::connection_iface_wptr cl,
+                                service_wrapper_impl::service_sptr serv )
+    {
+        return std::make_shared<application::service_wrapper>(this, cl, serv);
+    }
+
+    void application::register_service_creator( const std::string &name,
+                                                service_getter_type func )
+    {
+        vtrc::lock_guard<vtrc::mutex> lck(impl_->services_lock_);
+
+        auto f = impl_->services_.find( name );
+        if( f != impl_->services_.end( ) ) {
+            std::ostringstream oss;
+            oss << "Service '" << name << "'' already exists.";
+            throw std::runtime_error( oss.str( ) );
+        }
+        impl_->services_.insert( std::make_pair( name, func ) );
+    }
+
+    void application::unregister_service_creator( const std::string &name )
+    {
+        vtrc::lock_guard<vtrc::mutex> lck(impl_->services_lock_);
+        auto f = impl_->services_.find( name );
+        if( f != impl_->services_.end( ) ) {
+            impl_->services_.erase( f );
+        }
+    }
+
     void application::run( int argc, const char *argv[ ] )
     {
         po::options_description desc;
@@ -154,6 +237,8 @@ namespace ta { namespace agent {
             show_help( desc );
             return;
         }
+
+        init_subsystems( this );
 
         impl_->pools_.get_io_pool( ).add_threads( impl_->io_count_ - 1 );
         impl_->pools_.get_rpc_pool( ).add_threads( impl_->rpc_count_ );
