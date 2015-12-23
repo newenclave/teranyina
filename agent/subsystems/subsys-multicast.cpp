@@ -84,10 +84,9 @@ namespace ta { namespace agent { namespace subsys {
             oss << ep.address( ).to_string( ) << ":" << port;
             std::string key_string = oss.str( );
 
-//            std::cout << "create: " << key_string << "\n";
+            //std::cout << "create: " << key_string << "\n";
 
             dispatcher_.post( [this, sock, key_string]( ) {
-//                std::cout << "add: " << key_string << std::endl;
                 sockets_[key_string] = sock;
                 start_recv( sock );
             });
@@ -126,7 +125,7 @@ namespace ta { namespace agent { namespace subsys {
                 );
 
             } catch( const std::exception& ex ) {
-                std::cerr << "mc error: " << ex.what( ) << "\n";
+                //std::cerr << "mc error: " << ex.what( ) << "\n";
             }
         }
 
@@ -165,14 +164,9 @@ namespace ta { namespace agent { namespace subsys {
         return subsys_name;
     }
 
-    void call( )
-    {
-        std::cout << "HellO!" << std::endl;
-    }
-
     void multicast::init( )
     {
-        impl_->app_->get_io_service( ).dispatch( call );
+
     }
 
     void multicast::start( )

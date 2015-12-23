@@ -8,6 +8,8 @@
 #include "vtrc-common/vtrc-signal-declaration.h"
 #include "vtrc-common/vtrc-rtti-wrapper.h"
 #include "vtrc-common/vtrc-connection-iface.h"
+#include "vtrc-common/vtrc-pool-pair.h"
+
 #include "vtrc-function.h"
 
 #include "subsystems/subsys-iface.h"
@@ -15,9 +17,11 @@
 
 namespace ta { namespace agent {
 
-    class application: public vtrc::server::application {
+    class application {
+
         struct  impl;
-        impl   *impl_;
+        vtrc::common::pool_pair  pools_;
+        impl                    *impl_;
     public:
         application( application & ) = delete;
         application & operator = ( application & ) = delete;
@@ -128,6 +132,11 @@ namespace ta { namespace agent {
             const subsystem_iface *subsys = get_subsys( typeid(T) );
             return poly_downcast<const T *>( subsys );
         }
+
+        vtrc::server::application *get_application( );
+        const vtrc::server::application *get_application( ) const;
+        boost::asio::io_service &get_io_service( );
+        boost::asio::io_service &get_rpc_service( );
 
         void start_all( );
         void stop_all( );

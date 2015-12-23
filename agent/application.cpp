@@ -64,11 +64,10 @@ namespace ta { namespace agent {
         }
     }
 
-    struct application::impl {
+    struct application::impl: public vtrc::server::application {
 
-        subsystem_comtrainer    subsystems_;
-        vcomm::pool_pair        pools_;
-        logger                  logger_;
+        subsystem_comtrainer     subsystems_;
+        logger                   logger_;
 
         service_map             services_;
         vtrc::mutex             services_lock_;
@@ -76,9 +75,9 @@ namespace ta { namespace agent {
         unsigned                io_count_;
         unsigned                rpc_count_;
 
-        impl( )
-            :pools_(0, 0)
-            ,logger_(pools_.get_io_service( ), logger::level::info)
+        impl(vcomm::pool_pair &pools)
+            :vtrc::server::application(pools)
+            ,logger_(pools.get_io_service( ), logger::level::info)
             ,io_count_(1)
             ,rpc_count_(1)
         { }
@@ -96,8 +95,8 @@ namespace ta { namespace agent {
     };
 
     application::application( )
-        :vtrc::server::application( )
-        ,impl_(new impl)
+        :pools_(0, 0)
+        ,impl_(new impl(pools_))
     { }
 
     application::~application( )
@@ -159,6 +158,26 @@ namespace ta { namespace agent {
             (*b)->stop( );
         }
 
+    }
+
+    vtrc::server::application *application::get_application( )
+    {
+        return impl_;
+    }
+
+    const vtrc::server::application *application::get_application( ) const
+    {
+        return impl_;
+    }
+
+    boost::asio::io_service &application::get_io_service( )
+    {
+        return impl_->get_io_service( );
+    }
+
+    boost::asio::io_service &application::get_rpc_service( )
+    {
+        return impl_->get_rpc_service( );
     }
 
     //////// service wrapper
@@ -240,13 +259,13 @@ namespace ta { namespace agent {
             return;
         }
 
-//        impl_->pools_.get_io_pool( ).add_threads( impl_->io_count_ - 1 );
-//        impl_->pools_.get_rpc_pool( ).add_threads( impl_->rpc_count_ );
-
         init_subsystems( this );
         start_all( );
 
-        impl_->pools_.get_io_pool( ).attach( );
+        pools_.get_io_pool( ).add_threads( impl_->io_count_ - 1 );
+        pools_.get_rpc_pool( ).add_threads( impl_->rpc_count_ );
+
+        pools_.get_io_pool( ).attach( );
     }
 
 }}
