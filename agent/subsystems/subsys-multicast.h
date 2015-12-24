@@ -4,6 +4,8 @@
 
 #include "subsys-iface.h"
 
+#include <vector>
+
 namespace ta { namespace agent {
 
     class application;
@@ -23,7 +25,8 @@ namespace subsys {
 
         ~multicast( );
 
-        static vtrc::shared_ptr<multicast> create( application *app );
+        static vtrc::shared_ptr<multicast> create( application *app,
+                                        const std::vector<std::string> &def );
 
         const std::string &name( )  const;
 

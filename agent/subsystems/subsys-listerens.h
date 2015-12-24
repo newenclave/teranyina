@@ -6,6 +6,8 @@
 
 #include "vtrc-common/vtrc-signal-declaration.h"
 
+#include <vector>
+
 namespace ta { namespace agent {
 
     class application;

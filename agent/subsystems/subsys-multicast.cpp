@@ -153,7 +153,8 @@ namespace ta { namespace agent { namespace subsys {
     }
 
     /// static
-    vtrc::shared_ptr<multicast> multicast::create( application *app )
+    vtrc::shared_ptr<multicast> multicast::create( application *app,
+                                          const std::vector<std::string> &def )
     {
         vtrc::shared_ptr<multicast> new_inst(new multicast(app));
         return new_inst;

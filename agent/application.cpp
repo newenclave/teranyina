@@ -71,6 +71,7 @@ namespace ta { namespace agent {
         unsigned                rpc_count_;
 
         string_vector           servers_;
+        string_vector           mcs_;
 
         impl(vcomm::pool_pair &pools)
             :vtrc::server::application(pools)
@@ -87,6 +88,8 @@ namespace ta { namespace agent {
                       "io threads count" )
             ( "rpc,r", po::value<unsigned>(&rpc_count_)->default_value(1),
                       "rpc threads count" )
+            ( "multicast,m", po::value<string_vector>(&mcs_),
+                            "multicast listeners" )
             ( "server,s", po::value<string_vector>(&servers_),
                        "servers points" )
             ;
@@ -95,7 +98,7 @@ namespace ta { namespace agent {
         void init_subsystems(  )
         {
             using namespace agent::subsys;
-            parent_->add_subsystem<subsys::multicast>( );
+            parent_->add_subsystem<subsys::multicast>( mcs_ );
             parent_->add_subsystem<subsys::listerens>( servers_ );
         }
 
