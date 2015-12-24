@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "utils.h"
 
 namespace ta { namespace utilities {
@@ -30,6 +32,20 @@ namespace ta { namespace utilities {
 
         return res;
     }
+
+    std::ostream & operator << ( std::ostream &os, const endpoint_info &ei )
+    {
+        static const char *ssl_flag[2] = { "", "@" };
+
+        if( ei.is_local( ) ) {
+            os << ei.addpess;
+        } else {
+            os << ssl_flag[ei.is_ssl( ) ? 1 : 0]
+               << ei.addpess << ":" << ei.service;
+        }
+        return os;
+    }
+
 
 }}
 

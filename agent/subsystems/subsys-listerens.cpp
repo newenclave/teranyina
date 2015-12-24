@@ -73,11 +73,14 @@ namespace ta { namespace agent { namespace subsys {
             for( auto &ep: endpoints_ ) {
                 auto inf = utilities::get_endpoint_info( ep );
                 if( inf.is_local( ) ) {
-                    std::cout << "Start local ep: " << inf.addpess << std::endl;
+                    std::cout << "Start local ep: " << inf.addpess
+                              << " (" << inf << ") "
+                              << std::endl;
                 } else {
                     std::cout << "Start tcp ep: "
                               << inf.addpess  << " " << inf.service
                               << " ssl: " << true_false[inf.is_ssl( ) ? 1 : 0]
+                              << " (" << inf << ") "
                               << std::endl;
                 }
             }

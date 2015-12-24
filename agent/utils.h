@@ -2,6 +2,7 @@
 #define TA_UTILS_H
 
 #include <string>
+#include <ostream>
 
 namespace ta { namespace utilities {
 
@@ -28,8 +29,9 @@ namespace ta { namespace utilities {
         {
             return flags & FLAG_SSL;
         }
-
     };
+
+    std::ostream & operator << ( std::ostream &os, const endpoint_info &ei );
 
     ///  0.0.0.0:12345             - tcp  endpoint (address:port)
     ///  0.0.0.0:12345             - tcp6 endpoint (address:port)
