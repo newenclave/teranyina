@@ -18,11 +18,12 @@ namespace ta { namespace agent {
         namespace vcomm = vtrc::common;
         namespace gpb   = google::protobuf;
 
-        typedef std::map<vcomm::rtti_wrapper, subsystem_sptr> subsys_map;
-        typedef std::vector<subsystem_sptr>                   subsys_vector;
+        using subsys_map    = std::map<vcomm::rtti_wrapper, subsystem_sptr>;
+        using subsys_vector = std::vector<subsystem_sptr>;
+        using string_vector = std::vector<std::string>;
 
-        typedef std::map<std::string,
-                         application::service_getter_type > service_map;
+        using service_map   =  std::map< std::string,
+                                         application::service_getter_type >;
 
         struct subsystem_comtrainer {
             subsys_map      subsys_;
@@ -31,9 +32,9 @@ namespace ta { namespace agent {
 
         void get_options( po::options_description& desc )
         {
-            desc.add_options( )
-                ( "help,h", "help message" )
-            ;
+//            desc.add_options( )
+//                ( "help,h", "help message" )
+//            ;
         }
 
         po::variables_map create_cmd_params( int argc, const char *argv[ ],
@@ -50,13 +51,6 @@ namespace ta { namespace agent {
             return vm;
         }
 
-        void init_subsystems( agent::application *app )
-        {
-            using namespace agent::subsys;
-            app->add_subsystem<subsys::multicast>( );
-            app->add_subsystem<subsys::listerens>( );
-        }
-
         void show_help( po::options_description const &desc )
         {
             std::cout << "Usage: ./teranyina_agent <options>\n"
@@ -66,6 +60,7 @@ namespace ta { namespace agent {
 
     struct application::impl: public vtrc::server::application {
 
+        agent::application      *parent_;
         subsystem_comtrainer     subsystems_;
         logger                   logger_;
 
@@ -74,6 +69,8 @@ namespace ta { namespace agent {
 
         unsigned                io_count_;
         unsigned                rpc_count_;
+
+        string_vector           servers_;
 
         impl(vcomm::pool_pair &pools)
             :vtrc::server::application(pools)
@@ -85,11 +82,21 @@ namespace ta { namespace agent {
         void get_agent_options( po::options_description& desc )
         {
             desc.add_options( )
+            ( "help,h", "help message" )
             ( "io,i", po::value<unsigned>(&io_count_)->default_value(1),
                       "io threads count" )
             ( "rpc,r", po::value<unsigned>(&rpc_count_)->default_value(1),
                       "rpc threads count" )
+            ( "server,s", po::value<string_vector>(&servers_),
+                       "servers points" )
             ;
+        }
+
+        void init_subsystems(  )
+        {
+            using namespace agent::subsys;
+            parent_->add_subsystem<subsys::multicast>( );
+            parent_->add_subsystem<subsys::listerens>( servers_ );
         }
 
     };
@@ -97,7 +104,9 @@ namespace ta { namespace agent {
     application::application( )
         :pools_(0, 0)
         ,impl_(new impl(pools_))
-    { }
+    {
+        impl_->parent_ = this;
+    }
 
     application::~application( )
     {
@@ -259,7 +268,11 @@ namespace ta { namespace agent {
             return;
         }
 
-        init_subsystems( this );
+        for(auto &a: impl_->servers_ ) {
+            std::cout << "Serv: " << a << "\n";
+        }
+
+        impl_->init_subsystems( );
         start_all( );
 
         pools_.get_io_pool( ).add_threads( impl_->io_count_ - 1 );

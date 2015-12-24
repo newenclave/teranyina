@@ -25,7 +25,8 @@ namespace subsys {
 
         ~listerens( );
 
-        static vtrc::shared_ptr<listerens> create( application *app );
+        static vtrc::shared_ptr<listerens> create( application *app,
+                                        const std::vector<std::string> &def );
 
         const std::string &name( )  const;
 
