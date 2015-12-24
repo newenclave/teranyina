@@ -38,6 +38,7 @@ namespace ta { namespace agent {
         impl_->dispatcher_.post( std::bind( &logger::do_write, this,
                                             lev, td.total_microseconds( ),
                                             data ) );
+
     }
 
     void logger::do_write( level lvl, std::uint64_t microsec,
