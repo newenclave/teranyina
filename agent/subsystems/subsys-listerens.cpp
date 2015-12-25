@@ -28,7 +28,7 @@ namespace ta { namespace agent { namespace subsys {
         namespace vserv = vtrc::server;
 
         using string_vector  = std::vector<std::string>;
-        using listerens_list = std::list<vserv::listener_sptr>;
+        using listerens_map  = std::map<std::string, vserv::listener_sptr>;
 
         const std::string subsys_name( "listerens" );
 
@@ -47,6 +47,7 @@ namespace ta { namespace agent { namespace subsys {
 
         application     *app_;
         string_vector    endpoints_;
+        listerens_map    listeners_;
 
 //        logger          &log_;
 
@@ -68,20 +69,35 @@ namespace ta { namespace agent { namespace subsys {
 
         void start_all( )
         {
+            using namespace vserv::listeners;
             static const char *true_false[2] = { "false", "true" };
 
             for( auto &ep: endpoints_ ) {
                 auto inf = utilities::get_endpoint_info( ep );
-                if( inf.is_local( ) ) {
-                    std::cout << "Start local ep: " << inf.addpess
-                              << " (" << inf << ") "
-                              << std::endl;
-                } else {
-                    std::cout << "Start tcp ep: "
-                              << inf.addpess  << " " << inf.service
-                              << " ssl: " << true_false[inf.is_ssl( ) ? 1 : 0]
-                              << " (" << inf << ") "
-                              << std::endl;
+                if( inf ) {
+                    vserv::listener_sptr next;
+                    if( inf.is_local( ) ) {
+
+                        next = local::create( *app_->get_application( ),
+                                              inf.addpess );
+                        std::cout << "Start local ep: " << inf.addpess
+                                  << " (" << inf << ") "
+                                  << std::endl;
+                    } else {
+
+                        next = tcp::create( *app_->get_application( ),
+                                             inf.addpess, inf.service );
+                        std::cout << "Start tcp ep: "
+                                  << inf.addpess  << " " << inf.service
+                                  << " ssl: "
+                                  << true_false[inf.is_ssl( ) ? 1 : 0]
+                                  << " (" << inf << ") "
+                                  << std::endl;
+                    }
+                    if( next ) {
+                        next->start( );
+                        listeners_[ep] = next;
+                    }
                 }
             }
         }

@@ -84,12 +84,16 @@ namespace ta { namespace agent {
         {
             desc.add_options( )
             ( "help,h", "help message" )
+
             ( "io,i", po::value<unsigned>(&io_count_)->default_value(1),
                       "io threads count" )
+
             ( "rpc,r", po::value<unsigned>(&rpc_count_)->default_value(1),
                       "rpc threads count" )
+
             ( "multicast,m", po::value<string_vector>(&mcs_),
-                            "multicast listeners" )
+                       "multicast listeners" )
+
             ( "server,s", po::value<string_vector>(&servers_),
                        "servers points" )
             ;

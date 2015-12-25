@@ -1,6 +1,9 @@
 
 #include "subsys-clients.h"
 #include "../application.h"
+
+#include "client-core/ta-client.h"
+
 //#include "subsys-log.h"
 
 //#include "vtrc-memory.h"
