@@ -5,6 +5,7 @@ message ping {
 }
 
 message pong {
-    optional string mesage = 1;
+    optional bool   active = 1;
+    optional string mesage = 2;
 }
 

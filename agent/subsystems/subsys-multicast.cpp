@@ -6,7 +6,11 @@
 #include "../application.h"
 #include "protocol/protocol-constants.h"
 
+#include "protocol/multicast.pb.h"
+
 #include "boost/asio.hpp"
+
+#include "utils.h"
 
 namespace ta { namespace agent { namespace subsys {
 
@@ -15,7 +19,6 @@ namespace ta { namespace agent { namespace subsys {
         namespace ba   = boost::asio;
         namespace bs   = boost::system;
         namespace bip  = boost::asio::ip;
-
 
         const size_t maximum_buffer_length = 1024 * 4;
         const std::string subsys_name( "multicast" );
@@ -30,14 +33,14 @@ namespace ta { namespace agent { namespace subsys {
             { }
         };
 
-        using socket_sptr = std::shared_ptr<socket_data>;
-        using socket_wptr = std::weak_ptr<socket_data>;
-
-        using socket_map  = std::map<std::string, socket_sptr>;
+        using socket_data_sptr = std::shared_ptr<socket_data>;
+        using socket_data_wptr = std::weak_ptr<socket_data>;
+        using socket_map       = std::map<std::string, socket_data_sptr>;
+        using string_vector    = std::vector<std::string>;
 
         application::service_wrapper_sptr create_service(
                                       ta::agent::application * /*app*/,
-                                      vtrc::common::connection_iface_wptr cl )
+                                      vtrc::common::connection_iface_wptr/*cl*/)
         {
             ///auto inst = std::make_shared<impl_type_here>( app, cl );
             ///return app->wrap_service( cl, inst );
@@ -49,8 +52,10 @@ namespace ta { namespace agent { namespace subsys {
     struct multicast::impl {
 
         application             *app_;
+        multicast               *parent_;
         socket_map               sockets_;
         ba::io_service::strand   dispatcher_;
+        string_vector            default_points_;
 
         impl( application *app )
             :app_(app)
@@ -58,14 +63,31 @@ namespace ta { namespace agent { namespace subsys {
 //            ,log_(app_->subsystem<subsys::log>( ).get_logger( ))
         { }
 
-        void add_endpoint( const std::string &mcaddr, std::uint16_t port )
+        void add_endpoint( const std::string &ep_str )
         {
             static const std::string v4any = "0.0.0.0";
             static const std::string v6any = "::";
 
+            std::string     mcaddr;
+            std::uint16_t   port = 0;
+
+            if( ep_str == "def4" ) {
+                mcaddr = proto::multicast::default_address_v4;
+                port   = proto::multicast::default_port;
+            } else if( ep_str == "def6" ) {
+                mcaddr = proto::multicast::default_address_v6;
+                port   = proto::multicast::default_port;
+            } else {
+                auto ep_info = utilities::get_endpoint_info( ep_str );
+                if( ep_info && !ep_info.is_local( ) ) {
+                    mcaddr = ep_info.addpess;
+                    port   = ep_info.service;
+                }
+            }
+
             auto sock = std::make_shared<socket_data>
                             ( std::ref(app_->get_io_service( )),
-                              maximum_buffer_length);
+                              maximum_buffer_length );
 
             auto mca = ba::ip::address::from_string(mcaddr);
 
@@ -81,12 +103,13 @@ namespace ta { namespace agent { namespace subsys {
             sock->sock_.set_option(bip::multicast::join_group(mca));
 
             std::ostringstream oss;
-            oss << ep.address( ).to_string( ) << ":" << port;
+            oss << mca.to_string( ) << ":" << port;
             std::string key_string = oss.str( );
 
             //std::cout << "create: " << key_string << "\n";
 
             dispatcher_.post( [this, sock, key_string]( ) {
+                //std::cout << "start: " << key_string << "\n";
                 sockets_[key_string] = sock;
                 start_recv( sock );
             });
@@ -94,7 +117,7 @@ namespace ta { namespace agent { namespace subsys {
             //start_recv( socket_v4_, sender_endpoint_v4_ );
         }
 
-        void handler( bs::error_code err, size_t total, socket_wptr wsock )
+        void handler( bs::error_code err, size_t total, socket_data_wptr wsock )
         {
             auto sock(wsock.lock( ));
             if( !sock ) {
@@ -105,10 +128,31 @@ namespace ta { namespace agent { namespace subsys {
                 return;
             }
 
+            using ping_req = ta::proto::multicast::ping;
+            using pong_res = ta::proto::multicast::pong;
+
+            ping_req input;
+            pong_res output;
+
+            input.ParseFromArray( &sock->data_[0], total );
+            output.set_active( true );
+
+            try {
+                parent_->on_new_request_( sock->ep_.address( ).to_string( ),
+                                          sock->ep_.port( ),
+                                          input, output );
+                if( output.active( ) ) {
+                    auto buf = output.SerializeAsString( );
+                    sock->sock_.send_to( ba::buffer( buf ), sock->ep_ );
+                }
+            } catch( const std::exception & /*ex*/ ) {
+                ;;;; /// log here
+            }
+
             start_recv( sock );
         }
 
-        void start_recv( socket_sptr sock )
+        void start_recv( socket_data_sptr sock )
         {
             namespace ph = std::placeholders;
             sock->ep_ = ba::ip::udp::endpoint( );
@@ -119,7 +163,7 @@ namespace ta { namespace agent { namespace subsys {
                     dispatcher_.wrap(
                         std::bind( &impl::handler, this,
                             ph::_1, ph::_2,
-                            socket_wptr(sock)
+                            socket_data_wptr(sock)
                         )
                     )
                 );
@@ -140,12 +184,25 @@ namespace ta { namespace agent { namespace subsys {
             app_->unregister_service_creator( name );
         }
 
+        void start_all( )
+        {
+            for( auto &e: default_points_ ) {
+                add_endpoint( e );
+            }
+        }
+
+        void stop_all( )
+        {
+            sockets_.clear( );
+        }
     };
 
 
     multicast::multicast( application *app )
         :impl_(new impl(app))
-    { }
+    {
+        impl_->parent_ = this;
+    }
 
     multicast::~multicast( )
     {
@@ -154,9 +211,10 @@ namespace ta { namespace agent { namespace subsys {
 
     /// static
     vtrc::shared_ptr<multicast> multicast::create( application *app,
-                                          const std::vector<std::string> &def )
+                                                   const string_vector &def )
     {
         vtrc::shared_ptr<multicast> new_inst(new multicast(app));
+        new_inst->impl_->default_points_.assign( def.begin( ), def.end( ) );
         return new_inst;
     }
 
@@ -172,6 +230,7 @@ namespace ta { namespace agent { namespace subsys {
 
     void multicast::start( )
     {
+        impl_->start_all( );
 //        impl_->add_endpoint( proto::multicast::default_address_v4,
 //                             proto::multicast::default_port );
 //        impl_->add_endpoint( proto::multicast::default_address_v6,
@@ -181,6 +240,7 @@ namespace ta { namespace agent { namespace subsys {
 
     void multicast::stop( )
     {
+        impl_->stop_all( );
 //        impl_->LOGINF << "Stopped.";
     }
 

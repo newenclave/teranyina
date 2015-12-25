@@ -12,14 +12,25 @@ namespace ta { namespace utilities {
         size_t delim_pos = ep.find_last_of( ':' );
 
         if( delim_pos == std::string::npos ) {
+
             /// local: <localname>
             tmp_addr = ep;
             res.type = endpoint_info::ENDPOINT_LOCAL;
+
         } else {
+
             /// tcp: <addr>:port
             res.type = endpoint_info::ENDPOINT_TCP;
             tmp_addr.assign( ep.begin( ), ep.begin( ) + delim_pos );
-            res.service.assign( ep.begin( ) + delim_pos + 1, ep.end( ) );
+
+            std::string svc_tmp( ep.begin( ) + delim_pos + 1, ep.end( ) );
+            int port = atoi( svc_tmp.c_str( ) );
+            if( port > 0 ) {
+                res.service = port;
+            } else {
+                res.type = endpoint_info::ENDPOINT_NONE;
+                return res;
+            }
         }
 
         if( tmp_addr.size( ) > 0 && tmp_addr[0] == '@' ) {
@@ -37,7 +48,9 @@ namespace ta { namespace utilities {
     {
         static const char *ssl_flag[2] = { "", "@" };
 
-        if( ei.is_local( ) ) {
+        if( !ei ) {
+            os << "";
+        } else if( ei.is_local( ) ) {
             os << ei.addpess;
         } else {
             os << ssl_flag[ei.is_ssl( ) ? 1 : 0]

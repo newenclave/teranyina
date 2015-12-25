@@ -3,8 +3,15 @@
 #define TA_SUBSYS_multicast_H
 
 #include "subsys-iface.h"
+#include "vtrc-common/vtrc-signal-declaration.h"
 
 #include <vector>
+#include <cstdint>
+
+namespace ta { namespace proto { namespace multicast {
+    class ping;
+    class pong;
+}}}
 
 namespace ta { namespace agent {
 
@@ -14,8 +21,15 @@ namespace subsys {
 
     class multicast: public subsystem_iface {
 
-        struct  impl;
-        impl   *impl_;
+        struct         impl;
+        friend struct  impl;
+        impl          *impl_;
+
+        /// [in] ip, [in] port, [in] ping_message, [in, out] pong_message
+        VTRC_DECLARE_SIGNAL( on_new_request,
+                             void( const std::string &, std::uint16_t,
+                                   const ta::proto::multicast::ping &,
+                                   ta::proto::multicast::pong & ) );
 
     protected:
 
