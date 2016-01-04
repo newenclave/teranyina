@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 #include "application.h"
 #include "vtrc-common/vtrc-pool-pair.h"
@@ -53,6 +54,16 @@ namespace ta { namespace agent {
             return vm;
         }
 
+        po::variables_map create_file_params( const std::string &path,
+                                           po::options_description const dsc )
+        {
+            po::variables_map vm;
+            std::ifstream ini_file(path);
+            po::store(po::parse_config_file( ini_file, dsc, true ), vm);
+            po::notify( vm );
+            return vm;
+        }
+
         void show_help( po::options_description const &desc )
         {
             std::cout << "Usage: ./teranyina_agent <options>\n"
@@ -75,6 +86,8 @@ namespace ta { namespace agent {
         string_vector           servers_;
         string_vector           mcs_;
 
+        std::string             config_file_;
+
         impl(vcomm::pool_pair &pools)
             :vtrc::server::application(pools)
             ,logger_(pools.get_io_service( ), logger::level::info)
@@ -82,10 +95,36 @@ namespace ta { namespace agent {
             ,rpc_count_(1)
         { }
 
-        void get_agent_options( po::options_description& desc )
+        void get_common_options( po::options_description& desc )
         {
             desc.add_options( )
             ( "help,h", "help message" )
+            ( "config,c", po::value<std::string>(&config_file_),
+                       "config ini-file" )
+             ;
+        }
+
+        void get_file_options( po::options_description& desc )
+        {
+            desc.add_options( )
+            /// threading
+            ( "threads.io", po::value<unsigned>(&io_count_)->default_value(1),
+                      "io threads count" )
+            ( "threads.rpc", po::value<unsigned>(&rpc_count_)->default_value(1),
+                      "rpc threads count" )
+            /// listeners
+            ( "server.value", po::value<string_vector>(&servers_),
+                      "servers points" )
+
+            /// multicast
+            ( "multicast.value", po::value<string_vector>(&mcs_),
+                       "multicast listeners" )
+             ;
+        }
+
+        void get_cmd_options( po::options_description& desc )
+        {
+            desc.add_options( )
 
             ( "io,i", po::value<unsigned>(&io_count_)->default_value(1),
                       "io threads count" )
@@ -98,6 +137,7 @@ namespace ta { namespace agent {
 
             ( "server,s", po::value<string_vector>(&servers_),
                        "servers points" )
+
             ;
         }
 
@@ -280,17 +320,27 @@ namespace ta { namespace agent {
         po::options_description desc;
 
         get_options( desc );
-        impl_->get_agent_options( desc );
+        impl_->get_common_options( desc );
 
         auto params = create_cmd_params( argc, argv, desc );
+
+        impl_->get_cmd_options( desc );
+
         if( params.count( "help" ) ) {
             show_help( desc );
             return;
         }
 
-        for(auto &a: impl_->servers_ ) {
-            std::cout << "Serv: " << a << "\n";
+        if( !impl_->config_file_.empty( ) )  {
+            po::options_description init_desc;
+            impl_->get_file_options( init_desc );
+            create_file_params( impl_->config_file_, init_desc );
+        } else {
+            create_cmd_params( argc, argv, desc );
         }
+
+        std::cout << "io: " << impl_->io_count_
+                  << " rpc: " << impl_->rpc_count_ << "\n";
 
         impl_->init_subsystems( );
         start_all( );
