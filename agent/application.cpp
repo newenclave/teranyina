@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "application.h"
 #include "vtrc-common/vtrc-pool-pair.h"
 
@@ -261,6 +263,16 @@ namespace ta { namespace agent {
         if( f != impl_->services_.end( ) ) {
             impl_->services_.erase( f );
         }
+    }
+
+    common::logger &application::get_logger( )
+    {
+        return impl_->logger_;
+    }
+
+    const common::logger &application::get_logger( ) const
+    {
+        return impl_->logger_;
     }
 
     void application::run( int argc, const char *argv[ ] )

@@ -1,3 +1,4 @@
+#include <iostream>
 #include <list>
 
 #include "subsys-listerens.h"
@@ -32,15 +33,15 @@ namespace ta { namespace agent { namespace subsys {
 
         const std::string subsys_name( "listerens" );
 
-        application::service_wrapper_sptr create_service(
-                                      ta::agent::application * /*app*/,
-                                      vcomm::connection_iface_wptr cl )
-        {
-            ///auto inst(vtrc::make_shared<impl_type_here>( app, cl ));
-            ///return app->wrap_service( cl, inst );
+//        application::service_wrapper_sptr create_service(
+//                                      ta::agent::application * /*app*/,
+//                                      vcomm::connection_iface_wptr cl )
+//        {
+//            ///auto inst(vtrc::make_shared<impl_type_here>( app, cl ));
+//            ///return app->wrap_service( cl, inst );
 
-            return application::service_wrapper_sptr( );
-        }
+//            return application::service_wrapper_sptr( );
+//        }
     }
 
     struct listerens::impl {
