@@ -179,7 +179,7 @@ namespace ta { namespace agent { namespace subsys {
                 l->max_    = maxl;
                 l->stream_ = std::move(open_file( path, &l->length_ ));
 
-                l->conn_    = log_.on_write_connect(
+                l->conn_   = log_.on_write_connect(
                                 std::bind( &impl::file_out_log, this,
                                     std::ref(*l), ph::_1, ph::_2, ph::_3 ) );
             }
