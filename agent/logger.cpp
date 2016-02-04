@@ -29,6 +29,11 @@ namespace ta { namespace agent {
         delete impl_;
     }
 
+    void logger::dispatch( std::function<void ( )> call )
+    {
+        impl_->dispatcher_.post( call );
+    }
+
     void logger::send_data( level lev, const std::string &data )
     {
         static const bpt::ptime epoch( bpt::ptime::date_type(1970, 1, 1) );

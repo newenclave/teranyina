@@ -2,6 +2,7 @@
 #define TA_AGENT_LOGGER_H
 
 #include <cstdint>
+#include <functional>
 
 #include "common/logger.hxx"
 #include "vtrc-common/vtrc-signal-declaration.h"
@@ -33,6 +34,8 @@ namespace ta { namespace agent {
 
         logger( boost::asio::io_service &ios, level lvl );
         ~logger( );
+
+        void dispatch( std::function<void ( )> call );
 
         static const char *level2str( level lvl, const char *def = "unk" )
         {

@@ -86,6 +86,7 @@ namespace ta { namespace agent {
         string_vector           servers_;
         string_vector           mcs_;
         string_vector           loggers_;
+        std::string             log_level_;
 
         std::string             config_file_;
 
@@ -124,6 +125,9 @@ namespace ta { namespace agent {
             /// logger output
             ( "logger.value", po::value<string_vector>(&loggers_),
                        "logger output device; /path/to/logger[:level[:level]]")
+            ( "logger.level", po::value<std::string>(&log_level_)
+                                           ->default_value("dbg"),
+                       "default logger level; err, inf, wrn, dbg[default]")
             ;
         }
 
@@ -142,8 +146,11 @@ namespace ta { namespace agent {
 
             ( "server,s", po::value<string_vector>(&servers_),
                        "servers points" )
-            ( "log,l", po::value<string_vector>(&loggers_),
+            ( "log,o", po::value<string_vector>(&loggers_),
                        "logger output device; /path/to/logger[:level[:level]]")
+            ( "level,l", po::value<std::string>(&log_level_)
+                         ->default_value("dbg"),
+                       "default logger level; err, inf, wrn, dbg[default]")
             ;
         }
 
@@ -344,6 +351,9 @@ namespace ta { namespace agent {
         } else {
             create_cmd_params( argc, argv, desc );
         }
+
+        get_logger( ).set_level(
+                    logger::str2level( impl_->log_level_.c_str( ) ) );
 
         impl_->init_subsystems( );
         start_all( );
