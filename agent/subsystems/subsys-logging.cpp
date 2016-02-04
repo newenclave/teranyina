@@ -52,7 +52,7 @@ namespace ta { namespace agent { namespace subsys {
             return std::move(res);
         }
 
-        struct ostream_inf: public std::enable_shared_from_this<ostream_inf> {
+        struct ostream_inf {
             std::unique_ptr<std::ostream> stream_;
             size_t           length_;
             level            min_;
@@ -69,7 +69,7 @@ namespace ta { namespace agent { namespace subsys {
 
         using ostream_sptr = std::shared_ptr<ostream_inf>;
         using ostream_wptr = std::weak_ptr<ostream_inf>;
-        using stream_list  = std::map<std::string, ostream_sptr>;
+        using stream_list  = std::list<ostream_inf>;
 
         std::string str2logger( const std::string &str,
                                 std::string &fromlvl, std::string &tolvl )
@@ -144,14 +144,10 @@ namespace ta { namespace agent { namespace subsys {
             }
         }
 
-        void file_out_log( ostream_wptr inf, level lvl,
+        void file_out_log( ostream_inf &inf, level lvl,
                            bpt::ptime const &tim, std::string const &data )
         {
-            auto lck = inf.lock( );
-            if( !lck ) {
-                return;
-            }
-            console_log( *lck->stream_, lck->min_, lck->max_, lvl, tim, data );
+            console_log( *inf.stream_, inf.min_, inf.max_, lvl, tim, data );
         }
 
         void add_logger( const std::string &path, level minl, level maxl )
@@ -176,17 +172,16 @@ namespace ta { namespace agent { namespace subsys {
 
             } else {
 
-                auto l     = std::make_shared<ostream_inf>( path );
+                streams_.emplace_back( path );
+
+                auto l     = streams_.rbegin( );
                 l->min_    = minl;
                 l->max_    = maxl;
                 l->stream_ = std::move(open_file( path, &l->length_ ));
 
                 l->conn_    = log_.on_write_connect(
                                 std::bind( &impl::file_out_log, this,
-                                    ostream_wptr(l->shared_from_this( )),
-                                    ph::_1, ph::_2, ph::_3 ) );
-
-                streams_[path] = l;
+                                    std::ref(*l), ph::_1, ph::_2, ph::_3 ) );
             }
         }
 
@@ -205,7 +200,7 @@ namespace ta { namespace agent { namespace subsys {
             add_logger( path, minl, maxl );
         }
 
-        void add_logger_output( const std::string &params )
+        void add_logger_output( const std::string &params ) /// dispatcher!
         {
             std::string from;
             std::string to;
@@ -213,14 +208,19 @@ namespace ta { namespace agent { namespace subsys {
             add_logger( path, from, to );
         }
 
-        void del_logger_output( const std::string &name )
+        void del_logger_output( const std::string &name ) /// dispatcher!
         {
             if( name == stdout_name ) { /// cout
                 stdout_connection_.conn_.disconnect( );
             } else if( name == stderr_name ) { /// cerr
                 stderr_connection_.conn_.disconnect( );
             } else {
-                streams_.erase( name );
+                for( auto b=streams_.begin( ), e=streams_.end( ); b!=e; ++b ) {
+                    if( b->path_ == name ) {
+                        streams_.erase( b );
+                        break;
+                    }
+                }
             }
         }
 
