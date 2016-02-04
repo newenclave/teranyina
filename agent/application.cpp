@@ -124,7 +124,7 @@ namespace ta { namespace agent {
                        "multicast listeners" )
             /// logger output
             ( "logger.value", po::value<string_vector>(&loggers_),
-                       "logger output device; /path/to/logger[:level[:level]]")
+                       "logger output device; /path/to/logger[[level[-level]]]")
             ( "logger.level", po::value<std::string>(&log_level_)
                                            ->default_value("dbg"),
                        "default logger level; err, inf, wrn, dbg[default]")

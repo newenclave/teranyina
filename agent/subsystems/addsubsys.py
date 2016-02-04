@@ -81,9 +81,12 @@ namespace ta { namespace agent { namespace subsys {
         application     *app_;
 //        logger          &log_;
 
+
+        using level = agent::logger::level;
+
         impl( application *app )
             :app_(app)
-//            ,log_(app_->subsystem<subsys::log>( ).get_logger( ))
+           ,log_(app_->.get_logger( ))
         { }
 
         void reg_creator( const std::string &name,
