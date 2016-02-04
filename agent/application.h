@@ -22,7 +22,9 @@ namespace ta { namespace agent {
         struct  impl;
         vtrc::common::pool_pair  pools_;
         impl                    *impl_;
+
     public:
+
         application( application & ) = delete;
         application & operator = ( application & ) = delete;
 
@@ -159,9 +161,8 @@ namespace ta { namespace agent {
 
         /* === nothrow === */
         /*
-         * returns nullptr if not found
+         * return nullptr if not found
         */
-
         subsystem_iface *
         get_subsys( const std::type_info &info ) noexcept;
 

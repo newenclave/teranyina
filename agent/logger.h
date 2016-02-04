@@ -13,7 +13,7 @@ namespace boost { namespace asio {
 namespace ta { namespace agent {
 
     using logger_signal_type = void ( common::logger::level, std::uint64_t,
-                                      std::string const & );
+                                      std::string const & ) noexcept;
 
     class logger: public common::logger {
 
@@ -30,7 +30,7 @@ namespace ta { namespace agent {
     private:
         virtual void send_data( level lev, const std::string &data );
         void do_write( level lvl, std::uint64_t microsec,
-                       std::string const &data );
+                       std::string const &data ) noexcept;
 
     };
 }}

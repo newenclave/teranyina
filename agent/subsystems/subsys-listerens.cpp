@@ -1,5 +1,6 @@
 #include <iostream>
 #include <list>
+#include <memory>
 
 #include "subsys-listerens.h"
 #include "../application.h"
@@ -10,6 +11,8 @@
 #include "vtrc-server/vtrc-listener-local.h"
 
 #include "utils.h"
+
+#include "boost/system/error_code.hpp"
 
 //#include "subsys-log.h"
 
@@ -27,21 +30,15 @@ namespace ta { namespace agent { namespace subsys {
 
         namespace vcomm = vtrc::common;
         namespace vserv = vtrc::server;
+        namespace bsys  = boost::system;
 
         using string_vector  = std::vector<std::string>;
         using listerens_map  = std::map<std::string, vserv::listener_sptr>;
+        using listener_wptr  = std::weak_ptr<vserv::listener>;
+
 
         const std::string subsys_name( "listerens" );
 
-//        application::service_wrapper_sptr create_service(
-//                                      ta::agent::application * /*app*/,
-//                                      vcomm::connection_iface_wptr cl )
-//        {
-//            ///auto inst(vtrc::make_shared<impl_type_here>( app, cl ));
-//            ///return app->wrap_service( cl, inst );
-
-//            return application::service_wrapper_sptr( );
-//        }
     }
 
     struct listerens::impl {
@@ -68,10 +65,94 @@ namespace ta { namespace agent { namespace subsys {
             app_->unregister_service_creator( name );
         }
 
+///////////// signals
+        void cb_on_start( listener_wptr inst )
+        {
+            auto lck = inst.lock( );
+            if( !lck ) {
+                return;
+            }
+            std::cout << "[listeren] start: " << lck->name( )
+                      << std::endl;
+        }
+
+        void cb_on_stop( listener_wptr inst )
+        {
+            auto lck = inst.lock( );
+            if( !lck ) {
+                return;
+            }
+            std::cout << "[listeren] stop: " << lck->name( )
+                      << std::endl;
+        }
+
+        void cb_on_accept_failed( const bsys::error_code &err,
+                                  listener_wptr inst )
+        {
+            auto lck = inst.lock( );
+            if( !lck ) {
+                return;
+            }
+            if( err ) {
+                std::cout << "[listener] accept failed: " << err.message( )
+                          << std::endl;
+                /// recall accept? or stop?
+                return;
+            }
+        }
+
+        void cb_on_new_connection( const vcomm::connection_iface *cl,
+                                   listener_wptr inst )
+        {
+            auto lck = inst.lock( );
+            if( !lck ) {
+                return;
+            }
+            std::cout << "[listener] new connection: " << cl->name( )
+                      << std::endl;
+        }
+
+        void on_stop_connection( const vcomm::connection_iface *cl,
+                                 listener_wptr inst )
+        {
+            auto lck = inst.lock( );
+            if( !lck ) {
+                return;
+            }
+            std::cout << "[listener] stop connection: " << cl->name( )
+                      << std::endl;
+        }
+
+        void connect_signals( vserv::listener_sptr &l )
+        {
+            namespace ph = std::placeholders;
+
+            l->on_new_connection_connect(
+                std::bind( &impl::cb_on_new_connection, this,
+                           ph::_1, l->weak_from_this( ) ) );
+
+            l->on_stop_connection_connect(
+                std::bind( &impl::on_stop_connection, this,
+                           ph::_1, l->weak_from_this( ) ) );
+
+            l->on_accept_failed_connect(
+                std::bind( &impl::cb_on_accept_failed, this,
+                           ph::_1, l->weak_from_this( ) ) );
+
+            l->on_start_connect(
+                std::bind( &impl::cb_on_start, this,
+                           l->weak_from_this( ) ) );
+
+            l->on_stop_connect(
+                std::bind( &impl::cb_on_stop, this,
+                           l->weak_from_this( ) ) );
+
+        }
+
         void start_all( )
         {
             using namespace vserv::listeners;
-            static const char *true_false[2] = { "false", "true" };
+            static const char *true_false[2] = { "off", " on" };
 
             for( auto &ep: endpoints_ ) {
                 auto inf = utilities::get_endpoint_info( ep );
@@ -96,6 +177,7 @@ namespace ta { namespace agent { namespace subsys {
                                   << std::endl;
                     }
                     if( next ) {
+                        connect_signals( next );
                         next->start( );
                         listeners_[ep] = next;
                     }

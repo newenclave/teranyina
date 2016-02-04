@@ -30,7 +30,7 @@ namespace ta { namespace agent {
 
     void logger::send_data( level lev, const std::string &data )
     {
-        static const bpt::ptime epoch(bpt::ptime::date_type(1970, 1, 1));
+        static const bpt::ptime epoch( bpt::ptime::date_type(1970, 1, 1) );
 
         bpt::ptime local_time = bpt::microsec_clock::local_time( );
         bpt::time_duration td( local_time - epoch );
@@ -41,16 +41,9 @@ namespace ta { namespace agent {
     }
 
     void logger::do_write( level lvl, std::uint64_t microsec,
-                           std::string const &data )
+                           std::string const &data ) noexcept
     {
-        try {
-            on_write_( lvl, microsec, data );
-        } catch( const std::exception &ex ) {
-            std::cerr << "agent::logger do_write exception: "
-                      << ex.what( ) << "\n";
-        } catch( ... ) {
-            std::cerr << "agent::logger do_write exception: ... \n";
-        }
+        on_write_( lvl, microsec, data );
     }
 
 }}
