@@ -154,7 +154,7 @@ namespace ta { namespace agent { namespace subsys {
         {
             namespace ph = std::placeholders;
 
-            if( path == stdout_name ) { /// cout
+            if( path == stdout_name ) {         /// cout
 
                 //stdout_connection_.conn_.disconnect( );
                 stdout_connection_.conn_ = log_.on_write_connect(
@@ -162,7 +162,7 @@ namespace ta { namespace agent { namespace subsys {
                                        std::ref(std::cout), minl, maxl,
                                        ph::_1, ph::_2, ph::_3 ) );
 
-            } else if( path == stderr_name ) { /// cerr
+            } else if( path == stderr_name ) {  /// cerr
 
                 //stderr_connection_.conn_.disconnect( );
                 stderr_connection_.conn_ = log_.on_write_connect(
@@ -210,9 +210,9 @@ namespace ta { namespace agent { namespace subsys {
 
         void del_logger_output( const std::string &name ) /// dispatcher!
         {
-            if( name == stdout_name ) { /// cout
+            if( name == stdout_name ) {         /// cout
                 stdout_connection_.conn_.disconnect( );
-            } else if( name == stderr_name ) { /// cerr
+            } else if( name == stderr_name ) {  /// cerr
                 stderr_connection_.conn_.disconnect( );
             } else {
                 for( auto b=streams_.begin( ), e=streams_.end( ); b!=e; ++b ) {
@@ -223,7 +223,6 @@ namespace ta { namespace agent { namespace subsys {
                 }
             }
         }
-
     };
 
     logging::logging( application *app )
