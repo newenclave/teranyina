@@ -181,10 +181,10 @@ namespace ta { namespace agent { namespace subsys {
                 l->max_    = maxl;
                 l->stream_ = std::move(open_file( path, &l->length_ ));
 
-                l->conn_ = log_.on_write_connect(
-                            std::bind( &impl::file_out_log, this,
-                                       ostream_wptr(l->shared_from_this( )),
-                                       ph::_1, ph::_2, ph::_3 ) );
+                l->conn_    = log_.on_write_connect(
+                                std::bind( &impl::file_out_log, this,
+                                    ostream_wptr(l->shared_from_this( )),
+                                    ph::_1, ph::_2, ph::_3 ) );
 
                 streams_[path] = l;
             }
