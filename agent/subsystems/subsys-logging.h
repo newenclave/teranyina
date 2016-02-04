@@ -33,10 +33,10 @@ namespace subsys {
 
     public:
 
-        const std::string &name( )  const;
-        void init( )  ;
-        void start( ) ;
-        void stop( )  ;
+        const std::string &name( ) const noexcept override ;
+        void init( )  override;
+        void start( ) override;
+        void stop( )  override;
     };
 
 }}}

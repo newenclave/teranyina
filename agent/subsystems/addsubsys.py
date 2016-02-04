@@ -32,11 +32,11 @@ namespace subsys {
 
         static vtrc::shared_ptr<%ss-name%> create( application *app );
 
-        const std::string &name( )  const;
+        const std::string &name( )  const noexcept override;
 
-        void init( )  ;
-        void start( ) ;
-        void stop( )  ;
+        void init( )  override;
+        void start( ) override;
+        void stop( )  override;
     };
 
 }}}
@@ -79,14 +79,14 @@ namespace ta { namespace agent { namespace subsys {
     struct %ss-name%::impl {
 
         application     *app_;
-//        logger          &log_;
+        agent::logger   &log_;
 
 
         using level = agent::logger::level;
 
         impl( application *app )
             :app_(app)
-           ,log_(app_->.get_logger( ))
+            ,log_(app_->.get_logger( ))
         { }
 
         void reg_creator( const std::string &name,
@@ -119,7 +119,7 @@ namespace ta { namespace agent { namespace subsys {
         return new_inst;
     }
 
-    const std::string &%ss-name%::name( )  const
+    const std::string &%ss-name%::name( )  const noexcept
     {
         return subsys_name;
     }
