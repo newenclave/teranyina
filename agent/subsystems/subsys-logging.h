@@ -2,6 +2,8 @@
 #ifndef TA_SUBSYS_logging_H
 #define TA_SUBSYS_logging_H
 
+#include <vector>
+
 #include "subsys-iface.h"
 
 namespace ta { namespace agent {
@@ -23,7 +25,8 @@ namespace subsys {
 
         ~logging( );
 
-        static vtrc::shared_ptr<logging> create( application *app );
+        static vtrc::shared_ptr<logging> create( application *app,
+                                         const std::vector<std::string> &def );
 
         const std::string &name( )  const;
 

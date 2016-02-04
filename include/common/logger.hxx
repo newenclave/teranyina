@@ -9,7 +9,8 @@ namespace ta { namespace common {
     class logger {
 
     public:
-        enum level {
+
+        enum class level {
              zero    = 0
             ,error   = 1
             ,warning = 2

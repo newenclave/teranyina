@@ -1,6 +1,8 @@
 
 #include "subsys-logging.h"
 #include "../application.h"
+#include "../logger.h"
+
 //#include "subsys-log.h"
 
 //#include "vtrc-memory.h"
@@ -16,25 +18,62 @@ namespace ta { namespace agent { namespace subsys {
     namespace {
         const std::string subsys_name( "logging" );
 
-        application::service_wrapper_sptr create_service(
-                                      ta::agent::application * /*app*/,
-                                      vtrc::common::connection_iface_wptr cl )
+        inline logger::level str2lvl( const char *str )
         {
-            ///auto inst = std::make_shared<impl_type_here>( app, cl );
-            ///return app->wrap_service( cl, inst );
-
-            return application::service_wrapper_sptr( );
+            return logger::str2level( str );
         }
+
+        void str2logger( const std::string &str )
+        {
+            size_t delim_pos = str.find_last_of( '[' );
+            std::string path;
+            std::string from_lvl;
+            std::string to_lvl;
+
+            if( delim_pos == std::string::npos ) {
+                path = str;
+            } else {
+
+                path = std::string( str.begin( ), str.begin( ) + delim_pos );
+                auto *to = &from_lvl;
+                bool found_int = true;
+
+                for( auto d = ++delim_pos; d < str.size( ); ++d ) {
+                    switch( str[d] ) {
+                    case '-':
+                        to->assign( str.begin( ) + delim_pos,
+                                    str.begin( ) + d );
+                        to = &to_lvl;
+                        delim_pos = d + 1;
+                        break;
+                    case ']':
+                        to->assign( str.begin( ) + delim_pos,
+                                    str.begin( ) + d );
+                        found_int = false;
+                        break;
+                    }
+                }
+
+                if( found_int ) {
+                    to->assign( str.begin( ) + delim_pos, str.end( ) );
+                }
+
+                std::cout << "1Log file: " << path << " "
+                             << from_lvl.size( ) << " "
+                             << to_lvl.size( ) << "\n";
+            }
+        }
+
     }
 
     struct logging::impl {
 
         application     *app_;
-//        logger          &log_;
+        common::logger  &log_;
 
         impl( application *app )
             :app_(app)
-//            ,log_(app_->subsystem<subsys::log>( ).get_logger( ))
+            ,log_(app_->get_logger( ))
         { }
 
         void reg_creator( const std::string &name,
@@ -61,9 +100,15 @@ namespace ta { namespace agent { namespace subsys {
     }
 
     /// static
-    vtrc::shared_ptr<logging> logging::create( application *app )
+    vtrc::shared_ptr<logging> logging::create(application *app,
+                              const std::vector<std::string> &def )
     {
         vtrc::shared_ptr<logging> new_inst(new logging(app));
+
+        for( auto &d: def ) {
+            str2logger( d );
+        }
+
         return new_inst;
     }
 

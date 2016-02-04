@@ -85,6 +85,7 @@ namespace ta { namespace agent {
 
         string_vector           servers_;
         string_vector           mcs_;
+        string_vector           loggers_;
 
         std::string             config_file_;
 
@@ -112,6 +113,7 @@ namespace ta { namespace agent {
                       "io threads count" )
             ( "threads.rpc", po::value<unsigned>(&rpc_count_)->default_value(1),
                       "rpc threads count" )
+
             /// listeners
             ( "server.value", po::value<string_vector>(&servers_),
                       "servers points" )
@@ -119,7 +121,10 @@ namespace ta { namespace agent {
             /// multicast
             ( "multicast.value", po::value<string_vector>(&mcs_),
                        "multicast listeners" )
-             ;
+            /// logger output
+            ( "logger.value", po::value<string_vector>(&loggers_),
+                       "logger output device; /path/to/logger[:level[:level]]")
+            ;
         }
 
         void get_cmd_options( po::options_description& desc )
@@ -137,16 +142,17 @@ namespace ta { namespace agent {
 
             ( "server,s", po::value<string_vector>(&servers_),
                        "servers points" )
-
+            ( "log,l", po::value<string_vector>(&loggers_),
+                       "logger output device; /path/to/logger[:level[:level]]")
             ;
         }
 
         void init_subsystems(  )
         {
-            using namespace agent::subsys;
+            using namespace agent;
             parent_->add_subsystem<subsys::multicast>( mcs_ );
             parent_->add_subsystem<subsys::listerens>( servers_ );
-
+            parent_->add_subsystem<subsys::logging>( loggers_ );
         }
 
     };

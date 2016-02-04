@@ -24,8 +24,58 @@ namespace ta { namespace agent {
     public:
 
         using level = common::logger::level;
+
         logger( boost::asio::io_service &ios, level lvl );
         ~logger( );
+
+        static const char *level2str( level lvl,
+                                      const char *def = "unk" )
+        {
+            switch( lvl ) {
+            case level::zero:
+                return "zer";
+            case level::error:
+                return "err";
+            case level::warning:
+                return "wrn";
+            case level::info:
+                return "inf";
+            case level::debug:
+                return "dbg";
+            default:
+                return def;
+            }
+        }
+
+        static level str2level( const char *str,
+                                level def = level::info )
+        {
+            struct lvl2str {
+                const char *str_;
+                level       lvl_;
+            };
+
+            static lvl2str levels[ ] =
+            {
+                { "zero",     level::zero    },
+                { "zro",      level::zero    },
+                { "error",    level::error   },
+                { "err",      level::error   },
+                { "warning",  level::warning },
+                { "wrn",      level::warning },
+                { "info",     level::info    },
+                { "inf",      level::info    },
+                { "debug",    level::debug   },
+                { "dbg",      level::debug   }
+            };
+
+            for( auto &lvl: levels ) {
+                if( 0 == strcmp( lvl.str_, str ) ) {
+                    return lvl.lvl_;
+                }
+            }
+            return def;
+        }
 
     private:
         virtual void send_data( level lev, const std::string &data );
