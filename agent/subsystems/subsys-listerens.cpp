@@ -18,11 +18,11 @@
 
 //#include "vtrc-memory.h"
 
-//#define LOG(lev) log_(lev) << "[listerens] "
-//#define LOGINF   LOG(logger::info)
-//#define LOGDBG   LOG(logger::debug)
-//#define LOGERR   LOG(logger::error)
-//#define LOGWRN   LOG(logger::warning)
+#define LOG(lev) log_(lev) << "[listerens] "
+#define LOGINF   LOG(logger::level::info)
+#define LOGDBG   LOG(logger::level::debug)
+#define LOGERR   LOG(logger::level::error)
+#define LOGWRN   LOG(logger::level::warning)
 
 namespace ta { namespace agent { namespace subsys {
 
@@ -44,14 +44,14 @@ namespace ta { namespace agent { namespace subsys {
     struct listerens::impl {
 
         application     *app_;
+        agent::logger   &log_;
+
         string_vector    endpoints_;
         listerens_map    listeners_;
 
-//        logger          &log_;
-
         impl( application *app )
             :app_(app)
-//            ,log_(app_->subsystem<subsys::log>( ).get_logger( ))
+            ,log_(app_->get_logger( ))
         { }
 
         void reg_creator( const std::string &name,
@@ -72,8 +72,8 @@ namespace ta { namespace agent { namespace subsys {
             if( !lck ) {
                 return;
             }
-            std::cout << "[listeren] start: " << lck->name( )
-                      << std::endl;
+            LOGINF << "start: " << lck->name( )
+                   ;
         }
 
         void cb_on_stop( listener_wptr inst )
@@ -82,8 +82,8 @@ namespace ta { namespace agent { namespace subsys {
             if( !lck ) {
                 return;
             }
-            std::cout << "[listeren] stop: " << lck->name( )
-                      << std::endl;
+            LOGINF << "stop: " << lck->name( )
+                   ;
         }
 
         void cb_on_accept_failed( const bsys::error_code &err,
@@ -94,8 +94,8 @@ namespace ta { namespace agent { namespace subsys {
                 return;
             }
             if( err ) {
-                std::cout << "[listener] accept failed: " << err.message( )
-                          << std::endl;
+                LOGERR << "accept failed: " << err.message( )
+                       ;
                 /// recall accept? or stop?
                 return;
             }
@@ -108,8 +108,8 @@ namespace ta { namespace agent { namespace subsys {
             if( !lck ) {
                 return;
             }
-            std::cout << "[listener] new connection: " << cl->name( )
-                      << std::endl;
+            LOGINF << "new connection: " << cl->name( )
+                   ;
         }
 
         void on_stop_connection( const vcomm::connection_iface *cl,
@@ -119,8 +119,8 @@ namespace ta { namespace agent { namespace subsys {
             if( !lck ) {
                 return;
             }
-            std::cout << "[listener] stop connection: " << cl->name( )
-                      << std::endl;
+            LOGINF << "stop connection: " << cl->name( )
+                   ;
         }
 
         void connect_signals( vserv::listener_sptr &l )
@@ -162,19 +162,19 @@ namespace ta { namespace agent { namespace subsys {
 
                         next = local::create( *app_->get_application( ),
                                               inf.addpess );
-                        std::cout << "Start local ep: " << inf.addpess
-                                  << " (" << inf << ") "
-                                  << std::endl;
+                        LOGINF << "Start local ep: " << inf.addpess
+                               << " (" << inf << ") "
+                               ;
                     } else {
 
                         next = tcp::create( *app_->get_application( ),
                                              inf.addpess, inf.service );
-                        std::cout << "Start tcp ep: "
+                        LOGINF << "Start tcp ep: "
                                   << inf.addpess  << " " << inf.service
                                   << " ssl: "
                                   << true_false[inf.is_ssl( ) ? 1 : 0]
                                   << " (" << inf << ") "
-                                  << std::endl;
+                                  ;
                     }
                     if( next ) {
                         connect_signals( next );
@@ -220,12 +220,12 @@ namespace ta { namespace agent { namespace subsys {
     void listerens::start( )
     {
         impl_->start_all( );
-//        impl_->LOGINF << "Started.";
+        impl_->LOGINF << "Started.";
     }
 
     void listerens::stop( )
     {
-//        impl_->LOGINF << "Stopped.";
+        impl_->LOGINF << "Stopped.";
     }
 
 

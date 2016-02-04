@@ -140,8 +140,8 @@ namespace ta { namespace agent {
         boost::asio::io_service &get_io_service( );
         boost::asio::io_service &get_rpc_service( );
 
-        common::logger &get_logger( );
-        const common::logger &get_logger( ) const;
+        agent::logger &get_logger( );
+        const agent::logger &get_logger( ) const;
 
         void start_all( );
         void stop_all( );

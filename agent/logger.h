@@ -6,13 +6,19 @@
 #include "common/logger.hxx"
 #include "vtrc-common/vtrc-signal-declaration.h"
 
-namespace boost { namespace asio {
+namespace boost {
+namespace asio {
     class io_service;
-}}
+}
+namespace posix_time {
+    class ptime;
+}
+}
 
 namespace ta { namespace agent {
 
-    using logger_signal_type = void ( common::logger::level, std::uint64_t,
+    using logger_signal_type = void ( common::logger::level,
+                                      const boost::posix_time::ptime &tim,
                                       std::string const & ) noexcept;
 
     class logger: public common::logger {
@@ -28,8 +34,7 @@ namespace ta { namespace agent {
         logger( boost::asio::io_service &ios, level lvl );
         ~logger( );
 
-        static const char *level2str( level lvl,
-                                      const char *def = "unk" )
+        static const char *level2str( level lvl, const char *def = "unk" )
         {
             switch( lvl ) {
             case level::zero:
@@ -47,8 +52,7 @@ namespace ta { namespace agent {
             }
         }
 
-        static level str2level( const char *str,
-                                level def = level::info )
+        static level str2level( const char *str, level def = level::info )
         {
             struct lvl2str {
                 const char *str_;
@@ -58,15 +62,20 @@ namespace ta { namespace agent {
             static lvl2str levels[ ] =
             {
                 { "zero",     level::zero    },
-                { "zro",      level::zero    },
+                { "zer",      level::zero    },
+                { "ZER",      level::zero    },
                 { "error",    level::error   },
                 { "err",      level::error   },
+                { "ERR",      level::error   },
                 { "warning",  level::warning },
                 { "wrn",      level::warning },
+                { "WRN",      level::warning },
                 { "info",     level::info    },
                 { "inf",      level::info    },
+                { "INF",      level::info    },
                 { "debug",    level::debug   },
-                { "dbg",      level::debug   }
+                { "dbg",      level::debug   },
+                { "DBG",      level::debug   }
             };
 
             for( auto &lvl: levels ) {
@@ -79,7 +88,7 @@ namespace ta { namespace agent {
 
     private:
         virtual void send_data( level lev, const std::string &data );
-        void do_write( level lvl, std::uint64_t microsec,
+        void do_write( level lvl, const boost::posix_time::ptime &tim,
                        std::string const &data ) noexcept;
 
     };

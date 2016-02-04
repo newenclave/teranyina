@@ -150,9 +150,9 @@ namespace ta { namespace agent {
         void init_subsystems(  )
         {
             using namespace agent;
+            parent_->add_subsystem<subsys::logging>( loggers_ );
             parent_->add_subsystem<subsys::multicast>( mcs_ );
             parent_->add_subsystem<subsys::listerens>( servers_ );
-            parent_->add_subsystem<subsys::logging>( loggers_ );
         }
 
     };
@@ -311,12 +311,12 @@ namespace ta { namespace agent {
         }
     }
 
-    common::logger &application::get_logger( )
+    agent::logger &application::get_logger( )
     {
         return impl_->logger_;
     }
 
-    const common::logger &application::get_logger( ) const
+    const agent::logger &application::get_logger( ) const
     {
         return impl_->logger_;
     }
@@ -344,9 +344,6 @@ namespace ta { namespace agent {
         } else {
             create_cmd_params( argc, argv, desc );
         }
-
-        std::cout << "io: " << impl_->io_count_
-                  << " rpc: " << impl_->rpc_count_ << "\n";
 
         impl_->init_subsystems( );
         start_all( );
