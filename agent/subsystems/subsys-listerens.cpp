@@ -36,9 +36,7 @@ namespace ta { namespace agent { namespace subsys {
         using listerens_map  = std::map<std::string, vserv::listener_sptr>;
         using listener_wptr  = std::weak_ptr<vserv::listener>;
 
-
         const std::string subsys_name( "listerens" );
-
     }
 
     struct listerens::impl {

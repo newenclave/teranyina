@@ -4,6 +4,10 @@
 
 #include "subsys-iface.h"
 
+namespace vtrc { namespace client {
+    class vtrc_client;
+}}
+
 namespace ta { namespace agent {
 
     class application;
@@ -24,6 +28,10 @@ namespace subsys {
         ~clients( );
 
         static vtrc::shared_ptr<clients> create( application *app );
+
+        void add_client( const std::string &path );
+
+    public:
 
         const std::string &name( )  const;
 

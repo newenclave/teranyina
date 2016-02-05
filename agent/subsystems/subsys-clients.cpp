@@ -1,22 +1,26 @@
 
 #include "subsys-clients.h"
 #include "../application.h"
+#include "../utils.h"
 
-#include "client-core/ta-client.h"
+#include "vtrc-client/vtrc-client.h"
 
-//#include "subsys-log.h"
-
-//#include "vtrc-memory.h"
-
-//#define LOG(lev) log_(lev) << "[clients] "
-//#define LOGINF   LOG(logger::info)
-//#define LOGDBG   LOG(logger::debug)
-//#define LOGERR   LOG(logger::error)
-//#define LOGWRN   LOG(logger::warning)
+#define LOG(lev) log_(lev) << "[clients] "
+#define LOGINF   LOG(level::info)
+#define LOGDBG   LOG(level::debug)
+#define LOGERR   LOG(level::error)
+#define LOGWRN   LOG(level::warning)
 
 namespace ta { namespace agent { namespace subsys {
 
     namespace {
+
+        using level = agent::logger::level;
+
+        using vtrc_client      = vtrc::client::vtrc_client;
+
+        using vtrc_client_sptr = vtrc::client::vtrc_client_sptr;
+        using vtrc_client_wptr = vtrc::client::vtrc_client_wptr;
 
         const std::string subsys_name( "clients" );
 
@@ -28,16 +32,18 @@ namespace ta { namespace agent { namespace subsys {
 
             return application::service_wrapper_sptr( );
         }
+
     }
 
     struct clients::impl {
 
         application     *app_;
-//        logger          &log_;
+        logger          &log_;
+        std::vector<vtrc_client_sptr>  clients_;
 
         impl( application *app )
             :app_(app)
-//            ,log_(app_->subsystem<subsys::log>( ).get_logger( ))
+            ,log_(app_->get_logger( ))
         { }
 
         void reg_creator( const std::string &name,
@@ -70,6 +76,26 @@ namespace ta { namespace agent { namespace subsys {
         return new_inst;
     }
 
+    void clients::add_client( const std::string &path )
+    {
+        auto ep = utilities::get_endpoint_info( path );
+        auto cl = vtrc_client::create( impl_->app_->get_io_service( ),
+                                       impl_->app_->get_rpc_service( ) );
+
+        cl->connection( );
+        impl_->clients_.push_back( cl );
+
+        if( ep.is_local( ) ) {
+        } else {
+            cl->async_connect( ep.addpess, ep.service,
+                                [this]( const boost::system::error_code &e ) {
+                                    impl_->LOGINF << "Connected!";
+                                }, true );
+        }
+
+        //impl_->LOGINF << ep;
+    }
+
     const std::string &clients::name( )  const
     {
         return subsys_name;
@@ -77,17 +103,17 @@ namespace ta { namespace agent { namespace subsys {
 
     void clients::init( )
     {
-
+        //add_client( "@127.0.0.1:12346" );
     }
 
     void clients::start( )
     {
-//        impl_->LOGINF << "Started.";
+        impl_->LOGINF << "Started";
     }
 
     void clients::stop( )
     {
-//        impl_->LOGINF << "Stopped.";
+        impl_->LOGINF << "Stopped";
     }
 
 

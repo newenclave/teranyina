@@ -55,15 +55,18 @@ def source_file( ):
 //#include "vtrc-memory.h"
 
 //#define LOG(lev) log_(lev) << "[%ss-name%] "
-//#define LOGINF   LOG(logger::info)
-//#define LOGDBG   LOG(logger::debug)
-//#define LOGERR   LOG(logger::error)
-//#define LOGWRN   LOG(logger::warning)
+//#define LOGINF   LOG(level::info)
+//#define LOGDBG   LOG(level::debug)
+//#define LOGERR   LOG(level::error)
+//#define LOGWRN   LOG(level::warning)
 
 namespace ta { namespace agent { namespace subsys {
 
     namespace {
+
         const std::string subsys_name( "%ss-name%" );
+
+        using level = agent::logger::level;
 
         application::service_wrapper_sptr create_service(
                                       ta::agent::application * /*app*/,
@@ -80,9 +83,6 @@ namespace ta { namespace agent { namespace subsys {
 
         application     *app_;
         agent::logger   &log_;
-
-
-        using level = agent::logger::level;
 
         impl( application *app )
             :app_(app)
