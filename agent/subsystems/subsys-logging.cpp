@@ -163,11 +163,7 @@ namespace ta { namespace agent { namespace subsys {
             inf.stream_->flush( );
         }
 
-        void cout_str( std::ostream &o, std::string const &data )
-        {
-            o << data;
-        }
-
+        /// dispatcher!
         void add_logger( const std::string &path, level minl, level maxl )
         {
             namespace ph = std::placeholders;
@@ -202,15 +198,16 @@ namespace ta { namespace agent { namespace subsys {
             }
         }
 
-        void add_logger( const std::string &path, const std::string &from,
-                         const std::string &to )
+        /// dispatcher!
+        void add_logger( const std::string &path,
+                         const std::string &from, const std::string &to )
         {
             level minl = level::zero;
             level maxl = log_.get_level( );
 
             if( !to.empty( ) ) {
                 maxl = logger::str2level( to.c_str( ) );
-                minl = logger::str2level( from.c_str( ), logger::level::zero );
+                minl = logger::str2level( from.c_str( ), level::zero );
             } else if( !from.empty( ) ) {
                 maxl = logger::str2level( from.c_str( ) );
             }
