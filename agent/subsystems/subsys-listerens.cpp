@@ -72,7 +72,7 @@ namespace ta { namespace agent { namespace subsys {
             if( !lck ) {
                 return;
             }
-            LOGINF << "start: " << lck->name( )
+            LOGINF << "start point: " << lck->name( )
                    ;
         }
 
@@ -82,7 +82,7 @@ namespace ta { namespace agent { namespace subsys {
             if( !lck ) {
                 return;
             }
-            LOGINF << "stop: " << lck->name( )
+            LOGINF << "stop point: " << lck->name( )
                    ;
         }
 
@@ -112,8 +112,8 @@ namespace ta { namespace agent { namespace subsys {
                    ;
         }
 
-        void on_stop_connection( const vcomm::connection_iface *cl,
-                                 listener_wptr inst )
+        void cb_on_stop_connection( const vcomm::connection_iface *cl,
+                                    listener_wptr inst )
         {
             auto lck = inst.lock( );
             if( !lck ) {
@@ -127,25 +127,43 @@ namespace ta { namespace agent { namespace subsys {
         {
             namespace ph = std::placeholders;
 
-            l->on_new_connection_connect(
-                std::bind( &impl::cb_on_new_connection, this,
-                           ph::_1, l->weak_from_this( ) ) );
+#define LIST_CONNECT_IMPL(name) l->name##_connect(              \
+                        std::bind( &impl::cb_##name, this,      \
+                                   l->weak_from_this( ) ) )
 
-            l->on_stop_connection_connect(
-                std::bind( &impl::on_stop_connection, this,
-                           ph::_1, l->weak_from_this( ) ) );
+#define LIST_CONNECT_IMPL1(name) l->name##_connect(             \
+                        std::bind( &impl::cb_##name, this,      \
+                            ph::_1, l->weak_from_this( ) ) )
 
-            l->on_accept_failed_connect(
-                std::bind( &impl::cb_on_accept_failed, this,
-                           ph::_1, l->weak_from_this( ) ) );
+            LIST_CONNECT_IMPL1( on_new_connection );
+            LIST_CONNECT_IMPL1( on_stop_connection );
+            LIST_CONNECT_IMPL1( on_accept_failed );
 
-            l->on_start_connect(
-                std::bind( &impl::cb_on_start, this,
-                           l->weak_from_this( ) ) );
+            LIST_CONNECT_IMPL( on_start );
+            LIST_CONNECT_IMPL( on_stop );
 
-            l->on_stop_connect(
-                std::bind( &impl::cb_on_stop, this,
-                           l->weak_from_this( ) ) );
+//            l->on_new_connection_connect(
+//                std::bind( &impl::cb_on_new_connection, this,
+//                           ph::_1, l->weak_from_this( ) ) );
+
+//            l->on_stop_connection_connect(
+//                std::bind( &impl::on_stop_connection, this,
+//                           ph::_1, l->weak_from_this( ) ) );
+
+//            l->on_accept_failed_connect(
+//                std::bind( &impl::cb_on_accept_failed, this,
+//                           ph::_1, l->weak_from_this( ) ) );
+
+//            l->on_start_connect(
+//                std::bind( &impl::cb_on_start, this,
+//                           l->weak_from_this( ) ) );
+
+//            l->on_stop_connect(
+//                std::bind( &impl::cb_on_stop, this,
+//                           l->weak_from_this( ) ) );
+
+#undef LIST_CONNECT_IMPL1
+#undef LIST_CONNECT_IMPL
 
         }
 

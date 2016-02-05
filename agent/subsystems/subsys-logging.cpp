@@ -214,7 +214,8 @@ namespace ta { namespace agent { namespace subsys {
             add_logger( path, minl, maxl );
         }
 
-        void add_logger_output( const std::string &params ) /// dispatcher!
+        /// dispatcher!
+        void add_logger_output( const std::string &params )
         {
             std::string from;
             std::string to;
@@ -222,7 +223,8 @@ namespace ta { namespace agent { namespace subsys {
             add_logger( path, from, to );
         }
 
-        void del_logger_output( const std::string &name ) /// dispatcher!
+        /// dispatcher!
+        void del_logger_output( const std::string &name )
         {
             if( name == stdout_name ) {         /// cout
                 stdout_connection_.conn_.disconnect( );
