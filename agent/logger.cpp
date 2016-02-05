@@ -6,6 +6,7 @@
 
 #include "boost/date_time/posix_time/posix_time.hpp"
 #include "boost/asio/strand.hpp"
+#include "boost/algorithm/string.hpp"
 
 namespace ta { namespace agent {
 
@@ -50,7 +51,9 @@ namespace ta { namespace agent {
     void logger::do_write( level lvl, const bpt::ptime &tim,
                            std::string const &data ) noexcept
     {
-        on_write_( lvl, tim, data );
+        logger_data_type all;
+        boost::split( all, data, boost::is_any_of("\n") );
+        on_write_( lvl, tim, all );
     }
 
 }}

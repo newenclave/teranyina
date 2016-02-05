@@ -18,9 +18,10 @@ namespace posix_time {
 
 namespace ta { namespace agent {
 
+    using logger_data_type   = std::vector<std::string>;
     using logger_signal_type = void ( common::logger::level,
                                       const boost::posix_time::ptime &tim,
-                                      std::string const & ) noexcept;
+                                      logger_data_type const & ) noexcept;
 
     class logger: public common::logger {
 

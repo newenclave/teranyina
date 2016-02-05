@@ -7,13 +7,13 @@
 #include "../application.h"
 #include "../logger.h"
 
+#include "vtrc-common/vtrc-delayed-call.h"
+
 #include "boost/date_time/posix_time/posix_time.hpp"
-
-//#include "subsys-log.h"
-
-//#include "vtrc-memory.h"
+#include "boost/algorithm/string.hpp"
 
 #define LOG(lev) log_(lev) << "[logging] "
+#define LOGSPACE              "          "
 #define LOGINF   LOG(logger::level::info)
 #define LOGDBG   LOG(logger::level::debug)
 #define LOGERR   LOG(logger::level::error)
@@ -26,7 +26,8 @@ namespace ta { namespace agent { namespace subsys {
         const std::string stdout_name = "stdout";
         const std::string stderr_name = "stderr";
 
-        using level = agent::logger::level;
+        using level      = agent::logger::level;
+        using stringlist = std::vector<std::string>;
 
         const std::string subsys_name( "logging" );
         namespace bsig = boost::signals2;
@@ -136,18 +137,35 @@ namespace ta { namespace agent { namespace subsys {
 
         void console_log( std::ostream &o,
                           level minl, level maxl, level lvl,
-                          bpt::ptime const &tim, std::string const &data )
+                          bpt::ptime const &tim, stringlist const &data )
         {
             if( (lvl >= minl) && (lvl <= maxl) ) {
-                o << tim << " [" << agent::logger::level2str(lvl) << "] "
-                  << data << std::endl;
+                for( auto &s: data ) {
+                    o << tim << " [" << agent::logger::level2str(lvl) << "] "
+                      << s << std::endl;
+                }
             }
         }
 
         void file_out_log( ostream_inf &inf, level lvl,
-                           bpt::ptime const &tim, std::string const &data )
+                           bpt::ptime const &tim, stringlist const &data )
         {
-            console_log( *inf.stream_, inf.min_, inf.max_, lvl, tim, data );
+            //console_log( *inf.stream_, inf.min_, inf.max_, lvl, tim, data );
+            std::ostringstream oss;
+            if( (lvl >= inf.min_) && (lvl <= inf.max_) ) {
+                for( auto &s: data ) {
+                    oss << tim << " [" << agent::logger::level2str(lvl) << "] "
+                        << s << "\n";
+                }
+            }
+            inf.length_    += oss.tellp( );
+            (*inf.stream_) << oss.str( );
+            inf.stream_->flush( );
+        }
+
+        void cout_str( std::ostream &o, std::string const &data )
+        {
+            o << data;
         }
 
         void add_logger( const std::string &path, level minl, level maxl )
@@ -178,7 +196,6 @@ namespace ta { namespace agent { namespace subsys {
                 l->min_    = minl;
                 l->max_    = maxl;
                 l->stream_ = std::move(open_file( path, &l->length_ ));
-
                 l->conn_   = log_.on_write_connect(
                                 std::bind( &impl::file_out_log, this,
                                     std::ref(*l), ph::_1, ph::_2, ph::_3 ) );
