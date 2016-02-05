@@ -232,18 +232,18 @@ namespace ta { namespace agent { namespace subsys {
 
     void listerens::init( )
     {
-
+        impl_->LOGINF << "Init";
     }
 
     void listerens::start( )
     {
         impl_->start_all( );
-        impl_->LOGINF << "Started.";
+        impl_->LOGINF << "Started";
     }
 
     void listerens::stop( )
     {
-        impl_->LOGINF << "Stopped.";
+        impl_->LOGINF << "Stopped";
     }
 
 
