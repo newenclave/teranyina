@@ -179,6 +179,7 @@ namespace ta { namespace agent { namespace subsys {
             { }
         };
 
+        /// works on dispatcher
         void console_log( console_info &inf, level lvl,
                           bpt::ptime const &tim, stringlist const &data )
         {
@@ -191,6 +192,7 @@ namespace ta { namespace agent { namespace subsys {
             }
         }
 
+        /// works on dispatcher
         void file_out_log( ostream_inf &inf, level lvl,
                            bpt::ptime const &tim, stringlist const &data )
         {
