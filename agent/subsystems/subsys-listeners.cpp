@@ -2,7 +2,7 @@
 #include <list>
 #include <memory>
 
-#include "subsys-listerens.h"
+#include "subsys-listeners.h"
 #include "../application.h"
 
 #include "vtrc-server/vtrc-listener.h"
@@ -18,7 +18,7 @@
 
 //#include "vtrc-memory.h"
 
-#define LOG(lev) log_(lev) << "[listerens] "
+#define LOG(lev) log_(lev) << "[listener] "
 #define LOGINF   LOG(logger::level::info)
 #define LOGDBG   LOG(logger::level::debug)
 #define LOGERR   LOG(logger::level::error)
@@ -172,6 +172,7 @@ namespace ta { namespace agent { namespace subsys {
 
             for( auto &ep: endpoints_ ) {
                 auto inf = utilities::get_endpoint_info( ep );
+                std::cout << inf << "\n";
                 if( inf ) {
                     vserv::listener_sptr next;
                     if( inf.is_local( ) ) {

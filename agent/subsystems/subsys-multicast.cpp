@@ -12,6 +12,11 @@
 
 #include "utils.h"
 
+#define LOG(lev) log_(lev) << "[multcast] "
+#define LOGINF   LOG(logger::level::info)
+#define LOGDBG   LOG(logger::level::debug)
+#define LOGERR   LOG(logger::level::error)
+#define LOGWRN   LOG(logger::level::warning)
 namespace ta { namespace agent { namespace subsys {
 
     namespace {
@@ -24,9 +29,9 @@ namespace ta { namespace agent { namespace subsys {
         const std::string subsys_name( "multicast" );
 
         struct socket_data {
-            bip::udp::socket        sock_;
-            std::vector<char>       data_;
-            ba::ip::udp::endpoint   ep_;
+            bip::udp::socket      sock_;
+            std::vector<char>     data_;
+            ba::ip::udp::endpoint ep_;
             socket_data( ba::io_service &ios, size_t buf_max )
                 :sock_(ios)
                 ,data_(buf_max)
@@ -52,6 +57,7 @@ namespace ta { namespace agent { namespace subsys {
     struct multicast::impl {
 
         application             *app_;
+        agent::logger           &log_;
         multicast               *parent_;
         socket_map               sockets_;
         ba::io_service::strand   dispatcher_;
@@ -59,8 +65,8 @@ namespace ta { namespace agent { namespace subsys {
 
         impl( application *app )
             :app_(app)
+            ,log_(app_->get_logger( ))
             ,dispatcher_(app_->get_io_service( ))
-//            ,log_(app_->subsystem<subsys::log>( ).get_logger( ))
         { }
 
         void add_endpoint( const std::string &ep_str )
@@ -106,10 +112,9 @@ namespace ta { namespace agent { namespace subsys {
             oss << mca.to_string( ) << ":" << port;
             std::string key_string = oss.str( );
 
-            //std::cout << "create: " << key_string << "\n";
-
+            LOGINF << "create multicast receiver: " << key_string << "\n";
             dispatcher_.post( [this, sock, key_string]( ) {
-                //std::cout << "start: " << key_string << "\n";
+                LOGINF << "start multicast receiver: " << key_string << "\n";
                 sockets_[key_string] = sock;
                 start_recv( sock );
             });
@@ -145,7 +150,8 @@ namespace ta { namespace agent { namespace subsys {
                     auto buf = output.SerializeAsString( );
                     sock->sock_.send_to( ba::buffer( buf ), sock->ep_ );
                 }
-            } catch( const std::exception & /*ex*/ ) {
+            } catch( const std::exception &ex ) {
+                LOGERR << "multicast handler failed; " << ex.what( );
                 ;;;; /// log here
             }
 
@@ -169,7 +175,7 @@ namespace ta { namespace agent { namespace subsys {
                 );
 
             } catch( const std::exception& ex ) {
-                //std::cerr << "mc error: " << ex.what( ) << "\n";
+                LOGERR << "failed to start receiving; " << ex.what( );
             }
         }
 
@@ -235,13 +241,13 @@ namespace ta { namespace agent { namespace subsys {
 //                             proto::multicast::default_port );
 //        impl_->add_endpoint( proto::multicast::default_address_v6,
 //                             proto::multicast::default_port );
-//        impl_->LOGINF << "Started.";
+        impl_->LOGINF << "Started.";
     }
 
     void multicast::stop( )
     {
         impl_->stop_all( );
-//        impl_->LOGINF << "Stopped.";
+        impl_->LOGINF << "Stopped.";
     }
 
 

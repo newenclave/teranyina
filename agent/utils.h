@@ -7,6 +7,43 @@
 
 namespace ta { namespace utilities {
 
+
+    template <typename T>
+    struct result_type {
+
+        bool ok;
+        T result;
+
+        result_type( )
+            :ok(false)
+        { }
+
+        result_type( bool f, const T &s )
+            :ok(f)
+            ,result(s)
+        { }
+
+        result_type( bool f, T &&s )
+            :ok(f)
+            ,result(s)
+        { }
+
+        result_type( bool f )
+            :ok(f)
+        { }
+    };
+
+    result_type<std::string> bin2hex( void const *bytes, size_t length );
+    result_type<std::string> bin2hex( std::string const &input );
+    result_type<std::string> hex2bin( std::string const &input );
+
+    template <typename T>
+    std::ostream & operator << ( std::ostream &o, const result_type<T> &res )
+    {
+        o << ( res.ok ? "Ok: " : "Fail: " ) << res.result;
+        return o;
+    }
+
     namespace console {
         std::ostream &light ( std::ostream &s );
         std::ostream &red   ( std::ostream &s );
@@ -64,5 +101,6 @@ namespace ta { namespace utilities {
     endpoint_info get_endpoint_info( const std::string &ep );
 
 }}
+
 
 #endif // UTILS_H

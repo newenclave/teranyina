@@ -1,4 +1,5 @@
 #include <sstream>
+#include <stdexcept>
 
 #include "utils.h"
 
@@ -121,6 +122,102 @@ namespace ta { namespace utilities {
         {
             return set_stream_color(s, COLOR_CYAN);
         }
+    }
+
+    result_type<std::string> bin2hex( void const *bytes, size_t length )
+    {
+
+        if( (NULL == bytes) || (0 == length) )
+            return result_type<std::string>(false, "");
+
+        static
+            unsigned char hexes_[ ] = {
+                '0', '1', '2', '3', '4',
+                '5', '6', '7', '8', '9',
+                'A', 'B', 'C', 'D', 'E', 'F' };
+
+        struct hi_lo_struct {
+            unsigned char h :4;
+            unsigned char l :4;
+            char line[3];
+            hi_lo_struct(): h(0), l(0) { line[2] = 0; }
+            const char * operator()(const char in_) {
+                h = (in_ >> 4);
+                l = (in_ & 0xF);
+                line[0] = hexes_[h];
+                line[1] = hexes_[l];
+                return line;
+            }
+        } int_to_hex;
+
+        result_type<std::string> tmp;
+        tmp.ok = true; /// impossible to fail
+
+        tmp.result.reserve( length * 2 + 1);
+        char const * c = static_cast<char const *>(bytes);
+        for(size_t b(0), e(length); b!=e; ++b) {
+            tmp.result.append(int_to_hex(c[b]));
+        }
+        return tmp;
+    }
+
+    result_type<std::string> bin2hex( std::string const &input )
+    {
+        return bin2hex( input.c_str( ), input.size( ) );
+    }
+
+    result_type<std::string> hex2bin( std::string const &input )
+    {
+        struct {
+            unsigned char operator ( ) ( const char in_ ) {
+                switch(in_) {
+                case '0':   case '1':
+                case '2':   case '3':
+                case '4':   case '5':
+                case '6':   case '7':
+                case '8':   case '9':
+                    return in_ - '0';
+                case 'a':   case 'b':
+                case 'c':   case 'd':
+                case 'e':   case 'f':
+                    return in_ - 'a' + 10;
+                case 'A':   case 'B':
+                case 'C':   case 'D':
+                case 'E':   case 'F':
+                    return in_ - 'A' + 10;
+                default:
+                    return 0xFF;
+                }
+            }
+        } static hex_to_int;
+
+        result_type<std::string> res;
+        std::string tmp;
+        tmp.reserve( input.size( ) / 2 + 1 );
+
+        for( auto b = input.begin( ), e = input.end( ); b!=e; ++b ) {
+
+            unsigned char next = 0;
+            unsigned char h = hex_to_int( *b );
+
+            if( h == 0xFF ) {
+                res.ok = false;
+                return res;
+            }
+
+            next = (h << 4);
+            if( ++b == e ) {
+                tmp.push_back(next);
+                break;
+            }
+
+            unsigned char l = hex_to_int(*b);
+            next |= (l & 0xF);
+            tmp.push_back(next);
+        }
+        res.ok = true;
+        res.result.swap(tmp);
+        return res;
     }
 
     endpoint_info get_endpoint_info( const std::string &ep )

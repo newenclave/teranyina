@@ -13,8 +13,7 @@
 #include "boost/date_time/posix_time/posix_time.hpp"
 #include "boost/algorithm/string.hpp"
 
-#define LOG(lev) log_(lev) << "[logging] "
-#define LOGSPACE              "          "
+#define LOG(lev) log_(lev) << "[ logging] "
 #define LOGINF   LOG(logger::level::info)
 #define LOGDBG   LOG(logger::level::debug)
 #define LOGERR   LOG(logger::level::error)

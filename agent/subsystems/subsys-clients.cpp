@@ -5,7 +5,7 @@
 
 #include "vtrc-client/vtrc-client.h"
 
-#define LOG(lev) log_(lev) << "[clients] "
+#define LOG(lev) log_(lev) << "[ clients] "
 #define LOGINF   LOG(level::info)
 #define LOGDBG   LOG(level::debug)
 #define LOGERR   LOG(level::error)

@@ -50,15 +50,12 @@ def source_file( ):
     """
 #include "subsys-%ss-name%.h"
 #include "../application.h"
-//#include "subsys-log.h"
 
-//#include "vtrc-memory.h"
-
-//#define LOG(lev) log_(lev) << "[%ss-name%] "
-//#define LOGINF   LOG(level::info)
-//#define LOGDBG   LOG(level::debug)
-//#define LOGERR   LOG(level::error)
-//#define LOGWRN   LOG(level::warning)
+#define LOG(lev) log_(lev) << "[%ss-name%] "
+#define LOGINF   LOG(level::info)
+#define LOGDBG   LOG(level::debug)
+#define LOGERR   LOG(level::error)
+#define LOGWRN   LOG(level::warning)
 
 namespace ta { namespace agent { namespace subsys {
 
@@ -86,7 +83,7 @@ namespace ta { namespace agent { namespace subsys {
 
         impl( application *app )
             :app_(app)
-            ,log_(app_->.get_logger( ))
+            ,log_(app_->get_logger( ))
         { }
 
         void reg_creator( const std::string &name,
@@ -131,12 +128,12 @@ namespace ta { namespace agent { namespace subsys {
 
     void %ss-name%::start( )
     {
-//        impl_->LOGINF << "Started.";
+        impl_->LOGINF << "Started.";
     }
 
     void %ss-name%::stop( )
     {
-//        impl_->LOGINF << "Stopped.";
+        impl_->LOGINF << "Stopped.";
     }
 
 
