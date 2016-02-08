@@ -43,8 +43,8 @@ namespace ta { namespace agent {
         static const bpt::ptime epoch( bpt::ptime::date_type(1970, 1, 1) );
 
         bpt::ptime local_time = bpt::microsec_clock::local_time( );
-        //bpt::time_duration td( local_time - epoch );
 
+        //bpt::time_duration td( local_time - epoch );
         //std::cout << std::hex << std::this_thread::get_id( ) << "!\n";
 
         impl_->dispatcher_.post( std::bind( &logger::do_write, this,

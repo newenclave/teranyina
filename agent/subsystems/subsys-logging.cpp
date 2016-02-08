@@ -318,11 +318,11 @@ namespace ta { namespace agent { namespace subsys {
         }
 
         //////////// test levels
-        new_inst->impl_->LOG( level::zero )    << "level zero\n\tzero";
-        new_inst->impl_->LOG( level::error )   << "level error\n\terror";
-        new_inst->impl_->LOG( level::warning ) << "level warning\n\twarning";
-        new_inst->impl_->LOG( level::info )    << "level info\n\tinfo";
-        new_inst->impl_->LOG( level::debug )   << "level debug\n\tdebug";
+        new_inst->impl_->LOG( level::zero )    << "\nlevel zero\n\tzero";
+        new_inst->impl_->LOG( level::error )   << "\nlevel error\n\terror";
+        new_inst->impl_->LOG( level::warning ) << "\nlevel warning\n\twarning";
+        new_inst->impl_->LOG( level::info )    << "\nlevel info\n\tinfo";
+        new_inst->impl_->LOG( level::debug )   << "\nlevel debug\n\tdebug";
 
         return new_inst;
     }
