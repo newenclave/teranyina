@@ -87,11 +87,11 @@ namespace ta { namespace agent { namespace subsys {
         }
 
         struct ostream_inf {
-            std::unique_ptr<std::ostream> stream_;
-            size_t           length_;
-            level            min_;
-            level            max_;
-            std::string      path_;
+            ostream_uptr            stream_;
+            size_t                  length_;
+            level                   min_;
+            level                   max_;
+            std::string             path_;
             bsig::scoped_connection conn_;
             ostream_inf(const std::string &path)
                 :length_(0)
@@ -240,15 +240,17 @@ namespace ta { namespace agent { namespace subsys {
                     l->length_ = len;
                     l->min_    = minl;
                     l->max_    = maxl;
-                    l->stream_.swap( stream_impl );
                     l->conn_   = log_.on_write_connect(
                                     std::bind( &impl::file_out_log, this,
                                         std::ref(*l),
                                         ph::_1, ph::_2, ph::_3 ) );
+                    l->stream_.swap( stream_impl );
 
                 } catch( const std::exception &ex ) {
-                    LOGERR << "failed add log file " << path << "; "
-                           << ex.what( );
+                    //std::cerr
+                    LOGERR
+                        << "failed to add log file " << path << "; "
+                        << ex.what( );
                 }
 
             }
