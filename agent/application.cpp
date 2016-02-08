@@ -12,6 +12,8 @@
 
 #include "subsystems/subsys-list.hxx"
 
+#include "openssl/rsa.h"
+
 namespace ta { namespace agent {
 
     namespace {

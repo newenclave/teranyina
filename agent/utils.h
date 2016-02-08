@@ -7,6 +7,16 @@
 
 namespace ta { namespace utilities {
 
+    namespace console {
+        std::ostream &light ( std::ostream &s );
+        std::ostream &red   ( std::ostream &s );
+        std::ostream &green ( std::ostream &s );
+        std::ostream &blue  ( std::ostream &s );
+        std::ostream &cyan  ( std::ostream &s );
+        std::ostream &yellow( std::ostream &s );
+        std::ostream &none  ( std::ostream &s );
+    }
+
     struct endpoint_info {
         enum ep_type {
              ENDPOINT_NONE   = 0

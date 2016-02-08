@@ -6,6 +6,7 @@
 #include "subsys-logging.h"
 #include "../application.h"
 #include "../logger.h"
+#include "../utils.h"
 
 #include "vtrc-common/vtrc-delayed-call.h"
 
@@ -40,6 +41,38 @@ namespace ta { namespace agent { namespace subsys {
 
         struct connection_info {
             bsig::scoped_connection conn_;
+        };
+
+        struct level_color {
+            std::ostream &o_;
+            level_color( std::ostream &o, level lvl )
+                :o_(o)
+            {
+                switch( lvl ) {
+                case level::zero:
+                    o << utilities::console::cyan;
+                    break;
+                case level::error:
+                    o << utilities::console::red;
+                    break;
+                case level::warning:
+                    o << utilities::console::yellow;
+                    break;
+                case level::info:
+                    o << utilities::console::green;
+                    break;
+                case level::debug:
+                    o << utilities::console::light;
+                    break;
+                default:
+                    o << utilities::console::none;
+                }
+            }
+
+            ~level_color( )
+            {
+                o_ << utilities::console::none;
+            }
         };
 
         using ostream_uptr = std::unique_ptr<std::ostream>;
@@ -135,14 +168,25 @@ namespace ta { namespace agent { namespace subsys {
             app_->unregister_service_creator( name );
         }
 
-        void console_log( std::ostream &o,
-                          level minl, level maxl, level lvl,
+        struct console_info {
+            std::ostream &o_;
+            level minl_;
+            level maxl_;
+            console_info( std::ostream &o, level minl, level maxl )
+                :o_(o)
+                ,minl_(minl)
+                ,maxl_(maxl)
+            { }
+        };
+
+        void console_log( console_info &inf, level lvl,
                           bpt::ptime const &tim, stringlist const &data )
         {
-            if( (lvl >= minl) && (lvl <= maxl) ) {
+            //level_color _( o, lvl );
+            if( (lvl >= inf.minl_) && (lvl <= inf.maxl_) ) {
                 for( auto &s: data ) {
-                    o << tim << " [" << agent::logger::level2str(lvl) << "] "
-                      << s << std::endl;
+                    inf.o_ << tim << " [" << agent::logger::level2str(lvl)
+                           << "] " << s << std::endl;
                 }
             }
         }
@@ -173,7 +217,7 @@ namespace ta { namespace agent { namespace subsys {
                 //stdout_connection_.conn_.disconnect( );
                 stdout_connection_.conn_ = log_.on_write_connect(
                             std::bind( &impl::console_log, this,
-                                       std::ref(std::cout), minl, maxl,
+                                       console_info(std::cout, minl, maxl),
                                        ph::_1, ph::_2, ph::_3 ) );
 
             } else if( path == stderr_name ) {  /// cerr
@@ -181,7 +225,7 @@ namespace ta { namespace agent { namespace subsys {
                 //stderr_connection_.conn_.disconnect( );
                 stderr_connection_.conn_ = log_.on_write_connect(
                             std::bind( &impl::console_log, this,
-                                       std::ref(std::cerr), minl, maxl,
+                                       console_info(std::cerr, minl, maxl),
                                        ph::_1, ph::_2, ph::_3 ) );
 
             } else {
