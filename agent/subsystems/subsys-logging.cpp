@@ -230,11 +230,10 @@ namespace ta { namespace agent { namespace subsys {
 
             } else {
 
-                std::unique_ptr<std::ostream> stream_impl;
                 try {
 
                     size_t len = 0;
-                    stream_impl = open_file( path, &len );
+                    auto stream_impl = open_file( path, &len );
 
                     streams_.emplace_back( path );
                     auto l     = streams_.rbegin( );
