@@ -33,7 +33,8 @@ namespace ta { namespace agent {
 
         using level = common::logger::level;
 
-        logger( boost::asio::io_service &ios, level lvl );
+        logger( boost::asio::io_service &ios, level lvl,
+                const char *split_string = "\n" );
         ~logger( );
 
         void dispatch( std::function<void ( )> call );

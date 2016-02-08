@@ -182,7 +182,7 @@ namespace ta { namespace agent { namespace subsys {
         void console_log( console_info &inf, level lvl,
                           bpt::ptime const &tim, stringlist const &data )
         {
-            //level_color _( o, lvl );
+            //level_color _( inf.o_, lvl );
             if( (lvl >= inf.minl_) && (lvl <= inf.maxl_) ) {
                 for( auto &s: data ) {
                     inf.o_ << tim << " [" << agent::logger::level2str(lvl)
@@ -230,15 +230,28 @@ namespace ta { namespace agent { namespace subsys {
 
             } else {
 
-                streams_.emplace_back( path );
+                std::unique_ptr<std::ostream> stream_impl;
+                try {
 
-                auto l     = streams_.rbegin( );
-                l->min_    = minl;
-                l->max_    = maxl;
-                l->stream_ = std::move(open_file( path, &l->length_ ));
-                l->conn_   = log_.on_write_connect(
-                                std::bind( &impl::file_out_log, this,
-                                    std::ref(*l), ph::_1, ph::_2, ph::_3 ) );
+                    size_t len = 0;
+                    stream_impl = open_file( path, &len );
+
+                    streams_.emplace_back( path );
+                    auto l     = streams_.rbegin( );
+                    l->length_ = len;
+                    l->min_    = minl;
+                    l->max_    = maxl;
+                    l->stream_.swap( stream_impl );
+                    l->conn_   = log_.on_write_connect(
+                                    std::bind( &impl::file_out_log, this,
+                                        std::ref(*l),
+                                        ph::_1, ph::_2, ph::_3 ) );
+
+                } catch( const std::exception &ex ) {
+                    LOGERR << "failed add log file " << path << "; "
+                           << ex.what( );
+                }
+
             }
         }
 
@@ -304,11 +317,12 @@ namespace ta { namespace agent { namespace subsys {
             new_inst->impl_->add_logger_output( d );
         }
 
-        new_inst->impl_->LOG( level::zero )    << "level zero";
-        new_inst->impl_->LOG( level::error )   << "level error";
-        new_inst->impl_->LOG( level::warning ) << "level warning";
-        new_inst->impl_->LOG( level::info )    << "level info";
-        new_inst->impl_->LOG( level::debug )   << "level debug";
+        //////////// test levels
+        new_inst->impl_->LOG( level::zero )    << "level zero\n\tzero";
+        new_inst->impl_->LOG( level::error )   << "level error\n\terror";
+        new_inst->impl_->LOG( level::warning ) << "level warning\n\twarning";
+        new_inst->impl_->LOG( level::info )    << "level info\n\tinfo";
+        new_inst->impl_->LOG( level::debug )   << "level debug\n\tdebug";
 
         return new_inst;
     }

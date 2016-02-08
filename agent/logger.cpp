@@ -15,14 +15,17 @@ namespace ta { namespace agent {
 
     struct logger::impl {
         ba::io_service::strand dispatcher_;
-        impl(ba::io_service &ios)
+        const char *split_string_;
+        impl(ba::io_service &ios, const char *split_string)
             :dispatcher_(ios)
+            ,split_string_(split_string)
         { }
     };
 
-    logger::logger( boost::asio::io_service &ios, level lvl )
+    logger::logger( boost::asio::io_service &ios, level lvl,
+                    const char *split_string )
         :common::logger( lvl )
-        ,impl_(new impl(ios))
+        ,impl_(new impl(ios, split_string))
     { }
 
     logger::~logger( )
@@ -52,7 +55,7 @@ namespace ta { namespace agent {
                            std::string const &data ) noexcept
     {
         logger_data_type all;
-        boost::split( all, data, boost::is_any_of("\n") );
+        boost::split( all, data, boost::is_any_of(impl_->split_string_) );
         on_write_( lvl, tim, all );
     }
 
