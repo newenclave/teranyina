@@ -72,6 +72,7 @@ namespace ta { namespace agent { namespace subsys {
             ~level_color( )
             {
                 o_ << utilities::console::none;
+                o_.flush( );
             }
         };
 
@@ -79,7 +80,13 @@ namespace ta { namespace agent { namespace subsys {
 
         ostream_uptr open_file( const std::string &path, size_t *size )
         {
-            ostream_uptr res( new std::ofstream( path, std::ios::app ) );
+            std::unique_ptr<std::ofstream>
+                   res( new std::ofstream( path.c_str( ), std::ios::app ) );
+
+            if( !res->is_open( ) ) {
+                return ostream_uptr( );
+            }
+
             if( size )  {
                 *size = res->tellp( );
             }
@@ -183,7 +190,7 @@ namespace ta { namespace agent { namespace subsys {
         void console_log( console_info &inf, level lvl,
                           bpt::ptime const &tim, stringlist const &data )
         {
-            //level_color _( inf.o_, lvl );
+            level_color _( inf.o_, lvl );
             if( (lvl >= inf.minl_) && (lvl <= inf.maxl_) ) {
                 for( auto &s: data ) {
                     inf.o_ << tim << " [" << agent::logger::level2str(lvl)
@@ -237,17 +244,23 @@ namespace ta { namespace agent { namespace subsys {
                     size_t len = 0;
                     auto stream_impl = open_file( path, &len );
 
-                    streams_.emplace_back( path );
-                    auto l     = streams_.rbegin( );
-                    l->length_ = len;
-                    l->min_    = minl;
-                    l->max_    = maxl;
-                    l->conn_   = log_.on_write_connect(
-                                    std::bind( &impl::file_out_log, this,
-                                        std::ref(*l),
-                                        ph::_1, ph::_2, ph::_3 ) );
-                    l->stream_.swap( stream_impl );
-
+                    if( stream_impl ) {
+                        streams_.emplace_back( path );
+                        auto l     = streams_.rbegin( );
+                        l->length_ = len;
+                        l->min_    = minl;
+                        l->max_    = maxl;
+                        l->conn_   = log_.on_write_connect(
+                                        std::bind( &impl::file_out_log, this,
+                                            std::ref(*l),
+                                            ph::_1, ph::_2, ph::_3 ) );
+                        l->stream_.swap( stream_impl );
+                    } else {
+                        //std::cerr
+                        LOGERR
+                            << "failed to add log file " << path << ";"
+                            ;
+                    }
                 } catch( const std::exception &ex ) {
                     //std::cerr
                     LOGERR
