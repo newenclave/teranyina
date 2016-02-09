@@ -27,7 +27,8 @@ namespace subsys {
 
         ~clients( );
 
-        static std::shared_ptr<clients> create( application *app );
+        typedef std::shared_ptr<clients> shared_type;
+        static shared_type create( application *app );
 
         void add_client( const std::string &path );
 

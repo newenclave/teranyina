@@ -25,8 +25,9 @@ namespace subsys {
 
         ~logging( );
 
-        static std::shared_ptr<logging> create( application *app,
-                                         const std::vector<std::string> &def );
+        typedef std::shared_ptr<logging> shared_type;
+        static shared_type create( application *app,
+                                   const std::vector<std::string> &def );
 
         void add_logger_output( const std::string &params );
         void del_logger_output( const std::string &name );

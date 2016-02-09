@@ -216,10 +216,10 @@ namespace ta { namespace agent { namespace subsys {
     }
 
     /// static
-    std::shared_ptr<multicast> multicast::create( application *app,
-                                                   const string_vector &def )
+    multicast::shared_type multicast::create( application *app,
+                                              const string_vector &def )
     {
-        vtrc::shared_ptr<multicast> new_inst(new multicast(app));
+        shared_type new_inst(new multicast(app));
         new_inst->impl_->default_points_.assign( def.begin( ), def.end( ) );
         return new_inst;
     }

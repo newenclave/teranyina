@@ -216,8 +216,8 @@ namespace ta { namespace agent { namespace subsys {
     }
 
     /// static
-    std::shared_ptr<listerens> listerens::create( application *app,
-                                           const std::vector<std::string> &def )
+    listerens::shared_type listerens::create( application *app,
+                                      const std::vector<std::string> &def )
     {
         vtrc::shared_ptr<listerens> new_inst(new listerens(app));
         new_inst->impl_->endpoints_.assign( def.begin( ), def.end( ) );

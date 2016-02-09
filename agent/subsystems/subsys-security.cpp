@@ -87,9 +87,9 @@ namespace ta { namespace agent { namespace subsys {
     }
 
     /// static
-    std::shared_ptr<security> security::create( application *app )
+    security::shared_type security::create( application *app )
     {
-        vtrc::shared_ptr<security> new_inst(new security(app));
+        shared_type new_inst(new security(app));
         return new_inst;
     }
 

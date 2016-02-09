@@ -39,8 +39,9 @@ namespace subsys {
 
         ~multicast( );
 
-        static std::shared_ptr<multicast> create( application *app,
-                                        const std::vector<std::string> &def );
+        typedef std::shared_ptr<multicast> shared_type;
+        static shared_type create( application *app,
+                                   const std::vector<std::string> &def );
 
         const std::string &name( )  const;
 
