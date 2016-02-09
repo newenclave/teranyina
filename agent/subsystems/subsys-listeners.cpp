@@ -171,8 +171,9 @@ namespace ta { namespace agent { namespace subsys {
             static const char *true_false[2] = { "off", " on" };
 
             for( auto &ep: endpoints_ ) {
+
                 auto inf = utilities::get_endpoint_info( ep );
-                std::cout << inf << "\n";
+
                 if( inf ) {
                     vserv::listener_sptr next;
                     if( inf.is_local( ) ) {

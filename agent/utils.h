@@ -14,8 +14,15 @@ namespace ta { namespace utilities {
         bool ok;
         T result;
 
+        result_type( const result_type &  ) = default;
+        result_type(       result_type && ) = default;
+
         result_type( )
             :ok(false)
+        { }
+
+        result_type( bool f )
+            :ok(f)
         { }
 
         result_type( bool f, const T &s )
@@ -28,9 +35,10 @@ namespace ta { namespace utilities {
             ,result(s)
         { }
 
-        result_type( bool f )
-            :ok(f)
-        { }
+        operator bool ( ) const noexcept
+        {
+            return ok;
+        }
     };
 
     result_type<std::string> bin2hex( void const *bytes, size_t length );
@@ -40,7 +48,7 @@ namespace ta { namespace utilities {
     template <typename T>
     std::ostream & operator << ( std::ostream &o, const result_type<T> &res )
     {
-        o << ( res.ok ? "Ok: " : "Fail: " ) << res.result;
+        o << ( res ? "Ok: " : "Fail: " ) << res.result;
         return o;
     }
 

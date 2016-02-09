@@ -63,12 +63,12 @@ namespace ta { namespace agent { namespace subsys {
             SSL_load_error_strings( );
             SSLeay_add_all_algorithms( );
             vcomm::random_device rd;
+
             auto seed = rd.generate_block( 128 );
-            auto hex  = utilities::bin2hex( seed );
-            LOGDBG << "seed; " << hex;
             RAND_seed( seed.c_str( ), seed.size( ));
 
-            LOGINF << "init finish";
+            LOGINF << "init finish; random status = "
+                   << (RAND_status( ) ? "ok" : "not enough");
         }
 
     };
