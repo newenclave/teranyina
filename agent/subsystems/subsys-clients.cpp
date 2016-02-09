@@ -1,9 +1,16 @@
+#include <set>
+#include <list>
+#include <functional>
 
 #include "subsys-clients.h"
+#include "subsys-listeners.h"
+
 #include "../application.h"
 #include "../utils.h"
 
+#include "vtrc-server/vtrc-listener.h"
 #include "vtrc-client/vtrc-client.h"
+#include "vtrc-common/vtrc-connection-iface.h"
 
 #define LOG(lev) log_(lev) << "[ clients] "
 #define LOGINF   LOG(level::info)
@@ -17,10 +24,19 @@ namespace ta { namespace agent { namespace subsys {
 
         using level = agent::logger::level;
 
-        using vtrc_client      = vtrc::client::vtrc_client;
+        using vtrc_client           = vtrc::client::vtrc_client;
+        using vtrc_client_sptr      = vtrc::client::vtrc_client_sptr;
+        using vtrc_client_wptr      = vtrc::client::vtrc_client_wptr;
 
-        using vtrc_client_sptr = vtrc::client::vtrc_client_sptr;
-        using vtrc_client_wptr = vtrc::client::vtrc_client_wptr;
+        using connection_iface      = vtrc::common::connection_iface;
+        using connection_iface_wptr = std::weak_ptr<connection_iface>;
+        using vlistener             = vtrc::server::listener;
+
+        using client_set            = std::vector<const connection_iface_wptr>;
+
+        struct client_context {
+            std::string path_;
+        };
 
         const std::string subsys_name( "clients" );
 
@@ -41,6 +57,8 @@ namespace ta { namespace agent { namespace subsys {
         logger          &log_;
         std::vector<vtrc_client_sptr>  clients_;
 
+        //client_set      connections_;
+
         impl( application *app )
             :app_(app)
             ,log_(app_->get_logger( ))
@@ -55,6 +73,16 @@ namespace ta { namespace agent { namespace subsys {
         void unreg_creator( const std::string &name )
         {
             app_->unregister_service_creator( name );
+        }
+
+        void on_new_connection( const connection_iface &c, vlistener &vl )
+        {
+
+        }
+
+        void on_stop_connection( const connection_iface &c )
+        {
+
         }
 
     };
@@ -88,9 +116,10 @@ namespace ta { namespace agent { namespace subsys {
         if( ep.is_local( ) ) {
         } else {
             cl->async_connect( ep.addpess, ep.service,
-                                [this]( const boost::system::error_code &e ) {
-                                    impl_->LOGINF << "Connected!";
-                                }, true );
+                            [this, cl]( const boost::system::error_code &e ) {
+                                impl_->LOGINF << "Connected to "
+                                     << cl->connection( )->name( );
+                            }, true );
         }
 
         //impl_->LOGINF << ep;
@@ -103,11 +132,21 @@ namespace ta { namespace agent { namespace subsys {
 
     void clients::init( )
     {
-        //add_client( "@127.0.0.1:12346" );
+//        auto &lstnr(impl_->app_->subsystem<listeners>( ));
+//        namespace ph = std::placeholders;
+
+//        lstnr.on_new_connection_connect(
+//            std::bind( &impl::on_new_connection, impl_, ph::_1, ph::_2 ) );
+
+//        lstnr.on_stop_connection_connect(
+//            std::bind( &impl::on_stop_connection, impl_, ph::_1 ) );
+
+//        add_client( "@127.0.0.1:12345" );
     }
 
     void clients::start( )
     {
+        add_client( "@127.0.0.1:12345" );
         impl_->LOGINF << "Started";
     }
 

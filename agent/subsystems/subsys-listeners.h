@@ -8,30 +8,50 @@
 
 #include <vector>
 
+namespace vtrc {
+
+    namespace common {
+        struct connection_iface;
+    }
+
+    namespace server {
+        class listener;
+    }
+}
+
 namespace ta { namespace agent {
 
     class application;
 
 namespace subsys {
 
-    class listerens: public subsystem_iface {
+    class listeners: public subsystem_iface {
 
         struct  impl;
         impl   *impl_;
 
+        using connection_iface = vtrc::common::connection_iface;
+        using vlistener        = vtrc::server::listener;
+
+        VTRC_DECLARE_SIGNAL( on_new_connection,
+                             void ( const connection_iface &, vlistener & ) );
+
+        VTRC_DECLARE_SIGNAL( on_stop_connection,
+                             void ( const connection_iface & ) );
+
     protected:
 
-        listerens( application *app );
+        listeners( application *app );
 
     public:
 
-        ~listerens( );
+        ~listeners( );
 
-        typedef std::shared_ptr<listerens> shared_type;
+        typedef std::shared_ptr<listeners> shared_type;
         static shared_type create( application *app,
                                    const std::vector<std::string> &def );
 
-        const std::string &name( )  const;
+        const std::string &name( ) const;
 
         void init( )  ;
         void start( ) ;

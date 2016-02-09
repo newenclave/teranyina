@@ -39,10 +39,11 @@ namespace ta { namespace agent { namespace subsys {
         const std::string subsys_name( "listerens" );
     }
 
-    struct listerens::impl {
+    struct listeners::impl {
 
         application     *app_;
         agent::logger   &log_;
+        listeners       *parent_;
 
         string_vector    endpoints_;
         listerens_map    listeners_;
@@ -106,6 +107,8 @@ namespace ta { namespace agent { namespace subsys {
             if( !lck ) {
                 return;
             }
+
+            parent_->on_new_connection_( *cl, *lck );
             LOGINF << "new connection: " << cl->name( )
                    ;
         }
@@ -117,6 +120,7 @@ namespace ta { namespace agent { namespace subsys {
             if( !lck ) {
                 return;
             }
+            parent_->on_stop_connection_( *cl );
             LOGINF << "stop connection: " << cl->name( )
                    ;
         }
@@ -206,42 +210,44 @@ namespace ta { namespace agent { namespace subsys {
     };
 
 
-    listerens::listerens( application *app )
+    listeners::listeners( application *app )
         :impl_(new impl(app))
-    { }
+    {
+        impl_->parent_ = this;
+    }
 
-    listerens::~listerens( )
+    listeners::~listeners( )
     {
         delete impl_;
     }
 
     /// static
-    listerens::shared_type listerens::create( application *app,
+    listeners::shared_type listeners::create( application *app,
                                       const std::vector<std::string> &def )
     {
-        vtrc::shared_ptr<listerens> new_inst(new listerens(app));
+        vtrc::shared_ptr<listeners> new_inst(new listeners(app));
         new_inst->impl_->endpoints_.assign( def.begin( ), def.end( ) );
 
         return new_inst;
     }
 
-    const std::string &listerens::name( ) const
+    const std::string &listeners::name( ) const
     {
         return subsys_name;
     }
 
-    void listerens::init( )
+    void listeners::init( )
     {
         impl_->LOGINF << "Init";
     }
 
-    void listerens::start( )
+    void listeners::start( )
     {
         impl_->start_all( );
         impl_->LOGINF << "Started";
     }
 
-    void listerens::stop( )
+    void listeners::stop( )
     {
         impl_->LOGINF << "Stopped";
     }

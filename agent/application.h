@@ -28,7 +28,8 @@ namespace ta { namespace agent {
 
     public:
 
-        application( application & ) = delete;
+        application( const application & )         = delete;
+        application(       application && )        = delete;
         application & operator = ( application & ) = delete;
 
         application( );

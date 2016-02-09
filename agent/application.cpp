@@ -162,7 +162,7 @@ namespace ta { namespace agent {
             parent_->add_subsystem<subsys::logging>  ( loggers_ );
             parent_->add_subsystem<subsys::security> ( );
             parent_->add_subsystem<subsys::multicast>( mcs_ );
-            parent_->add_subsystem<subsys::listerens>( servers_ );
+            parent_->add_subsystem<subsys::listeners>( servers_ );
             parent_->add_subsystem<subsys::clients>  ( );
         }
 

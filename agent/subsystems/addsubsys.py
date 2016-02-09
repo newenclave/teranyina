@@ -33,7 +33,7 @@ namespace subsys {
         typedef std::shared_ptr<%ss-name%> shared_type;
         static shared_type create( application *app );
 
-        const std::string &name( )  const noexcept override;
+        const std::string &name( ) const noexcept override;
 
         void init( )  override;
         void start( ) override;
@@ -117,7 +117,7 @@ namespace ta { namespace agent { namespace subsys {
         return new_inst;
     }
 
-    const std::string &%ss-name%::name( )  const noexcept
+    const std::string &%ss-name%::name( ) const noexcept
     {
         return subsys_name;
     }
