@@ -23,6 +23,9 @@ namespace ta { namespace agent {
         vtrc::common::pool_pair  pools_;
         impl                    *impl_;
 
+        using ta_app                = ta::agent::application;
+        using connection_iface_wptr = vtrc::common::connection_iface_wptr;
+
     public:
 
         application( application & ) = delete;
@@ -69,12 +72,10 @@ namespace ta { namespace agent {
         /// func( app, connection )
         ///
         typedef vtrc::function<
-            service_wrapper_sptr ( ta::agent::application *,
-                                   vtrc::common::connection_iface_wptr )
+            service_wrapper_sptr ( ta_app *, connection_iface_wptr )
         > service_getter_type;
 
-        service_wrapper_sptr wrap_service (
-                                    vtrc::common::connection_iface_wptr c,
+        service_wrapper_sptr wrap_service ( connection_iface_wptr c,
                                     service_wrapper_impl::service_sptr serv );
     public: // services
 
