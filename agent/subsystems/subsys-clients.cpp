@@ -12,6 +12,8 @@
 #include "vtrc-client/vtrc-client.h"
 #include "vtrc-common/vtrc-connection-iface.h"
 
+#include "boost/system/error_code.hpp"
+
 #define LOG(lev) log_(lev) << "[ clients] "
 #define LOGINF   LOG(level::info)
 #define LOGDBG   LOG(level::debug)
@@ -118,7 +120,9 @@ namespace ta { namespace agent { namespace subsys {
             cl->async_connect( ep.addpess, ep.service,
                             [this, cl]( const boost::system::error_code &e ) {
                                 impl_->LOGINF << "Connected to "
-                                     << cl->connection( )->name( );
+                                     << cl->connection( )->name( )
+                                     << "; " << e.message( )
+                                      ;
                             }, true );
         }
 
