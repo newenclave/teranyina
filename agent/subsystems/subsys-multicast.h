@@ -39,7 +39,7 @@ namespace subsys {
 
         ~multicast( );
 
-        static vtrc::shared_ptr<multicast> create( application *app,
+        static std::shared_ptr<multicast> create( application *app,
                                         const std::vector<std::string> &def );
 
         const std::string &name( )  const;

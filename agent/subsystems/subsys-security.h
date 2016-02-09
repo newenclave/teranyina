@@ -23,7 +23,7 @@ namespace subsys {
 
         ~security( );
 
-        static vtrc::shared_ptr<security> create( application *app );
+        static std::shared_ptr<security> create( application *app );
 
         const std::string &name( )  const noexcept override;
 

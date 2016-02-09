@@ -24,7 +24,7 @@ namespace ta { namespace agent {
         subsystem_iface & operator = ( const subsystem_iface& ) = delete;
     };
 
-    using subsystem_sptr = vtrc::shared_ptr<subsystem_iface>;
+    using subsystem_sptr = std::shared_ptr<subsystem_iface>;
 }}
 
 #endif // SUBSYSTEMIFACE_H

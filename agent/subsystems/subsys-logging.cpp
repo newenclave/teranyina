@@ -323,7 +323,7 @@ namespace ta { namespace agent { namespace subsys {
     }
 
     /// static
-    vtrc::shared_ptr<logging> logging::create(application *app,
+    std::shared_ptr<logging> logging::create(application *app,
                               const std::vector<std::string> &def )
     {
         vtrc::shared_ptr<logging> new_inst(new logging(app));

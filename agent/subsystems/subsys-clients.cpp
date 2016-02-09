@@ -70,7 +70,7 @@ namespace ta { namespace agent { namespace subsys {
     }
 
     /// static
-    vtrc::shared_ptr<clients> clients::create( application *app )
+    std::shared_ptr<clients> clients::create( application *app )
     {
         vtrc::shared_ptr<clients> new_inst(new clients(app));
         return new_inst;

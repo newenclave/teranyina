@@ -25,7 +25,7 @@ namespace subsys {
 
         ~logging( );
 
-        static vtrc::shared_ptr<logging> create( application *app,
+        static std::shared_ptr<logging> create( application *app,
                                          const std::vector<std::string> &def );
 
         void add_logger_output( const std::string &params );

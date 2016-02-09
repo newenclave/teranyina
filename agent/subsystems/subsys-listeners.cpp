@@ -216,7 +216,7 @@ namespace ta { namespace agent { namespace subsys {
     }
 
     /// static
-    vtrc::shared_ptr<listerens> listerens::create( application *app,
+    std::shared_ptr<listerens> listerens::create( application *app,
                                            const std::vector<std::string> &def )
     {
         vtrc::shared_ptr<listerens> new_inst(new listerens(app));

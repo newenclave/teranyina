@@ -67,8 +67,11 @@ namespace ta { namespace agent { namespace subsys {
             auto seed = rd.generate_block( 128 );
             RAND_seed( seed.c_str( ), seed.size( ));
 
-            LOGINF << "init finish; random status = "
-                   << (RAND_status( ) ? "ok" : "not enough");
+            if( RAND_status( ) ) {
+                LOGINF << "init finish; random status = ok";
+            } else {
+                LOGWRN << "init finish; random status = not enough";
+            }
         }
 
     };
@@ -84,7 +87,7 @@ namespace ta { namespace agent { namespace subsys {
     }
 
     /// static
-    vtrc::shared_ptr<security> security::create( application *app )
+    std::shared_ptr<security> security::create( application *app )
     {
         vtrc::shared_ptr<security> new_inst(new security(app));
         return new_inst;
