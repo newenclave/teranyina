@@ -31,6 +31,8 @@ namespace ta { namespace agent {
         using service_map   =  std::map< std::string,
                                          application::service_getter_type >;
 
+        using level = logger::level;
+
         struct subsystem_comtrainer {
             subsys_map      subsys_;
             subsys_vector   subsys_order_;
@@ -176,11 +178,13 @@ namespace ta { namespace agent {
         {
             vtrc::lock_guard<vtrc::mutex> lck(services_lock_);
             auto f = services_.find( name );
-            parent_->get_logger( )( logger::level::info ) << "Return " << name;
             if( f != services_.end( ) ) {
-                parent_->get_logger( )( logger::level::info ) << "Return " << name;
                 return f->second( parent_, cl->weak_from_this( ) );
             }
+
+            logger_(level::debug) << "[     app] service " << name
+                                  << " was not found.";
+
             return vtrc::shared_ptr<vtrc::common::rpc_service_wrapper>( );
         }
 
