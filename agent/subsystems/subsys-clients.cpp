@@ -14,12 +14,13 @@
 
 #include "boost/system/error_code.hpp"
 
+#include "protocol/ctrl.pb.h"
+
 #define LOG(lev) log_(lev) << "[ clients] "
 #define LOGINF   LOG(level::info)
 #define LOGDBG   LOG(level::debug)
 #define LOGERR   LOG(level::error)
 #define LOGWRN   LOG(level::warning)
-
 namespace ta { namespace agent { namespace subsys {
 
     namespace {
@@ -86,7 +87,7 @@ namespace ta { namespace agent { namespace subsys {
     };
 
 
-    clients::clients( application *app )
+    clients::clients(application *app)
         :impl_(new impl(app))
     { }
 
@@ -98,7 +99,7 @@ namespace ta { namespace agent { namespace subsys {
     /// static
     clients::shared_type clients::create( application *app )
     {
-        shared_type new_inst(new clients(app));
+        shared_type new_inst(new clients( app ));
         return new_inst;
     }
 
@@ -119,6 +120,15 @@ namespace ta { namespace agent { namespace subsys {
                                      << cl->connection( )->name( )
                                      << "; " << e.message( )
                                       ;
+                                if( !e ) {
+                                    auto ch = cl->create_channel( vtrc::common::rpc_channel::DISABLE_WAIT);
+                                    ta::proto::ctrl_Stub s( ch );
+                                    s.shutdown( NULL, NULL, NULL, NULL );
+                                    impl_->LOGINF << "Shutdown message "
+                                         << cl->connection( )->name( )
+                                         << "; " << e.message( );
+
+                                }
                             }, true );
         }
 
@@ -141,12 +151,14 @@ namespace ta { namespace agent { namespace subsys {
 //        lstnr.on_stop_connection_connect(
 //            std::bind( &impl::on_stop_connection, impl_, ph::_1 ) );
 
+//        if( !impl_->sd_.empty( ) ) {
+//            add_client( impl_->sd_ );
+//        }
 //        add_client( "@127.0.0.1:12345" );
     }
 
     void clients::start( )
     {
-        add_client( "@127.0.0.1:12345" );
         impl_->LOGINF << "Started";
     }
 

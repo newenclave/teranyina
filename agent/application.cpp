@@ -74,22 +74,22 @@ namespace ta { namespace agent {
 
     struct application::impl: public vtrc::server::application {
 
-        agent::application      *parent_;
-        subsystem_comtrainer     subsystems_;
-        logger                   logger_;
+        agent::application   *parent_;
+        subsystem_comtrainer  subsystems_;
+        logger                logger_;
 
-        service_map             services_;
-        vtrc::mutex             services_lock_;
+        service_map           services_;
+        vtrc::mutex           services_lock_;
 
-        unsigned                io_count_;
-        unsigned                rpc_count_;
+        unsigned              io_count_;
+        unsigned              rpc_count_;
 
-        string_vector           servers_;
-        string_vector           mcs_;
-        string_vector           loggers_;
-        std::string             log_level_;
+        string_vector         servers_;
+        string_vector         mcs_;
+        string_vector         loggers_;
+        std::string           log_level_;
 
-        std::string             config_file_;
+        std::string           config_file_;
 
         impl(vcomm::pool_pair &pools)
             :vtrc::server::application(pools)
@@ -152,6 +152,8 @@ namespace ta { namespace agent {
             ( "level,l", po::value<std::string>(&log_level_)
                          ->default_value("dbg"),
                        "default logger level; err, inf, wrn, dbg[default]")
+
+
             ;
         }
 
@@ -164,6 +166,20 @@ namespace ta { namespace agent {
             parent_->add_subsystem<subsys::control>  ( );
             parent_->add_subsystem<subsys::listeners>( servers_ );
             parent_->add_subsystem<subsys::clients>  ( );
+        }
+
+        vtrc::shared_ptr<vtrc::common::rpc_service_wrapper>
+        get_service_by_name( vtrc::common::connection_iface *cl,
+                             const std::string &name ) override
+        {
+            vtrc::lock_guard<vtrc::mutex> lck(services_lock_);
+            auto f = services_.find( name );
+            parent_->get_logger( )( logger::level::info ) << "Return " << name;
+            if( f != services_.end( ) ) {
+                parent_->get_logger( )( logger::level::info ) << "Return " << name;
+                return f->second( parent_, cl->weak_from_this( ) );
+            }
+            return vtrc::shared_ptr<vtrc::common::rpc_service_wrapper>( );
         }
 
     };
@@ -305,6 +321,8 @@ namespace ta { namespace agent {
     {
         vtrc::lock_guard<vtrc::mutex> lck(impl_->services_lock_);
 
+        get_logger( )( logger::level::info ) << "[     app] Add service " << name;
+
         auto f = impl_->services_.find( name );
         if( f != impl_->services_.end( ) ) {
             std::ostringstream oss;
@@ -321,6 +339,11 @@ namespace ta { namespace agent {
         if( f != impl_->services_.end( ) ) {
             impl_->services_.erase( f );
         }
+    }
+
+    void application::quit( )
+    {
+        pools_.stop_all( );
     }
 
     agent::logger &application::get_logger( ) noexcept
@@ -367,6 +390,8 @@ namespace ta { namespace agent {
         pools_.get_rpc_pool( ).add_threads( impl_->rpc_count_ );
 
         pools_.get_io_pool( ).attach( );
+
+        pools_.join_all( );
     }
 
 }}

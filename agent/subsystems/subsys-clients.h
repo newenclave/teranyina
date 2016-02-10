@@ -21,14 +21,14 @@ namespace subsys {
 
     protected:
 
-        clients( application *app );
+        clients(application *app);
 
     public:
 
         ~clients( );
 
         typedef std::shared_ptr<clients> shared_type;
-        static shared_type create( application *app );
+        static shared_type create( application *app);
 
         void add_client( const std::string &path );
 

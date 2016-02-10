@@ -1,0 +1,9 @@
+package ta.proto;
+option cc_generic_services = true;
+
+message empty { }
+
+service ctrl {
+    rpc shutdown (empty) returns (empty);
+}
+
