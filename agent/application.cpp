@@ -14,6 +14,8 @@
 
 #include "openssl/rsa.h"
 
+#include "google/protobuf/stubs/common.h"
+
 namespace ta { namespace agent {
 
     namespace {
@@ -392,6 +394,8 @@ namespace ta { namespace agent {
         pools_.get_io_pool( ).attach( );
 
         pools_.join_all( );
+        google::protobuf::ShutdownProtobufLibrary( );
+
     }
 
 }}
