@@ -76,7 +76,6 @@ namespace ta { namespace agent { namespace subsys {
 
     };
 
-
     security::security( application *app )
         :impl_(new impl(app))
     { }

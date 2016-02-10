@@ -59,8 +59,8 @@ namespace ta { namespace agent {
         protected:
 
             const method_type *get_method ( const std::string &name ) const;
-            application *get_application( );
-            const application *get_application( ) const;
+            application *get_application( ) noexcept;
+            const application *get_application( ) const noexcept;
         };
 
         typedef vtrc::common::rpc_service_wrapper     parent_service_type;
@@ -137,13 +137,13 @@ namespace ta { namespace agent {
             return poly_downcast<const T *>( subsys );
         }
 
-        vtrc::server::application *get_application( );
-        const vtrc::server::application *get_application( ) const;
-        boost::asio::io_service &get_io_service( );
-        boost::asio::io_service &get_rpc_service( );
+        vtrc::server::application *get_application( ) noexcept;
+        const vtrc::server::application *get_application( ) const noexcept;
+        boost::asio::io_service &get_io_service( ) noexcept;
+        boost::asio::io_service &get_rpc_service( ) noexcept;
 
-        agent::logger &get_logger( );
-        const agent::logger &get_logger( ) const;
+        agent::logger &get_logger( ) noexcept;
+        const agent::logger &get_logger( ) const noexcept;
 
         void start_all( );
         void stop_all( );

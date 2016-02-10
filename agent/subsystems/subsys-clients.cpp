@@ -34,8 +34,6 @@ namespace ta { namespace agent { namespace subsys {
         using connection_iface_wptr = std::weak_ptr<connection_iface>;
         using vlistener             = vtrc::server::listener;
 
-        using client_set            = std::vector<const connection_iface_wptr>;
-
         struct client_context {
             std::string path_;
         };
@@ -58,8 +56,6 @@ namespace ta { namespace agent { namespace subsys {
         application     *app_;
         logger          &log_;
         std::vector<vtrc_client_sptr>  clients_;
-
-        //client_set      connections_;
 
         impl( application *app )
             :app_(app)

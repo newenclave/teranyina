@@ -18,8 +18,7 @@ namespace ta { namespace agent {
 
     namespace {
 
-        namespace po = boost::program_options;
-
+        namespace po    = boost::program_options;
         namespace vcomm = vtrc::common;
         namespace gpb   = google::protobuf;
 
@@ -156,12 +155,13 @@ namespace ta { namespace agent {
             ;
         }
 
-        void init_subsystems(  )
+        void init_subsystems( )
         {
             using namespace agent;
             parent_->add_subsystem<subsys::logging>  ( loggers_ );
             parent_->add_subsystem<subsys::security> ( );
             parent_->add_subsystem<subsys::multicast>( mcs_ );
+            parent_->add_subsystem<subsys::control>  ( );
             parent_->add_subsystem<subsys::listeners>( servers_ );
             parent_->add_subsystem<subsys::clients>  ( );
         }
@@ -236,22 +236,23 @@ namespace ta { namespace agent {
 
     }
 
-    vtrc::server::application *application::get_application( )
+    vtrc::server::application *application::get_application( ) noexcept
     {
         return impl_;
     }
 
-    const vtrc::server::application *application::get_application( ) const
+    const
+    vtrc::server::application *application::get_application( ) const noexcept
     {
         return impl_;
     }
 
-    boost::asio::io_service &application::get_io_service( )
+    boost::asio::io_service &application::get_io_service( ) noexcept
     {
         return impl_->get_io_service( );
     }
 
-    boost::asio::io_service &application::get_rpc_service( )
+    boost::asio::io_service &application::get_rpc_service( ) noexcept
     {
         return impl_->get_rpc_service( );
     }
@@ -279,13 +280,13 @@ namespace ta { namespace agent {
     }
 
     application
-    *application::service_wrapper_impl::get_application( )
+    *application::service_wrapper_impl::get_application( ) noexcept
     {
         return app_;
     }
 
     const application
-    *application::service_wrapper_impl::get_application( ) const
+    *application::service_wrapper_impl::get_application( ) const noexcept
     {
         return app_;
     }
@@ -322,12 +323,12 @@ namespace ta { namespace agent {
         }
     }
 
-    agent::logger &application::get_logger( )
+    agent::logger &application::get_logger( ) noexcept
     {
         return impl_->logger_;
     }
 
-    const agent::logger &application::get_logger( ) const
+    const agent::logger &application::get_logger( ) const noexcept
     {
         return impl_->logger_;
     }
