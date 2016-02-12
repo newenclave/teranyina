@@ -332,13 +332,6 @@ namespace ta { namespace agent { namespace subsys {
             new_inst->impl_->add_logger_output( d );
         }
 
-        //////////// test levels
-        new_inst->impl_->LOG( level::zero )    << "\nlevel zero\n\tzero";
-        new_inst->impl_->LOG( level::error )   << "\nlevel error\n\terror";
-        new_inst->impl_->LOG( level::warning ) << "\nlevel warning\n\twarning";
-        new_inst->impl_->LOG( level::info )    << "\nlevel info\n\tinfo";
-        new_inst->impl_->LOG( level::debug )   << "\nlevel debug\n\tdebug";
-
         return new_inst;
     }
 

@@ -139,6 +139,7 @@ endif( )
 #    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -static-libgcc")
 #    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++")
 #    ADD_DEFINITIONS(-static-libgcc)
+#    ADD_DEFINITIONS(-static)
 #    SET( CMAKE_CXX_LINK_EXECUTABLE
 #         "${CMAKE_CXX_LINK_EXECUTABLE} -static-libgcc -static-libstdc++")
 #endif( STATIC_GLIBC )

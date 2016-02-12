@@ -327,7 +327,8 @@ namespace ta { namespace agent {
     {
         vtrc::lock_guard<vtrc::mutex> lck(impl_->services_lock_);
 
-        get_logger( )( logger::level::info ) << "[     app] Add service " << name;
+        get_logger( )( logger::level::debug ) << "[     app] Add service "
+                                              << name;
 
         auto f = impl_->services_.find( name );
         if( f != impl_->services_.end( ) ) {

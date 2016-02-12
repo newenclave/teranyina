@@ -12,10 +12,10 @@ set( exe_name ${INTERNAL_PROJECT_NAME}_agent )
 add_executable(${exe_name} ${src_dir})
 
 list( APPEND internal
-    ${INTERNAL_PROJECT_NAME}_protocol
-    VTRC_CLIENT
-    VTRC_SERVER
-    VTRC_COMMON
+      ${INTERNAL_PROJECT_NAME}_protocol
+      VTRC_CLIENT
+      VTRC_SERVER
+      VTRC_COMMON
     )
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
@@ -38,15 +38,16 @@ foreach( dep ${internal} )
 
 endforeach(dep)
 
-list(APPEND dependencies
-    Boost
-    PROTOBUF
+list( APPEND dependencies
+      Boost
+      PROTOBUF
     )
 
 message( "-- Seting up dependencies for " ${exe_name} )
 foreach( dep ${dependencies} )
 
-    message( "\tAdd dependence: " ${dep} )
+    #message( "\tAdd dependence: " ${dep} )
+    message( "\tAdd dependence: " ${${dep}_LIBRARIES} )
 
     add_dependencies(       ${exe_name} ${dep}      )
     add_definitions(        ${${dep}_DEFINITIONS}   )
