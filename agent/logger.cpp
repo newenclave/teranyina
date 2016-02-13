@@ -40,7 +40,7 @@ namespace ta { namespace agent {
 
     void logger::send_data( level lev, const std::string &data )
     {
-        static const bpt::ptime epoch( bpt::ptime::date_type(1970, 1, 1) );
+        //static const bpt::ptime epoch( bpt::ptime::date_type(1970, 1, 1) );
 
         bpt::ptime local_time = bpt::microsec_clock::local_time( );
 
@@ -48,14 +48,26 @@ namespace ta { namespace agent {
         //std::cout << std::hex << std::this_thread::get_id( ) << "!\n";
 
         impl_->dispatcher_.post( std::bind( &logger::do_write, this,
-                                            lev, local_time, data ) );
+                                            lev, local_time, data, true ) );
     }
 
+    void logger::send_data_nosplit( level lev, const std::string &data )
+    {
+        bpt::ptime local_time = bpt::microsec_clock::local_time( );
+        impl_->dispatcher_.post( std::bind( &logger::do_write, this,
+                                            lev, local_time, data, false ) );
+    }
+
+
     void logger::do_write( level lvl, const bpt::ptime &tim,
-                           std::string const &data ) noexcept
+                           std::string const &data , bool split) noexcept
     {
         logger_data_type all;
-        boost::split( all, data, boost::is_any_of(impl_->split_string_) );
+        if(split) {
+            boost::split( all, data, boost::is_any_of(impl_->split_string_) );
+        } else {
+            all.push_back( data );
+        }
         on_write_( lvl, tim, all );
     }
 

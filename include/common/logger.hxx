@@ -28,11 +28,13 @@ namespace ta { namespace common {
             level                   level_;
             std::ostringstream      oss_;
             bool                    act_;
+            bool                    split_;
 
-            string_accumulator( logger &parent, level lev )
+            string_accumulator( logger &parent, level lev, bool split )
                 :parent_(parent)
                 ,level_(lev)
                 ,act_(true)
+                ,split_(split)
             { }
 
             string_accumulator( string_accumulator &other )
@@ -53,7 +55,8 @@ namespace ta { namespace common {
             ~string_accumulator( )
             {
                 if( act_ && ( level_ <= parent_.level_ ) ) {
-                    parent_.send_data( level_, oss_.str( ) );
+                    split_ ? parent_.send_data( level_, oss_.str( ) )
+                           : parent_.send_data_nosplit( level_, oss_.str( ) );
                 }
             }
 
@@ -70,16 +73,30 @@ namespace ta { namespace common {
     public:
 
         virtual void send_data( level lev, const std::string &data ) = 0;
+        virtual void send_data_nosplit( level lev,
+                                        const std::string &data ) = 0;
+
+        string_accumulator operator ( )( level lev, bool split )
+        {
+            string_accumulator res( *this, lev, split );
+            return res;
+        }
 
         string_accumulator operator ( )( level lev )
         {
-            string_accumulator res( *this, lev );
+            string_accumulator res( *this, lev, true );
+            return res;
+        }
+
+        string_accumulator operator ( )( bool split )
+        {
+            string_accumulator res( *this, level_, split );
             return res;
         }
 
         string_accumulator operator ( )( )
         {
-            string_accumulator res( *this, level_ );
+            string_accumulator res( *this, level_, true );
             return res;
         }
 

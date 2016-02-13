@@ -10,10 +10,13 @@
 #include "openssl/rand.h"
 
 #define LOG(lev) log_(lev) << "[security] "
-#define LOGINF   LOG(level::info)
-#define LOGDBG   LOG(level::debug)
-#define LOGERR   LOG(level::error)
-#define LOGWRN   LOG(level::warning)
+#define LOGNS(lev) log_(lev, false) << "[security] "
+
+#define LOGINF     LOG(level::info)
+#define LOGINFNS   LOGNS(level::info)
+#define LOGDBG     LOG(level::debug)
+#define LOGERR     LOG(level::error)
+#define LOGWRN     LOG(level::warning)
 
 namespace ta { namespace agent { namespace subsys {
 
@@ -58,6 +61,7 @@ namespace ta { namespace agent { namespace subsys {
 
         void init( )
         {
+            using namespace ta::utilities;
             LOGINF << "init start";
 
             SSL_load_error_strings( );
@@ -67,6 +71,15 @@ namespace ta { namespace agent { namespace subsys {
             auto seed = rd.generate_block( 128 );
             RAND_seed( seed.c_str( ), seed.size( ));
 
+#if 0
+            rsa_wrapper rw(rsa_wrapper::generate_keys( 2048 ));
+
+            LOGINF << "\n" << rw.pem_pubkey( );
+
+            std::string pass = "123";
+
+            LOGINF << "\n" << rw.pem_prikey( EVP_aes_256_cbc( ), pass );
+#endif
             if( RAND_status( ) ) {
                 LOGINF << "init finish; random status = ok";
             } else {

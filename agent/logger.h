@@ -92,9 +92,12 @@ namespace ta { namespace agent {
         }
 
     private:
-        virtual void send_data( level lev, const std::string &data );
+
+        void send_data( level lev, const std::string &data ) override;
+        void send_data_nosplit( level lev, const std::string &data ) override;
+
         void do_write( level lvl, const boost::posix_time::ptime &tim,
-                       std::string const &data ) noexcept;
+                       std::string const &data, bool split ) noexcept;
 
     };
 }}
