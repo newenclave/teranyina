@@ -331,6 +331,7 @@ namespace ta { namespace utilities {
     };
 
     class rsa_wrapper {
+
         RSA *rsa_;
 
     public:
