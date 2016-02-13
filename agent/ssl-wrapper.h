@@ -144,6 +144,11 @@ namespace ta { namespace utilities {
             ,own_(false)
         { }
 
+        bio_wrapper( BIO *b, bool o = true )
+            :b_(b)
+            ,own_(o)
+        { }
+
         void swap( bio_wrapper &other )
         {
             std::swap( b_,   other.b_   );
@@ -326,13 +331,31 @@ namespace ta { namespace utilities {
     };
 
     class rsa_wrapper {
-
         RSA *rsa_;
 
     public:
-
         typedef std::function<void(int, int)>              gen_callback;
         typedef std::function<std::string (bool, size_t)>  pem_callback;
+    private:
+
+        struct pem_cb {
+            rsa_wrapper::pem_callback cb_;
+            pem_cb(rsa_wrapper::pem_callback cb)
+                :cb_(cb)
+            { }
+
+            static int cb( char *buf, int size, int rwflag, void *userptr )
+            {
+                pem_cb *thiz = reinterpret_cast<pem_cb *>(userptr);
+                std::string res = thiz->cb_(!!rwflag, size);
+                size_t len_res = std::min( res.size( ), size_t(size) );
+                memcpy( buf, res.c_str( ), len_res );
+                return static_cast<int>(len_res);
+            }
+        };
+
+    public:
+
 
         rsa_wrapper( RSA *rsa )
             :rsa_(rsa)
@@ -364,16 +387,67 @@ namespace ta { namespace utilities {
         {
             int res = RSA_check_key( rsa );
             if( -1 == res ) {
-                throw ssl_exception( "RSA_check_key" );
+                ssl_exception::raise( "RSA_check_key" );
             }
             return !!res;
+        }
+
+        static RSA *from_pubkey_nothrow( const std::string &pubkey,
+                                         pem_callback pc = pem_callback( ) )
+        {
+            int r = 0;
+            void *data = pubkey.empty( ) ? (void *)&r : (void *)&pubkey[0];
+
+            RSA *key = NULL;
+
+            bio_wrapper b(BIO_new_mem_buf( data, pubkey.size( ) ));
+            pem_cb pcb(pc);
+            PEM_read_bio_RSAPublicKey( b.get( ), &key,
+                                       pc ? &pem_cb::cb : NULL, &pcb );
+            return key;
+        }
+
+        static RSA *from_prikey_nothrow( const std::string &prikey,
+                                         pem_callback pc = pem_callback( ) )
+        {
+            int r = 0;
+            void *data = prikey.empty( ) ? (void *)&r : (void *)&prikey[0];
+            bio_wrapper b(BIO_new_mem_buf( data, prikey.size( ) ));
+
+            RSA *key = NULL;
+
+            pem_cb pcb(pc);
+            PEM_read_bio_RSAPrivateKey( b.get( ), &key,
+                                        pc ? &pem_cb::cb : NULL, &pcb );
+
+            return key;
+        }
+
+        static RSA *from_pubkey( const std::string &prikey,
+                                 pem_callback pc = pem_callback( ) )
+        {
+            RSA *key = from_pubkey_nothrow( prikey, pc );
+            if( !key ) {
+                ssl_exception::raise( "PEM_read_bio_RSAPublicKey" );
+            }
+            return key;
+        }
+
+        static RSA *from_prikey( const std::string &prikey,
+                                 pem_callback pc = pem_callback( ) )
+        {
+            RSA *key = from_prikey_nothrow( prikey, pc );
+            if( !key ) {
+                ssl_exception::raise( "PEM_read_bio_RSAPrivateKey" );
+            }
+            return key;
         }
 
         std::string pem_pubkey( )
         {
             bio_wrapper b(BIO_s_mem( ));
             if( !PEM_write_bio_RSAPublicKey( b.get( ), rsa_ ) ) {
-                throw ssl_exception( "PEM_write_bio_RSAPublicKey" );
+                ssl_exception::raise( "PEM_write_bio_RSAPublicKey" );
             }
 
             std::string res( BIO_pending(b.get( )), '\0' );
@@ -390,7 +464,7 @@ namespace ta { namespace utilities {
                                               NULL, 0,
                                               NULL, NULL ) )
             {
-                throw ssl_exception("write_bio_RSAPrivateKey");
+                ssl_exception::raise("write_bio_RSAPrivateKey");
             }
 
             std::string res( BIO_pending(b.get( )), '\0' );
@@ -402,22 +476,6 @@ namespace ta { namespace utilities {
         std::string pem_prikey( const EVP_CIPHER *cyph, pem_callback pc )
         {
 
-            struct pem_cb {
-                pem_callback cb_;
-                pem_cb(pem_callback cb)
-                    :cb_(cb)
-                { }
-
-                static int cb( char *buf, int size, int rwflag, void *userptr )
-                {
-                    pem_cb *thiz = reinterpret_cast<pem_cb *>(userptr);
-                    std::string res = thiz->cb_(!!rwflag, size);
-                    size_t len_res = std::min( res.size( ), size_t(size) );
-                    memcpy( buf, res.c_str( ), len_res );
-                    return static_cast<int>(len_res);
-                }
-            };
-
             bio_wrapper b(BIO_s_mem( ));
 
             pem_cb pcb(pc);
@@ -426,7 +484,7 @@ namespace ta { namespace utilities {
                                               pc ? &pem_cb::cb : NULL,
                                               &pcb ) )
             {
-                throw ssl_exception("write_bio_RSAPrivateKey");
+                ssl_exception::raise("write_bio_RSAPrivateKey");
             }
 
             std::string res( BIO_pending(b.get( )), '\0' );
@@ -448,7 +506,7 @@ namespace ta { namespace utilities {
                                               key, pass.size( ),
                                               NULL, NULL ) )
             {
-                throw ssl_exception("write_bio_RSAPrivateKey");
+                ssl_exception::raise("write_bio_RSAPrivateKey");
             }
 
             std::string res( BIO_pending(b.get( )), '\0' );
@@ -464,7 +522,7 @@ namespace ta { namespace utilities {
 
             RSA *res = generate_keys_nothrow( bits, e, gcback );
             if( !res ) {
-                throw ssl_exception( "RSA_generate_key" );
+                ssl_exception::raise( "RSA_generate_key" );
             }
             return res;
         }
