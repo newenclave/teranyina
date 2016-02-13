@@ -4,8 +4,11 @@
 #include <string>
 #include <sstream>
 #include <stdexcept>
+#include <functional>
+
 #include "openssl/ssl.h"
 #include "openssl/err.h"
+#include "openssl/rsa.h"
 
 namespace ta { namespace utilities {
 
@@ -320,6 +323,174 @@ namespace ta { namespace utilities {
             }
             return res;
         }
+    };
+
+    class rsa_wrapper {
+
+        RSA *rsa_;
+
+    public:
+
+        typedef std::function<void(int, int)>              gen_callback;
+        typedef std::function<std::string (bool, size_t)>  pem_callback;
+
+        rsa_wrapper( RSA *rsa )
+            :rsa_(rsa)
+        { }
+
+        ~rsa_wrapper( )
+        {
+            if( rsa_ ) {
+                RSA_free( rsa_ );
+            }
+        }
+
+        RSA *get( )
+        {
+            return rsa_;
+        }
+
+        const RSA *get( ) const
+        {
+            return rsa_;
+        }
+
+        bool check(  ) const
+        {
+            return check( get( ) );
+        }
+
+        static bool check( const RSA *rsa )
+        {
+            int res = RSA_check_key( rsa );
+            if( -1 == res ) {
+                throw ssl_exception( "RSA_check_key" );
+            }
+            return !!res;
+        }
+
+        std::string pem_pubkey( )
+        {
+            bio_wrapper b(BIO_s_mem( ));
+            if( !PEM_write_bio_RSAPublicKey( b.get( ), rsa_ ) ) {
+                throw ssl_exception( "PEM_write_bio_RSAPublicKey" );
+            }
+
+            std::string res( BIO_pending(b.get( )), '\0' );
+            BIO_read( b.get( ), &res[0], res.size( ) );
+
+            return res;
+        }
+
+        std::string pem_prikey( )
+        {
+            bio_wrapper b(BIO_s_mem( ));
+
+            if( !PEM_write_bio_RSAPrivateKey( b.get( ), rsa_, NULL,
+                                              NULL, 0,
+                                              NULL, NULL ) )
+            {
+                throw ssl_exception("write_bio_RSAPrivateKey");
+            }
+
+            std::string res( BIO_pending(b.get( )), '\0' );
+            BIO_read( b.get( ), &res[0], res.size( ) );
+
+            return res;
+        }
+
+        std::string pem_prikey( const EVP_CIPHER *cyph, pem_callback pc )
+        {
+
+            struct pem_cb {
+                pem_callback cb_;
+                pem_cb(pem_callback cb)
+                    :cb_(cb)
+                { }
+
+                static int cb( char *buf, int size, int rwflag, void *userptr )
+                {
+                    pem_cb *thiz = reinterpret_cast<pem_cb *>(userptr);
+                    std::string res = thiz->cb_(!!rwflag, size);
+                    size_t len_res = std::min( res.size( ), size_t(size) );
+                    memcpy( buf, res.c_str( ), len_res );
+                    return static_cast<int>(len_res);
+                }
+            };
+
+            bio_wrapper b(BIO_s_mem( ));
+
+            pem_cb pcb(pc);
+            if( !PEM_write_bio_RSAPrivateKey( b.get(), rsa_, cyph,
+                                              NULL, 0,
+                                              pc ? &pem_cb::cb : NULL,
+                                              &pcb ) )
+            {
+                throw ssl_exception("write_bio_RSAPrivateKey");
+            }
+
+            std::string res( BIO_pending(b.get( )), '\0' );
+            BIO_read( b.get( ), &res[0], res.size( ) );
+
+            return res;
+        }
+
+        std::string pem_prikey( const EVP_CIPHER *cyph, std::string &pass )
+        {
+
+            bio_wrapper b(BIO_s_mem( ));
+
+            unsigned char *key = pass.empty( )
+                               ? NULL
+                               : reinterpret_cast<unsigned char *>( &pass[0] );
+
+            if( !PEM_write_bio_RSAPrivateKey( b.get( ), rsa_, cyph,
+                                              key, pass.size( ),
+                                              NULL, NULL ) )
+            {
+                throw ssl_exception("write_bio_RSAPrivateKey");
+            }
+
+            std::string res( BIO_pending(b.get( )), '\0' );
+            BIO_read( b.get( ), &res[0], res.size( ) );
+
+            return res;
+        }
+
+
+        static RSA *generate_keys( size_t bits, unsigned long e = RSA_F4,
+                                   gen_callback gcback = gen_callback( ) )
+        {
+
+            RSA *res = generate_keys_nothrow( bits, e, gcback );
+            if( !res ) {
+                throw ssl_exception( "RSA_generate_key" );
+            }
+            return res;
+        }
+
+        /// use ERR_get_error for opbtener th eerror code
+        static RSA *generate_keys_nothrow( size_t bits,
+                                       unsigned long e = RSA_F4,
+                                       gen_callback gcback = gen_callback( ) )
+        {
+            struct gen_cb {
+                gen_callback cb_;
+                gen_cb(gen_callback cb)
+                    :cb_(cb)
+                { }
+
+                static void cb( int p1, int p2, void *userdata )
+                {
+                    gen_cb *thiz = reinterpret_cast<gen_cb *>( userdata );
+                    thiz->cb_( p1, p2 );
+                }
+            };
+
+            gen_cb gcb(gcback);
+            return RSA_generate_key(bits, e, gcback ? &gen_cb::cb : NULL, &gcb);
+        }
+
     };
 
     class ssl_bio_wrapper {
