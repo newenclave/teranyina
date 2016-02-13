@@ -392,8 +392,8 @@ namespace ta { namespace utilities {
             return !!res;
         }
 
-        static RSA *from_pubkey_nothrow( const std::string &pubkey,
-                                         pem_callback pc = pem_callback( ) )
+        static RSA *from_pem_pubkey_nothrow( const std::string &pubkey,
+                                             pem_callback pc = pem_callback( ) )
         {
             int r = 0;
             void *data = pubkey.empty( ) ? (void *)&r : (void *)&pubkey[0];
@@ -407,8 +407,8 @@ namespace ta { namespace utilities {
             return key;
         }
 
-        static RSA *from_prikey_nothrow( const std::string &prikey,
-                                         pem_callback pc = pem_callback( ) )
+        static RSA *from_pem_prikey_nothrow( const std::string &prikey,
+                                             pem_callback pc = pem_callback( ) )
         {
             int r = 0;
             void *data = prikey.empty( ) ? (void *)&r : (void *)&prikey[0];
@@ -423,20 +423,20 @@ namespace ta { namespace utilities {
             return key;
         }
 
-        static RSA *from_pubkey( const std::string &prikey,
-                                 pem_callback pc = pem_callback( ) )
+        static RSA *from_pem_pubkey( const std::string &prikey,
+                                     pem_callback pc = pem_callback( ) )
         {
-            RSA *key = from_pubkey_nothrow( prikey, pc );
+            RSA *key = from_pem_pubkey_nothrow( prikey, pc );
             if( !key ) {
                 ssl_exception::raise( "PEM_read_bio_RSAPublicKey" );
             }
             return key;
         }
 
-        static RSA *from_prikey( const std::string &prikey,
-                                 pem_callback pc = pem_callback( ) )
+        static RSA *from_pem_prikey( const std::string &prikey,
+                                     pem_callback pc = pem_callback( ) )
         {
-            RSA *key = from_prikey_nothrow( prikey, pc );
+            RSA *key = from_pem_prikey_nothrow( prikey, pc );
             if( !key ) {
                 ssl_exception::raise( "PEM_read_bio_RSAPrivateKey" );
             }
