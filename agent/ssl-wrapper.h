@@ -347,9 +347,9 @@ namespace ta { namespace utilities {
 
             static int cb( char *buf, int size, int rwflag, void *userptr )
             {
-                pem_cb *thiz = reinterpret_cast<pem_cb *>(userptr);
+                pem_cb *thiz    = reinterpret_cast<pem_cb *>(userptr);
                 std::string res = thiz->cb_(!!rwflag, size);
-                size_t len_res = std::min( res.size( ), size_t(size) );
+                size_t len_res  = std::min( res.size( ), size_t(size) );
                 memcpy( buf, res.c_str( ), len_res );
                 return static_cast<int>(len_res);
             }
