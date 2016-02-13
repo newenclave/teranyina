@@ -462,8 +462,7 @@ namespace ta { namespace utilities {
             bio_wrapper b(BIO_s_mem( ));
 
             if( !PEM_write_bio_RSAPrivateKey( b.get( ), rsa_, NULL,
-                                              NULL, 0,
-                                              NULL, NULL ) )
+                                              NULL, 0, NULL, NULL ) )
             {
                 ssl_exception::raise("write_bio_RSAPrivateKey");
             }
@@ -481,8 +480,7 @@ namespace ta { namespace utilities {
 
             pem_cb pcb(pc);
             if( !PEM_write_bio_RSAPrivateKey( b.get(), rsa_, cyph,
-                                              NULL, 0,
-                                              pc ? &pem_cb::cb : NULL,
+                                              NULL, 0, pc ? &pem_cb::cb : NULL,
                                               &pcb ) )
             {
                 ssl_exception::raise("write_bio_RSAPrivateKey");
