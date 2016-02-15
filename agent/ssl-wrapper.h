@@ -514,6 +514,63 @@ namespace ta { namespace utilities {
             return res;
         }
 
+    protected:
+        template <typename Func>
+        std::string tmpl_do_enc_dec( const std::string &msg,
+                                     Func func, const char *name,
+                                     int padding )
+        {
+            char _;
+
+            std::string res(msg.size( ) + RSA_size(rsa_), '\0');
+
+            unsigned char *res_data = (unsigned char *)(&res[0]);
+            const unsigned char *src_data =
+                        (const unsigned char *)( msg.empty( ) ? &_ : &msg[0] );
+
+            int rres = func( msg.size( ), src_data, res_data, rsa_, padding );
+
+            if( rres == -1 ) {
+                ssl_exception::raise( name );
+            }
+            res.resize( rres );
+            return res;
+
+        }
+
+    public:
+
+        std::string pub_encrypt( const std::string &msg,
+                                 int padding = RSA_PKCS1_OAEP_PADDING )
+        {
+            return tmpl_do_enc_dec( msg,
+                                    RSA_public_encrypt, "RSA_public_encrypt",
+                                    padding );
+        }
+
+        std::string pri_decrypt( const std::string &msg,
+                                 int padding = RSA_PKCS1_OAEP_PADDING )
+        {
+            return tmpl_do_enc_dec( msg,
+                                    RSA_private_decrypt, "RSA_private_decrypt",
+                                    padding );
+        }
+
+        std::string pri_encrypt( const std::string &msg,
+                                 int padding = RSA_PKCS1_PADDING )
+        {
+            return tmpl_do_enc_dec( msg,
+                                    RSA_private_encrypt, "RSA_private_encrypt",
+                                    padding );
+        }
+
+        std::string pub_decrypt( const std::string &msg,
+                                 int padding = RSA_PKCS1_PADDING )
+        {
+            return tmpl_do_enc_dec( msg,
+                                    RSA_public_decrypt, "RSA_public_decrypt",
+                                    padding );
+        }
 
         static RSA *generate_keys( size_t bits, unsigned long e = RSA_F4,
                                    gen_callback gcback = gen_callback( ) )
