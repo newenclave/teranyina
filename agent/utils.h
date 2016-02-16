@@ -14,8 +14,15 @@ namespace ta { namespace utilities {
         bool ok;
         T result;
 
-        result_type( const result_type &  ) = default;
-        result_type(       result_type && ) = default;
+        result_type(const result_type &o)
+            :ok(o.ok)
+            , result(o.result)
+        { }
+
+        result_type(result_type &&o)
+            :ok(o.ok)
+            ,result(o.result)
+        { }
 
         result_type( )
             :ok(false)
