@@ -21,7 +21,7 @@ namespace ta { namespace utilities {
 
         result_type(result_type &&o)
             :ok(o.ok)
-            ,result(o.result)
+            ,result(std::move(o.result))
         { }
 
         result_type( )
