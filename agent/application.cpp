@@ -322,7 +322,7 @@ namespace ta { namespace agent {
         return std::make_shared<application::service_wrapper>(this, cl, serv);
     }
 
-    void application::register_service_creator( const std::string &name,
+    void application::register_service_factory( const std::string &name,
                                                 service_getter_type func )
     {
         vtrc::lock_guard<vtrc::mutex> lck(impl_->services_lock_);
@@ -339,7 +339,7 @@ namespace ta { namespace agent {
         impl_->services_.insert( std::make_pair( name, func ) );
     }
 
-    void application::unregister_service_creator( const std::string &name )
+    void application::unregister_service_factory( const std::string &name )
     {
         vtrc::lock_guard<vtrc::mutex> lck(impl_->services_lock_);
         auto f = impl_->services_.find( name );

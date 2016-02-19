@@ -56,12 +56,12 @@ namespace ta { namespace agent { namespace subsys {
         void reg_creator( const std::string &name,
                           application::service_getter_type func )
         {
-            app_->register_service_creator( name, func );
+            app_->register_service_factory( name, func );
         }
 
         void unreg_creator( const std::string &name )
         {
-            app_->unregister_service_creator( name );
+            app_->unregister_service_factory( name );
         }
 
 ///////////// signals
@@ -169,41 +169,46 @@ namespace ta { namespace agent { namespace subsys {
 
         }
 
-        void start_all( )
+        void create_from_endpoint_info( const utilities::endpoint_info &inf,
+                                        const std::string &ep )
         {
             using namespace vserv::listeners;
             static const char *true_false[2] = { "off", " on" };
 
-            for( auto &ep: endpoints_ ) {
+            if( inf ) {
+                vserv::listener_sptr next;
+                if( inf.is_local( ) ) {
 
-                auto inf = utilities::get_endpoint_info( ep );
+                    next = local::create( *app_->get_application( ),
+                                          inf.addpess );
+                    LOGINF << "Start local ep: " << inf.addpess
+                           << " (" << inf << ") "
+                           ;
+                } else {
 
-                if( inf ) {
-                    vserv::listener_sptr next;
-                    if( inf.is_local( ) ) {
-
-                        next = local::create( *app_->get_application( ),
-                                              inf.addpess );
-                        LOGINF << "Start local ep: " << inf.addpess
-                               << " (" << inf << ") "
-                               ;
-                    } else {
-
-                        next = tcp::create( *app_->get_application( ),
-                                             inf.addpess, inf.service );
-                        LOGINF << "Start tcp ep: "
-                                  << inf.addpess  << " " << inf.service
-                                  << " ssl: "
-                                  << true_false[inf.is_ssl( ) ? 1 : 0]
-                                  << " (" << inf << ") "
-                                  ;
-                    }
-                    if( next ) {
-                        connect_signals( next );
-                        next->start( );
-                        listeners_[ep] = next;
-                    }
+                    next = tcp::create( *app_->get_application( ),
+                                         inf.addpess, inf.service );
+                    LOGINF << "Start tcp ep: "
+                              << inf.addpess  << " " << inf.service
+                              << " ssl: "
+                              << true_false[inf.is_ssl( ) ? 1 : 0]
+                              << " (" << inf << ") "
+                              ;
                 }
+
+                if( next ) {
+                    connect_signals( next );
+                    next->start( );
+                    listeners_[ep] = next;
+                }
+            }
+        }
+
+        void start_all( )
+        {
+            for( auto &ep: endpoints_ ) {
+                auto inf = utilities::get_endpoint_info( ep );
+                create_from_endpoint_info( inf, ep );
             }
         }
 

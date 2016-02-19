@@ -127,8 +127,9 @@ namespace ta { namespace utilities {
     result_type<std::string> bin2hex( void const *bytes, size_t length )
     {
 
-        if( (NULL == bytes) || (0 == length) )
+        if( (NULL == bytes) || (0 == length) ) {
             return result_type<std::string>(false, "");
+        }
 
         static
             unsigned char hexes_[ ] = {

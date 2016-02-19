@@ -7,21 +7,20 @@
 
 namespace ta { namespace utilities {
 
-
     template <typename T>
     struct result_type {
 
-        bool ok;
         T result;
+        bool ok;
 
         result_type(const result_type &o)
-            :ok(o.ok)
-            , result(o.result)
+            :result(o.result)
+            ,ok(o.ok)
         { }
 
         result_type(result_type &&o)
-            :ok(o.ok)
-            ,result(std::move(o.result))
+            :result(std::move(o.result))
+            ,ok(o.ok)
         { }
 
         result_type( )
@@ -33,16 +32,16 @@ namespace ta { namespace utilities {
         { }
 
         result_type( bool f, const T &s )
-            :ok(f)
-            ,result(s)
+            :result(s)
+            ,ok(f)
         { }
 
         result_type( bool f, T &&s )
-            :ok(f)
-            ,result(s)
+            :result(s)
+            ,ok(f)
         { }
 
-        operator bool ( ) const noexcept
+        operator bool ( ) const
         {
             return ok;
         }

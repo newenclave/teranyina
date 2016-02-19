@@ -80,10 +80,10 @@ namespace ta { namespace agent {
                                     service_wrapper_impl::service_sptr serv );
     public: // services
 
-        void register_service_creator( const std::string &name,
+        void register_service_factory( const std::string &name,
                                        service_getter_type func );
 
-        void unregister_service_creator( const std::string &name );
+        void unregister_service_factory( const std::string &name );
 
         void quit( );
 
