@@ -58,7 +58,7 @@ namespace ta { namespace agent {
         protected:
 
             const method_type *get_method ( const std::string &name ) const;
-            application *get_application( ) noexcept;
+            application       *get_application( )       noexcept;
             const application *get_application( ) const noexcept;
         };
 
