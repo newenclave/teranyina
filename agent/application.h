@@ -72,8 +72,8 @@ namespace ta { namespace agent {
         ///
         /// func( app, connection )
         ///
-        typedef vtrc::function<
-            service_wrapper_sptr ( ta_app *, connection_iface_wptr )
+        typedef std::function <
+            service_wrapper_sptr( ta_app *, connection_iface_wptr )
         > service_getter_type;
 
         service_wrapper_sptr wrap_service ( connection_iface_wptr c,
@@ -137,12 +137,13 @@ namespace ta { namespace agent {
             return poly_downcast<const T *>( subsys );
         }
 
-        vtrc::server::application *get_application( ) noexcept;
+        vtrc::server::application       *get_application( )       noexcept;
         const vtrc::server::application *get_application( ) const noexcept;
-        boost::asio::io_service &get_io_service( ) noexcept;
+
+        boost::asio::io_service &get_io_service( )  noexcept;
         boost::asio::io_service &get_rpc_service( ) noexcept;
 
-        agent::logger &get_logger( ) noexcept;
+        agent::logger &get_logger( )             noexcept;
         const agent::logger &get_logger( ) const noexcept;
 
         void start_all( );
