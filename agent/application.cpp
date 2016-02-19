@@ -14,8 +14,6 @@
 
 #include "openssl/rsa.h"
 
-#include "google/protobuf/stubs/common.h"
-
 namespace ta { namespace agent {
 
     namespace {
@@ -78,6 +76,7 @@ namespace ta { namespace agent {
 
     struct application::impl: public vtrc::server::application {
 
+        vcomm::pool_pair      pools_;
         agent::application   *parent_;
         subsystem_comtrainer  subsystems_;
         logger                logger_;
@@ -95,12 +94,15 @@ namespace ta { namespace agent {
 
         std::string           config_file_;
 
-        impl(vcomm::pool_pair &pools)
-            :vtrc::server::application(pools)
-            ,logger_(pools.get_io_service( ), logger::level::info)
+        impl( )
+            :pools_(0, 0)
+            ,logger_(pools_.get_io_service( ), logger::level::info)
             ,io_count_(1)
             ,rpc_count_(1)
-        { }
+        {
+            assign_io_service(  pools_.get_io_service( )  );
+            assign_rpc_service( pools_.get_rpc_service( ) );
+        }
 
         void get_common_options( po::options_description& desc )
         {
@@ -191,8 +193,7 @@ namespace ta { namespace agent {
     };
 
     application::application( )
-        :pools_(0, 0)
-        ,impl_(new impl(pools_))
+        :impl_(new impl)
     {
         impl_->parent_ = this;
     }
@@ -350,7 +351,7 @@ namespace ta { namespace agent {
 
     void application::quit( )
     {
-        pools_.stop_all( );
+        impl_->pools_.stop_all( );
     }
 
     agent::logger &application::get_logger( ) noexcept
@@ -391,15 +392,15 @@ namespace ta { namespace agent {
                     logger::str2level( impl_->log_level_.c_str( ) ) );
 
         impl_->init_subsystems( );
+
         start_all( );
 
-        pools_.get_io_pool( ).add_threads( impl_->io_count_ - 1 );
-        pools_.get_rpc_pool( ).add_threads( impl_->rpc_count_ );
+        impl_->pools_.get_io_pool( ).add_threads( impl_->io_count_ - 1 );
+        impl_->pools_.get_rpc_pool( ).add_threads( impl_->rpc_count_ );
 
-        pools_.get_io_pool( ).attach( );
+        impl_->pools_.get_io_pool( ).attach( );
 
-        pools_.join_all( );
-        google::protobuf::ShutdownProtobufLibrary( );
+        impl_->pools_.join_all( );
 
     }
 

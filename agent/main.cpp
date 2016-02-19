@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "application.h"
+#include "google/protobuf/stubs/common.h"
 
 int main( int argc, const char *argv[ ] )
 {
@@ -10,5 +11,6 @@ int main( int argc, const char *argv[ ] )
     } catch( const std::exception &ex ) {
         std::cerr << "Application failed to run: " << ex.what( ) << "\n";
     }
+    google::protobuf::ShutdownProtobufLibrary( );
     return 0;
 }

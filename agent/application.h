@@ -20,8 +20,7 @@ namespace ta { namespace agent {
     class application {
 
         struct  impl;
-        vtrc::common::pool_pair  pools_;
-        impl                    *impl_;
+        impl   *impl_;
 
         using ta_app                = ta::agent::application;
         using connection_iface_wptr = vtrc::common::connection_iface_wptr;

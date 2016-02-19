@@ -109,7 +109,7 @@ namespace ta { namespace agent { namespace subsys {
             }
 
             parent_->on_new_connection_( *cl, *lck );
-            LOGINF << "new connection: " << cl->name( )
+            LOGINF << "new  connection: " << cl->name( )
                    ;
         }
 
