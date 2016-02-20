@@ -41,7 +41,7 @@ namespace ta { namespace agent { namespace subsys {
             {
                 closure_holder _(done);
                 app_->get_logger( )( level::info ) << "Shutting down agent.";
-                app_->quit( );
+                app_->get_io_service( ).post( [this]( ){ app_->quit( ); } );
             }
 
             static std::string name( )
@@ -57,7 +57,9 @@ namespace ta { namespace agent { namespace subsys {
         {
 
             if( app->is_ctrl_connection( cl.lock( ).get( ) ) ) {
-                app->get_logger( )( level::debug ) << "Create service";
+                app->get_logger( )( level::debug )
+                        << "[ control] Create service ";
+
                 auto inst = std::make_shared<ctrl_impl>( app );
                 return app->wrap_service( cl, inst );
             } else {
