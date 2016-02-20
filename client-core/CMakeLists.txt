@@ -19,7 +19,7 @@ endforeach( )
 
 add_library( ${lib_name} STATIC ${lib_src} )
 
-set( CORE_INCLUDE_DIRS "${FR_INCLUDE_DIRS}/${lib_dirname}" )
+set( CORE_INCLUDE_DIRS "${TA_INCLUDE_DIRS}/${lib_dirname}" )
 
 list( APPEND internal
     ${INTERNAL_PROJECT_NAME}_protocol
