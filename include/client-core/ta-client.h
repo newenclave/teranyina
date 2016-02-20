@@ -20,6 +20,8 @@ namespace ta { namespace client {
         vtrc::client::vtrc_client       &get_client( );
         const vtrc::client::vtrc_client &get_client( ) const;
 
+        void connect( const std::string &server );
+
     };
 }}
 

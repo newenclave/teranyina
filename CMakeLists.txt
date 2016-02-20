@@ -149,6 +149,7 @@ configure_file ("${PROJECT_SOURCE_DIR}/teranyina-config.h.in"
 
 add_subdirectory( protocol )
 add_subdirectory( client-core )
+add_subdirectory( ctrl-client )
 #add_subdirectory( server-core )
 add_subdirectory( agent )
 

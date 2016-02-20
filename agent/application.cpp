@@ -76,7 +76,7 @@ namespace ta { namespace agent {
 
     struct application::impl: public vtrc::server::application {
 
-        vcomm::pool_pair      pools_;
+        vcomm::pool_pair     &pools_;
         agent::application   *parent_;
         subsystem_comtrainer  subsystems_;
         logger                logger_;
@@ -94,14 +94,15 @@ namespace ta { namespace agent {
 
         std::string           config_file_;
 
-        impl( )
-            :pools_(0, 0)
+        impl( vcomm::pool_pair &pp )
+            :vtrc::server::application(pp)
+            ,pools_(pp)
             ,logger_(pools_.get_io_service( ), logger::level::info)
             ,io_count_(1)
             ,rpc_count_(1)
         {
-            assign_io_service(  pools_.get_io_service( )  );
-            assign_rpc_service( pools_.get_rpc_service( ) );
+//            assign_io_service(  pools_.get_io_service( )  );
+//            assign_rpc_service( pools_.get_rpc_service( ) );
         }
 
         void get_common_options( po::options_description& desc )
@@ -193,7 +194,8 @@ namespace ta { namespace agent {
     };
 
     application::application( )
-        :impl_(new impl)
+        :pools_(0, 0)
+        ,impl_(new impl(pools_))
     {
         impl_->parent_ = this;
     }
