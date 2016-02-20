@@ -259,6 +259,11 @@ namespace ta { namespace agent {
 
     }
 
+    bool application::is_ctrl_connection( vtrc::common::connection_iface */*c*/)
+    {
+        return true;
+    }
+
     vtrc::server::application *application::get_application( ) noexcept
     {
         return impl_;

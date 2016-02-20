@@ -5,9 +5,13 @@
 
 namespace ta { namespace client {
 
-    struct core::impl: public vtrc::client::vtrc_client {
-        impl( vtrc::common::pool_pair &pp )
-            :vtrc::client::vtrc_client(pp)
+    namespace vclient = vtrc::client;
+    namespace vcomm   = vtrc::common;
+
+    struct core::impl {
+        std::shared_ptr<vclient::vtrc_client> client_;
+        impl( vcomm::pool_pair &pp )
+            :client_(vclient::vtrc_client::create(pp))
         { }
     };
 
@@ -18,6 +22,16 @@ namespace ta { namespace client {
     core::~core( )
     {
         delete impl_;
+    }
+
+    vtrc::client::vtrc_client &core::get_client( )
+    {
+        return *impl_->client_;
+    }
+
+    const vtrc::client::vtrc_client &core::get_client( ) const
+    {
+        return *impl_->client_;
     }
 
 }}

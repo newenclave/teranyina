@@ -136,17 +136,20 @@ namespace ta { namespace agent {
             return poly_downcast<const T *>( subsys );
         }
 
+        bool is_ctrl_connection( vtrc::common::connection_iface *c );
+
         vtrc::server::application       *get_application( )       noexcept;
         const vtrc::server::application *get_application( ) const noexcept;
 
         boost::asio::io_service &get_io_service( )  noexcept;
         boost::asio::io_service &get_rpc_service( ) noexcept;
 
-        agent::logger &get_logger( )             noexcept;
+        agent::logger       &get_logger( )       noexcept;
         const agent::logger &get_logger( ) const noexcept;
 
         void start_all( );
         void stop_all( );
+
 
         void run( int argc, const char *argv[ ] );
 

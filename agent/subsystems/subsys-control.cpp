@@ -43,10 +43,12 @@ namespace ta { namespace agent { namespace subsys {
                 app_->get_logger( )( level::info ) << "Shutting down agent.";
                 app_->quit( );
             }
+
             static std::string name( )
             {
                 return ta::proto::ctrl::descriptor( )->full_name( );
             }
+
         };
 
         application::service_wrapper_sptr create_service(
@@ -54,11 +56,13 @@ namespace ta { namespace agent { namespace subsys {
                                       vtrc::common::connection_iface_wptr cl )
         {
 
-            app->get_logger( )( level::debug ) << "Create service";
-            auto inst = std::make_shared<ctrl_impl>( app );
-            return app->wrap_service( cl, inst );
-
-            //return application::service_wrapper_sptr( );
+            if( app->is_ctrl_connection( cl.lock( ).get( ) ) ) {
+                app->get_logger( )( level::debug ) << "Create service";
+                auto inst = std::make_shared<ctrl_impl>( app );
+                return app->wrap_service( cl, inst );
+            } else {
+                return application::service_wrapper_sptr( );
+            }
         }
     }
 
@@ -108,6 +112,12 @@ namespace ta { namespace agent { namespace subsys {
     {
         return subsys_name;
     }
+
+    std::string control::service_name( ) const noexcept
+    {
+        return ctrl_impl::name( );
+    }
+
 
     void control::init( )
     {
