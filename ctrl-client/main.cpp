@@ -55,10 +55,13 @@ namespace {
             ;
     }
 
-    cmd_map create_map( )
+    cmd_map create_map( ta::cc::cmd_sptr &def )
     {
         cmd_map res;
-        res.insert( cmd( ta::cc::cmd::ctrl::create( ) ) );
+        def = ta::cc::cmd::ctrl::create( );
+
+        res.insert( cmd( def ) );
+
         return res;
     }
 
@@ -182,8 +185,8 @@ int main( int argc, const char **argv )
     fill_common_options( desc );
     po::variables_map vm( parse_common( argc, argv, desc ) );
 
-    cmd_map cm = create_map( );
     ta::cc::cmd_sptr current_command;
+    cmd_map cm = create_map( current_command );
 
     if( vm.count( "command" ) ) {
         std::string c(vm["command"].as<std::string>( ));
