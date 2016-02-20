@@ -7,8 +7,8 @@ set( lib_name ${INTERNAL_PROJECT_NAME}_${lib_postfix} )
 list( APPEND src_dirs
         .
         ./impl
-        ${FR_INCLUDE_DIRS}/${lib_dirname}
-        ${FR_INCLUDE_DIRS}/${lib_dirname}/interfaces
+        ${TA_INCLUDE_DIRS}/${lib_dirname}
+        ${TA_INCLUDE_DIRS}/${lib_dirname}/iface
     )
 
 foreach( src_dir ${src_dirs} )
