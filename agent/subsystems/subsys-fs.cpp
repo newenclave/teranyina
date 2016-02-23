@@ -9,8 +9,6 @@
 #include "vtrc-server/vtrc-channels.h"
 #include "vtrc-common/vtrc-exception.h"
 
-#include "vtrc-atomic.h"
-
 #include "boost/filesystem.hpp"
 
 #include "protocol/fs.pb.h"
@@ -36,8 +34,10 @@ namespace ta { namespace agent { namespace subsys {
 
         using level = agent::logger::level;
 
-        using path_map     = std::map<std::uint32_t, bfs::path>;
-        using iterator_map = std::map<std::uint32_t, bfs::directory_iterator>;
+        typedef std::uint32_t handle_type;
+
+        using path_map     = std::map<handle_type, bfs::path>;
+        using iterator_map = std::map<handle_type, bfs::directory_iterator>;
 
         using file_sptr = std::shared_ptr<agent::file_iface> ;
         using file_wptr = vtrc::weak_ptr<agent::file_iface>;
@@ -51,15 +51,15 @@ namespace ta { namespace agent { namespace subsys {
             iterator_map        iters_;
             vtrc::shared_mutex  iters_lock_;
 
-            std::atomic<std::uint32_t>  handle_;
+            std::atomic<handle_type>  handle_;
 
-            inline std::uint32_t next_index( )
+            inline handle_type next_index( )
             {
                 return ++handle_;
             }
 
             bfs::path path_from_request( const proto::fs::handle_path* request,
-                                         std::uint32_t &hdl )
+                                         handle_type &hdl )
             {
                 bfs::path p(request->path( ));
 
@@ -93,7 +93,7 @@ namespace ta { namespace agent { namespace subsys {
             {
                 vcomm::closure_holder holder(done);
 
-                std::uint32_t hdl;
+                handle_type hdl;
                 bfs::path p(path_from_request( request, hdl ));
                 {
                     vtrc::unique_shared_lock l( path_lock_ );
@@ -112,7 +112,7 @@ namespace ta { namespace agent { namespace subsys {
 
                 vtrc::upgradable_lock ul( path_lock_ );
 
-                std::uint32_t hdl( request->hdl( ).value( ) );
+                handle_type hdl( request->hdl( ).value( ) );
 
                 path_map::iterator f( path_.find( hdl ) );
 
@@ -141,7 +141,7 @@ namespace ta { namespace agent { namespace subsys {
                          ::google::protobuf::Closure* done) override
             {
                 vcomm::closure_holder holder(done);
-                std::uint32_t hdl;
+                handle_type hdl;
                 bfs::path p(path_from_request( request, hdl ));
                 response->set_path( p.string( ) );
             }
@@ -152,7 +152,7 @@ namespace ta { namespace agent { namespace subsys {
                          ::google::protobuf::Closure* done) override
             {
                 vcomm::closure_holder holder(done);
-                std::uint32_t hdl;
+                handle_type hdl;
 
                 bfs::path p( path_from_request( request, hdl ) );
                 response->set_is_exist( bfs::exists( p ) );
@@ -165,7 +165,7 @@ namespace ta { namespace agent { namespace subsys {
             {
                 vcomm::closure_holder holder(done);
 
-                std::uint32_t hdl;
+                handle_type hdl;
                 bfs::path p( path_from_request( request, hdl ) );
 
                 response->set_position( bfs::file_size( p ) );
@@ -196,7 +196,7 @@ namespace ta { namespace agent { namespace subsys {
                        ::google::protobuf::Closure* done) override
             {
                 vcomm::closure_holder holder(done);
-                std::uint32_t hdl;
+                handle_type hdl;
                 bfs::path p( path_from_request( request, hdl ) );
                 fill_info( p, response );
             }
@@ -207,7 +207,7 @@ namespace ta { namespace agent { namespace subsys {
                          ::google::protobuf::Closure* done) override
             {
                 vcomm::closure_holder holder(done);
-                std::uint32_t hdl;
+                handle_type hdl;
                 bfs::path p( path_from_request( request, hdl ) );
                 bfs::create_directories( p );
                 response->mutable_hdl( )->set_value( hdl );
@@ -219,8 +219,8 @@ namespace ta { namespace agent { namespace subsys {
                          ::google::protobuf::Closure* done) override
             {
                 vcomm::closure_holder holder(done);
-                std::uint32_t shdl;
-                std::uint32_t dhdl;
+                handle_type shdl;
+                handle_type dhdl;
 
                 bfs::path s( path_from_request( &request->src( ), shdl ) );
                 bfs::path d( path_from_request( &request->dst( ), dhdl ) );
@@ -236,7 +236,7 @@ namespace ta { namespace agent { namespace subsys {
                          ::google::protobuf::Closure* done) override
             {
                 vcomm::closure_holder holder(done);
-                std::uint32_t hdl = 0;
+                handle_type hdl = 0;
                 bfs::path p(path_from_request( request, hdl ));
                 bfs::remove( p );
                 response->mutable_hdl( )->set_value( hdl );
@@ -255,7 +255,7 @@ namespace ta { namespace agent { namespace subsys {
             }
 
             void fill_iter_info( const bfs::directory_iterator &iter,
-                                 std::uint32_t hdl,
+                                 handle_type hdl,
                                  proto::fs::iterator_info* response)
             {
                 response->mutable_hdl( )->set_value( hdl );
@@ -267,7 +267,7 @@ namespace ta { namespace agent { namespace subsys {
                 }
             }
 
-            bfs::directory_iterator &get_iter_unsafe( std::uint32_t hdl )
+            bfs::directory_iterator &get_iter_unsafe( handle_type hdl )
             {
                 iterator_map::iterator f( iters_.find( hdl ) );
                 if( f == iters_.end( ) ) {
@@ -276,7 +276,7 @@ namespace ta { namespace agent { namespace subsys {
                 return f->second;
             }
 
-            bfs::directory_iterator &get_iter( std::uint32_t hdl )
+            bfs::directory_iterator &get_iter( handle_type hdl )
             {
                 vtrc::shared_lock l( iters_lock_ );
                 return get_iter_unsafe( hdl );
@@ -289,11 +289,11 @@ namespace ta { namespace agent { namespace subsys {
             {
                 vcomm::closure_holder holder(done);
 
-                std::uint32_t hdl;
+                handle_type hdl;
                 bfs::path p(path_from_request( request, hdl ));
 
                 bfs::directory_iterator new_iterator(p);
-                std::uint32_t iter_hdl = next_index( );
+                handle_type iter_hdl = next_index( );
 
                 vtrc::unique_shared_lock usl( iters_lock_);
                 iters_.insert( std::make_pair( iter_hdl, new_iterator ) );
@@ -307,7 +307,7 @@ namespace ta { namespace agent { namespace subsys {
             {
                 vcomm::closure_holder holder(done);
 
-                std::uint32_t hdl( request->hdl( ).value( ) );
+                handle_type hdl( request->hdl( ).value( ) );
                 vtrc::shared_lock usl( iters_lock_ );
 
                 bfs::directory_iterator &iter( get_iter_unsafe( hdl ) );
@@ -325,7 +325,7 @@ namespace ta { namespace agent { namespace subsys {
                          ::google::protobuf::Closure* done) override
             {
                 vcomm::closure_holder holder(done);
-                std::uint32_t hdl( request->hdl( ).value( ) );
+                handle_type hdl( request->hdl( ).value( ) );
                 bfs::directory_iterator iter( get_iter( hdl ) );
                 fill_info( iter->path( ), response );
             }
@@ -337,9 +337,9 @@ namespace ta { namespace agent { namespace subsys {
             {
                 vcomm::closure_holder holder(done);
 
-                std::uint32_t hdl( request->hdl( ).value( ) );
+                handle_type hdl( request->hdl( ).value( ) );
                 bfs::directory_iterator iter(get_iter( hdl ));
-                std::uint32_t new_hdl = next_index( );
+                handle_type new_hdl = next_index( );
                 fill_iter_info( iter, hdl, response );
 
                 vtrc::unique_shared_lock usl( iters_lock_ );
@@ -384,7 +384,7 @@ namespace ta { namespace agent { namespace subsys {
                     return;
                 }
 
-                std::uint32_t dhdl;
+                handle_type dhdl;
                 bfs::path p( path_from_request( &request->dst( ), dhdl ) );
 
                 std::vector<char> data(len);
@@ -405,7 +405,7 @@ namespace ta { namespace agent { namespace subsys {
                            ? 44000
                            : request->data( ).size( );
 
-                std::uint32_t dhdl;
+                handle_type dhdl;
                 bfs::path p( path_from_request( &request->dst( ), dhdl ) );
 
                 std::unique_ptr<file_iface> f( file::create( p.string( ),
@@ -426,14 +426,13 @@ namespace ta { namespace agent { namespace subsys {
             }
         };
 
-
         class proto_file_impl: public ta::proto::fs::file {
 
             vcomm::connection_iface_wptr  client_;
             file_map                      files_;
             vtrc::shared_mutex            files_lock_;
 
-            vtrc::atomic<std::uint32_t>  index_;
+            std::atomic<handle_type>      index_;
 
         public:
 
@@ -460,28 +459,28 @@ namespace ta { namespace agent { namespace subsys {
                 return ta::proto::fs::file::descriptor( )->full_name( );
             }
 
-            inline std::uint32_t next_id( )
+            inline handle_type next_id( )
             {
                 return ++index_;
             }
 
         private:
 
-            void del_file( std::uint32_t id )
+            void del_file( handle_type id )
             {
                 vtrc::unique_shared_lock lck( files_lock_ );
                 files_.erase( id );
             }
 
-            std::uint32_t add_file( file_sptr &f )
+            handle_type add_file( file_sptr &f )
             {
-                std::uint32_t id = next_id( );
+                handle_type id = next_id( );
                 vtrc::unique_shared_lock lck( files_lock_ );
                 files_[id] = f;
                 return id;
             }
 
-            file_sptr get_file( std::uint32_t id )
+            file_sptr get_file( handle_type id )
             {
                 vtrc::shared_lock lck( files_lock_ );
                 file_map::iterator f( files_.find(id) );
@@ -519,7 +518,7 @@ namespace ta { namespace agent { namespace subsys {
             }
 
             static
-            agent::file_iface::seek_whence value_to_enum( std::uint32_t v )
+            agent::file_iface::seek_whence value_to_enum( int v )
             {
                 switch ( v ) {
                 case proto::fs::POS_SEEK_CUR:
