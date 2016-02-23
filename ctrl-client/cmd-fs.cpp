@@ -51,6 +51,7 @@ namespace ta { namespace cc { namespace cmd {
                     } else {
                         files[leaf(d->path)] = d.info( );
                     }
+
                 }
                 for( auto &d: dirs ) {
                     const char *pref = d.second.is_empty ? " " : "+";
