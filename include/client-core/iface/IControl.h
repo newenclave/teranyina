@@ -17,8 +17,6 @@ namespace ta { namespace client { namespace interfaces {
         static control *create( ta::client::core &client );
     };
 
-
-
 }}}
 
 #endif // IASYNCOPERATION_H

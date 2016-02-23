@@ -102,7 +102,8 @@ service instance {
 
 message file_open_req {
     optional string path      = 1;
-    optional string strmode   = 5;
+    optional bool   as_device = 2;
+    optional string strmode   = 3;
 }
 
 enum file_position_whence {
