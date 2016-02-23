@@ -7,16 +7,20 @@ namespace ta { namespace client {
     class core;
 }}
 
-namespace ta { namespace client { namespace interfaces {
+namespace ta { namespace client {
 
-    struct control: public base {
 
-        virtual ~control( ) { }
+namespace interfaces { namespace control {
+
+    struct iface: public base {
+
+        virtual ~iface( ) { }
         virtual void shutdown( ) const = 0;
 
-        static control *create( ta::client::core &client );
     };
 
-}}}
+    iface *create( ta::client::core &client );
+
+}}}}
 
 #endif // IASYNCOPERATION_H

@@ -10,13 +10,13 @@ namespace ta { namespace cc { namespace cmd {
 
     namespace {
 
-        namespace po   = boost::program_options;
+        namespace po     = boost::program_options;
         namespace ifaces = ta::client::interfaces;
         typedef client::core core;
 
 
         const char *cmd_name = "ctrl";
-        typedef vtrc::unique_ptr<ifaces::control> ctrl_uptr;
+        typedef vtrc::unique_ptr<ifaces::control::iface> ctrl_uptr;
 
         struct impl: public cmd_iface {
 
@@ -28,8 +28,8 @@ namespace ta { namespace cc { namespace cmd {
             void exec( po::variables_map &vm, client::core &client )
             {
                 if( vm.count( "shutdown" ) ) {
-                      ctrl_uptr cmd(ifaces::control::create(client));
-                      cmd->shutdown( );
+                    ctrl_uptr cmd(ifaces::control::create(client));
+                    cmd->shutdown( );
                 }
             }
 

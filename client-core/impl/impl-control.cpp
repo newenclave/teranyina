@@ -12,7 +12,7 @@ namespace {
     namespace vcomm   = vtrc::common;
     namespace vclient = vtrc::client;
 
-    struct impl: public control {
+    struct impl: public control::iface {
 
         typedef ta::proto::ctrl_Stub                               stub_type;
         typedef vcomm::stub_wrapper<stub_type, vcomm::rpc_channel> client_stub;
@@ -43,9 +43,11 @@ namespace {
 
 }
 
-    control *control::create( ta::client::core &client )
+namespace control {
+    iface *create( ta::client::core &client )
     {
         return new impl(client);
     }
+}
 
 }}}
