@@ -129,12 +129,12 @@ namespace ta { namespace agent { namespace subsys {
 
     void %ss-name%::start( )
     {
-        impl_->LOGINF << "Started.";
+        impl_->LOGINF << "Started";
     }
 
     void %ss-name%::stop( )
     {
-        impl_->LOGINF << "Stopped.";
+        impl_->LOGINF << "Stopped";
     }
 
 

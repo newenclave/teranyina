@@ -16,7 +16,7 @@ namespace ta { namespace cc { namespace cmd {
 
 
         const char *cmd_name = "ctrl";
-        typedef vtrc::unique_ptr<ifaces::control::iface> ctrl_uptr;
+        typedef vtrc::unique_ptr<ifaces::control::iface> iface_uptr;
 
         struct impl: public cmd_iface {
 
@@ -27,8 +27,9 @@ namespace ta { namespace cc { namespace cmd {
 
             void exec( po::variables_map &vm, client::core &client )
             {
+                iface_uptr cmd(ifaces::control::create(client));
+                cmd->ping( );
                 if( vm.count( "shutdown" ) ) {
-                    ctrl_uptr cmd(ifaces::control::create(client));
                     cmd->shutdown( );
                 }
             }

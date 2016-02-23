@@ -35,8 +35,13 @@ namespace {
 
         void shutdown( ) const
         {
-            channel_.channel( )->set_flags( vcomm::rpc_channel::DISABLE_WAIT );
+            //channel_.channel( )->set_flags( vcomm::rpc_channel::DISABLE_WAIT );
             channel_.call( &stub_type::shutdown );
+        }
+
+        void ping( ) const
+        {
+            channel_.call( &stub_type::ping );
         }
 
     };

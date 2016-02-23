@@ -1,6 +1,8 @@
 #include <iostream>
 #include <fstream>
 
+#include "boost/asio/io_service.hpp"
+
 #include "application.h"
 #include "vtrc-common/vtrc-pool-pair.h"
 
@@ -194,6 +196,14 @@ namespace ta { namespace agent {
             return vtrc::shared_ptr<vtrc::common::rpc_service_wrapper>( );
         }
 
+        void stop_all( )
+        {
+            parent_->stop_all( );
+            logger_.dispatch( [this]( ) {
+                pools_.stop_all( );
+            } );
+        }
+
     };
 
     application::application( )
@@ -361,7 +371,7 @@ namespace ta { namespace agent {
 
     void application::quit( )
     {
-        impl_->pools_.stop_all( );
+        impl_->get_rpc_service( ).post( [this]( ) {impl_->stop_all( );} );
     }
 
     agent::logger &application::get_logger( ) noexcept
@@ -409,6 +419,7 @@ namespace ta { namespace agent {
         impl_->pools_.get_rpc_pool( ).add_threads( impl_->rpc_count_ );
 
         impl_->pools_.get_io_pool( ).attach( );
+
         impl_->pools_.join_all( );
 
     }

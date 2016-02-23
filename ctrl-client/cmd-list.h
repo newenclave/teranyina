@@ -7,6 +7,7 @@ namespace ta { namespace cc { namespace cmd {
 
     using ta::cc::cmd_sptr;
 
+    namespace fs     { cmd_sptr create( ); }
     namespace ctrl   { cmd_sptr create( ); }
 
 }}}

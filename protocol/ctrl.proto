@@ -4,5 +4,7 @@ option cc_generic_services = true;
 import "common.proto";
 
 service ctrl {
+    rpc ping     (empty) returns (empty);
     rpc shutdown (empty) returns (empty);
 }
+

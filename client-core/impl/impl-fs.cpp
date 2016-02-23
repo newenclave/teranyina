@@ -144,14 +144,15 @@ namespace filesystem {
         }
     }
 
-    directory_iterator&
-            directory_iterator::operator = ( directory_iterator &other )
+    directory_iterator& directory_iterator::operator = ( directory_iterator &o )
     {
-        directory_iterator_impl * new_impl =
-                        other.impl_ ? other.impl_->clone( ) : NULL;
+        directory_iterator_impl * new_impl = o.impl_
+                                           ? o.impl_->clone( )
+                                           : NULL;
         if( impl_ ) {
             delete impl_;
         }
+
         impl_ = new_impl;
         return *this;
     }
@@ -194,6 +195,12 @@ namespace filesystem {
     {
         return &(operator *( ));
     }
+
+    const info_data& directory_iterator::info( ) const
+    {
+        return impl_->info( );
+    }
+
 }
 
     namespace {

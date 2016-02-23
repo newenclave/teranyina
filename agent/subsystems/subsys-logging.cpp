@@ -175,10 +175,10 @@ namespace ta { namespace agent { namespace subsys {
         }
 
         struct console_info {
-            std::ostream &o_;
+            std::ostream *o_;
             level minl_;
             level maxl_;
-            console_info( std::ostream &o, level minl, level maxl )
+            console_info( std::ostream *o, level minl, level maxl )
                 :o_(o)
                 ,minl_(minl)
                 ,maxl_(maxl)
@@ -189,11 +189,11 @@ namespace ta { namespace agent { namespace subsys {
         void console_log( console_info &inf, level lvl,
                           bpt::ptime const &tim, stringlist const &data )
         {
-            level_color _( inf.o_, lvl );
+            level_color _( *inf.o_, lvl );
             if( (lvl >= inf.minl_) && (lvl <= inf.maxl_) ) {
                 for( auto &s: data ) {
-                    inf.o_ << tim << " [" << agent::logger::level2str(lvl)
-                           << "] " << s << std::endl;
+                    *inf.o_ << tim << " [" << agent::logger::level2str(lvl)
+                            << "] " << s << std::endl;
                 }
             }
         }
@@ -225,7 +225,7 @@ namespace ta { namespace agent { namespace subsys {
                 //stdout_connection_.conn_.disconnect( );
                 stdout_connection_.conn_ = log_.on_write_connect(
                             std::bind( &impl::console_log, this,
-                                       console_info(std::cout, minl, maxl),
+                                       console_info(&std::cout, minl, maxl),
                                        ph::_1, ph::_2, ph::_3 ) );
 
             } else if( path == stderr_name ) {  /// cerr
@@ -233,7 +233,7 @@ namespace ta { namespace agent { namespace subsys {
                 //stderr_connection_.conn_.disconnect( );
                 stderr_connection_.conn_ = log_.on_write_connect(
                             std::bind( &impl::console_log, this,
-                                       console_info(std::cerr, minl, maxl),
+                                       console_info(&std::cerr, minl, maxl),
                                        ph::_1, ph::_2, ph::_3 ) );
 
             } else {

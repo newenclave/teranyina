@@ -241,13 +241,13 @@ namespace ta { namespace agent { namespace subsys {
 //                             proto::multicast::default_port );
 //        impl_->add_endpoint( proto::multicast::default_address_v6,
 //                             proto::multicast::default_port );
-        impl_->LOGINF << "Started.";
+        impl_->LOGINF << "Started";
     }
 
     void multicast::stop( )
     {
         impl_->stop_all( );
-        impl_->LOGINF << "Stopped.";
+        impl_->LOGINF << "Stopped";
     }
 
 

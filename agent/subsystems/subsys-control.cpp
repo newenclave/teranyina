@@ -27,12 +27,22 @@ namespace ta { namespace agent { namespace subsys {
         class ctrl_impl: public ta::proto::ctrl {
 
             ta::agent::application *app_;
-
+            agent::logger          &log_;
         public:
 
             ctrl_impl(ta::agent::application *a)
                 :app_(a)
+                ,log_(app_->get_logger( ))
             { }
+
+            void ping(::google::protobuf::RpcController*    /*controller*/,
+                                 const ::ta::proto::empty*  /*request*/,
+                                 ::ta::proto::empty*        /*response*/,
+                                 ::google::protobuf::Closure* done) override
+            {
+                LOGDBG << "Ping request";
+                if( done ) done->Run( );
+            }
 
             void shutdown(::google::protobuf::RpcController* /*controller*/,
                      const ::ta::proto::empty*               /*request*/,
@@ -40,8 +50,8 @@ namespace ta { namespace agent { namespace subsys {
                      ::google::protobuf::Closure* done) override
             {
                 closure_holder _(done);
-                app_->get_logger( )( level::info ) << "Shutting down agent.";
-                app_->get_io_service( ).post( [this]( ){ app_->quit( ); } );
+                LOGINF << "Shutting down agent.";
+                app_->quit( );
             }
 
             static std::string name( )
@@ -128,14 +138,14 @@ namespace ta { namespace agent { namespace subsys {
 
     void control::start( )
     {
-        impl_->LOGINF << "Started.";
+        impl_->LOGINF << "Started";
 //        impl_->dc_.call_from_now( [this](...) { impl_->app_->quit( ); },
 //            vtrc::common::timer::monotonic_traits::milliseconds(5000) );
     }
 
     void control::stop( )
     {
-        impl_->LOGINF << "Stopped.";
+        impl_->LOGINF << "Stopped";
     }
 
 

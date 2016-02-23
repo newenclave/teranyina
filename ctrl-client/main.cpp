@@ -61,6 +61,7 @@ namespace {
         def = ta::cc::cmd::ctrl::create( );
 
         res.insert( cmd( def ) );
+        res.insert( cmd( ta::cc::cmd::fs::create( ) ) );
 
         return res;
     }

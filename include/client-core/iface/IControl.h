@@ -16,6 +16,7 @@ namespace interfaces { namespace control {
 
         virtual ~iface( ) { }
         virtual void shutdown( ) const = 0;
+        virtual void ping( ) const = 0;
 
     };
 

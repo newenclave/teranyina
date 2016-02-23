@@ -745,16 +745,16 @@ namespace ta { namespace agent { namespace subsys {
 
     void fs::start( )
     {
-        impl_->LOGINF << "Started.";
         impl_->reg_creator( proto_fs_impl::name( ), create_fs_inst );
         impl_->reg_creator( proto_file_impl::name( ), create_file_inst );
+        impl_->LOGINF << "Started";
     }
 
     void fs::stop( )
     {
-        impl_->LOGINF << "Stopped.";
         impl_->unreg_creator( proto_fs_impl::name( ) );
         impl_->unreg_creator( proto_file_impl::name( ) );
+        impl_->LOGINF << "Stopped";
     }
 
 }}}
