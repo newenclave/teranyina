@@ -138,9 +138,9 @@ namespace ta { namespace utilities {
                 'A', 'B', 'C', 'D', 'E', 'F' };
 
         struct hi_lo_struct {
+            char line[3];
             unsigned char h :4;
             unsigned char l :4;
-            char line[3];
             hi_lo_struct(): h(0), l(0) { line[2] = 0; }
             const char * operator()(const char in_) {
                 h = (in_ >> 4);

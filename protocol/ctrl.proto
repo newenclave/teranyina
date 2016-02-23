@@ -1,9 +1,8 @@
 package ta.proto;
 option cc_generic_services = true;
 
-message empty { }
+import "common.proto";
 
 service ctrl {
     rpc shutdown (empty) returns (empty);
 }
-

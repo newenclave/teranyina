@@ -1,0 +1,9 @@
+
+package ta.proto;
+
+message handle {
+    optional uint32 value = 1;
+}
+
+message empty { }
+

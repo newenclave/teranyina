@@ -5,3 +5,4 @@
 #include "subsys-logging.h"
 #include "subsys-security.h"
 #include "subsys-control.h"
+#include "subsys-fs.h"
