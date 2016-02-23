@@ -28,9 +28,12 @@ namespace ta { namespace cc { namespace cmd {
             void exec( po::variables_map &vm, client::core &client )
             {
                 iface_uptr cmd(ifaces::control::create(client));
+
                 cmd->ping( );
                 if( vm.count( "shutdown" ) ) {
+                    std::cout << "Shuting down agent...";
                     cmd->shutdown( );
+                    std::cout << "Ok\n";
                 }
             }
 
