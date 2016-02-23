@@ -14,6 +14,7 @@
 #include "boost/filesystem.hpp"
 
 #include "protocol/fs.pb.h"
+#include "vtrc-common/protocol/vtrc-errors.pb.h"
 
 #include "../files.h"
 
@@ -29,6 +30,7 @@ namespace ta { namespace agent { namespace subsys {
         namespace bfs   = boost::filesystem;
         namespace vcomm = vtrc::common;
         namespace proto = ta::proto;
+        namespace verr  = vtrc::rpc::errors;
 
         const std::string subsys_name( "fs" );
 
@@ -75,7 +77,7 @@ namespace ta { namespace agent { namespace subsys {
                     path_map::const_iterator f( path_.find( hdl ) );
 
                     if( f == path_.end( ) ) {
-                        vcomm::throw_system_error( EINVAL, "Bad fs handle" );
+                        vcomm::throw_protocol_error( verr::ERR_INVALID_VALUE );
                     }
                     p = f->second;
                     p /= request->path( );
@@ -115,7 +117,7 @@ namespace ta { namespace agent { namespace subsys {
                 path_map::iterator f( path_.find( hdl ) );
 
                 if( f == path_.end( ) ) {
-                    vcomm::throw_system_error( EINVAL, "Bad fs handle" );
+                    vcomm::throw_protocol_error( verr::ERR_INVALID_VALUE );
                 }
 
                 bfs::path req( request->path( ) );
@@ -269,7 +271,7 @@ namespace ta { namespace agent { namespace subsys {
             {
                 iterator_map::iterator f( iters_.find( hdl ) );
                 if( f == iters_.end( ) ) {
-                    vcomm::throw_system_error( EINVAL, "Bad iterator handle" );
+                    vcomm::throw_protocol_error( verr::ERR_INVALID_VALUE );
                 }
                 return f->second;
             }
@@ -313,7 +315,7 @@ namespace ta { namespace agent { namespace subsys {
                     ++iter;
                     fill_iter_info( iter, hdl, response );
                 } else {
-                    vcomm::throw_system_error( ENODATA, "End iterator." );
+                    vcomm::throw_protocol_error( verr::ERR_NO_DATA );
                 }
             }
 
@@ -484,7 +486,7 @@ namespace ta { namespace agent { namespace subsys {
                 vtrc::shared_lock lck( files_lock_ );
                 file_map::iterator f( files_.find(id) );
                 if( f == files_.end( ) ) {
-                    vcomm::throw_system_error( EBADF, "Bad file number." );
+                    vcomm::throw_protocol_error( verr::ERR_BAD_FILE );
                 }
                 return f->second;
             }
