@@ -36,27 +36,36 @@ namespace ta { namespace cc { namespace cmd {
                 return cmd_name;
             }
 
+            void ls( client::core &cl )
+            {
+                iface_uptr fi(ifaces::filesystem::create(cl,ls_path_));
+
+                std::map<std::string, ifaces::filesystem::info_data> dirs;
+                std::map<std::string, ifaces::filesystem::info_data> files;
+
+                for( auto d = fi->begin( ); d != fi->end( ); ++d ) {
+                    bool is_dir   = d.info( ).is_directory;
+
+                    if( is_dir ) {
+                        dirs[leaf(d->path)] = d.info( );
+                    } else {
+                        files[leaf(d->path)] = d.info( );
+                    }
+                }
+                for( auto &d: dirs ) {
+                    const char *pref = d.second.is_empty ? " " : "+";
+                    std::cout << pref << "["
+                              << d.first << "]" << "\n";
+                }
+                for( auto &f: files ) {
+                    std::cout << "  " << f.first << "\n";
+                }
+            }
+
             void exec( po::variables_map &vm, client::core &cl )
             {
                 if( vm.count( "ls" ) ) {
-                    iface_uptr fi(ifaces::filesystem::create(cl,ls_path_));
-                    std::set<std::string> dirs;
-                    std::set<std::string> files;
-                    for( auto d = fi->begin( ); d != fi->end( ); ++d ) {
-                        bool is_dir   = d.info( ).is_directory;
-
-                        if( is_dir ) {
-                            dirs.insert( leaf(d->path) );
-                        } else {
-                            files.insert( leaf(d->path) );
-                        }
-                    }
-                    for( auto &d: dirs ) {
-                        std::cout << "[" << d << "]" << "\n";
-                    }
-                    for( auto &f: files ) {
-                        std::cout << " " << f << "\n";
-                    }
+                    ls( cl );
                 }
             }
 
