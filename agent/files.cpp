@@ -9,9 +9,16 @@
 
 #include <fcntl.h>
 
+#ifndef _WIN32
+
+#include <unistd.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+
+#else
+
+#endif
 
 #include "errno-check.h"
 

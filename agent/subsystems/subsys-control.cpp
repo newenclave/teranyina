@@ -8,6 +8,7 @@
 #include "vtrc-common/vtrc-closure-holder.h"
 #include "vtrc-common/vtrc-delayed-call.h"
 
+#include "google/protobuf/descriptor.h"
 
 #define LOG(lev) log_(lev) << "[ control] "
 #define LOGINF   LOG(level::info)

@@ -4,7 +4,6 @@
 #include "vtrc-stdint.h"
 
 #include <string>
-#include <unistd.h>
 
 namespace ta { namespace agent {
 
