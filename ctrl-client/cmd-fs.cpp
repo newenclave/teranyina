@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "cmd-iface.h"
 
 #include "boost/program_options.hpp"

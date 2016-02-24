@@ -1,3 +1,4 @@
+#include <iostream>
 
 #include "cmd-iface.h"
 
