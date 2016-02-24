@@ -349,7 +349,7 @@ namespace ta { namespace agent { namespace subsys {
         } );
     }
 
-    const std::string &logging::name( )  const noexcept
+    const std::string &logging::name( )  const NOEXCEPT
     {
         return subsys_name;
     }

@@ -3,6 +3,7 @@
 #define TA_SUBSYS_fs_H
 
 #include "subsys-iface.h"
+#include "vtrc-common/vtrc-noexcept.h"
 
 namespace ta { namespace agent {
 
@@ -26,7 +27,7 @@ namespace subsys {
         typedef std::shared_ptr<fs> shared_type;
         static shared_type create( application *app );
 
-        const std::string &name( ) const noexcept override;
+        const std::string &name( ) const NOEXCEPT override;
 
         void init( )  override;
         void start( ) override;

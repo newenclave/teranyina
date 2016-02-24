@@ -5,6 +5,8 @@
 #include <cstdint>
 #include <ostream>
 
+#include "vtrc-common/vtrc-noexcept.h"
+
 namespace ta { namespace utilities {
 
     template <typename T>
@@ -82,22 +84,22 @@ namespace ta { namespace utilities {
         unsigned       flags   = 0;
         ep_type        type    = ENDPOINT_NONE;
 
-        bool is_local( ) const noexcept
+        bool is_local( ) const NOEXCEPT
         {
             return type == ENDPOINT_LOCAL;
         }
 
-        bool is_none( ) const noexcept
+        bool is_none( ) const NOEXCEPT
         {
             return type == ENDPOINT_NONE;
         }
 
-        bool is_ssl( ) const noexcept
+        bool is_ssl( ) const NOEXCEPT
         {
             return flags & FLAG_SSL;
         }
 
-        operator bool( ) const noexcept
+        operator bool( ) const NOEXCEPT
         {
             return !is_none( );
         }

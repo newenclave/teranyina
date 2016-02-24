@@ -6,6 +6,7 @@
 
 #include "common/logger.hxx"
 #include "vtrc-common/vtrc-signal-declaration.h"
+#include "vtrc-common/vtrc-noexcept.h"
 
 namespace boost {
 namespace asio {
@@ -21,7 +22,7 @@ namespace ta { namespace agent {
     using logger_data_type   = std::vector<std::string>;
     using logger_signal_type = void ( common::logger::level,
                                       const boost::posix_time::ptime &tim,
-                                      logger_data_type const & ) noexcept;
+                                      logger_data_type const & ) NOEXCEPT;
 
     class logger: public common::logger {
 
@@ -97,7 +98,7 @@ namespace ta { namespace agent {
         void send_data_nosplit( level lev, const std::string &data ) override;
 
         void do_write( level lvl, const boost::posix_time::ptime &tim,
-                       std::string const &data, bool split ) noexcept;
+                       std::string const &data, bool split ) NOEXCEPT;
 
     };
 }}

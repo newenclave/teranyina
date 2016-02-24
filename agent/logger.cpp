@@ -60,7 +60,7 @@ namespace ta { namespace agent {
 
 
     void logger::do_write( level lvl, const bpt::ptime &tim,
-                           std::string const &data , bool split) noexcept
+                           std::string const &data , bool split) NOEXCEPT
     {
         logger_data_type all;
         if(split) {

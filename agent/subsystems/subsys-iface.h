@@ -3,6 +3,7 @@
 
 #include <string>
 #include "vtrc-memory.h"
+#include "vtrc-common/vtrc-noexcept.h"
 
 namespace ta { namespace agent {
 

@@ -9,6 +9,7 @@
 #include "vtrc-common/vtrc-rtti-wrapper.h"
 #include "vtrc-common/vtrc-connection-iface.h"
 #include "vtrc-common/vtrc-pool-pair.h"
+#include "vtrc-common/vtrc-noexcept.h"
 
 #include "vtrc-function.h"
 
@@ -59,8 +60,8 @@ namespace ta { namespace agent {
         protected:
 
             const method_type *get_method ( const std::string &name ) const;
-            application       *get_application( )       noexcept;
-            const application *get_application( ) const noexcept;
+            application       *get_application( )       NOEXCEPT;
+            const application *get_application( ) const NOEXCEPT;
         };
 
         typedef vtrc::common::rpc_service_wrapper     parent_service_type;
@@ -124,14 +125,14 @@ namespace ta { namespace agent {
         }
 
         template <typename T>
-        T *subsystem_safe( ) noexcept
+        T *subsystem_safe( ) NOEXCEPT
         {
             subsystem_iface *subsys = get_subsys( typeid(T) );
             return poly_downcast<const T *>( subsys );
         }
 
         template <typename T>
-        const T *subsystem_safe( ) const noexcept
+        const T *subsystem_safe( ) const NOEXCEPT
         {
             const subsystem_iface *subsys = get_subsys( typeid(T) );
             return poly_downcast<const T *>( subsys );
@@ -139,14 +140,14 @@ namespace ta { namespace agent {
 
         bool is_ctrl_connection( vtrc::common::connection_iface *c );
 
-        vtrc::server::application       *get_application( )       noexcept;
-        const vtrc::server::application *get_application( ) const noexcept;
+        vtrc::server::application       *get_application( )       NOEXCEPT;
+        const vtrc::server::application *get_application( ) const NOEXCEPT;
 
-        boost::asio::io_service &get_io_service( )  noexcept;
-        boost::asio::io_service &get_rpc_service( ) noexcept;
+        boost::asio::io_service &get_io_service( )  NOEXCEPT;
+        boost::asio::io_service &get_rpc_service( ) NOEXCEPT;
 
-        agent::logger       &get_logger( )       noexcept;
-        const agent::logger &get_logger( ) const noexcept;
+        agent::logger       &get_logger( )       NOEXCEPT;
+        const agent::logger &get_logger( ) const NOEXCEPT;
 
         void start_all( );
         void stop_all( );
@@ -170,10 +171,10 @@ namespace ta { namespace agent {
          * return nullptr if not found
         */
         subsystem_iface *
-        get_subsys( const std::type_info &info ) noexcept;
+        get_subsys( const std::type_info &info ) NOEXCEPT;
 
         const subsystem_iface *
-        get_subsys( const std::type_info &info) const noexcept;
+        get_subsys( const std::type_info &info) const NOEXCEPT;
 
         /* =============== */
     };

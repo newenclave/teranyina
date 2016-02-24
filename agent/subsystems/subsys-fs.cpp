@@ -738,7 +738,7 @@ namespace ta { namespace agent { namespace subsys {
         return new_inst;
     }
 
-    const std::string &fs::name( ) const noexcept
+    const std::string &fs::name( ) const NOEXCEPT
     {
         return subsys_name;
     }

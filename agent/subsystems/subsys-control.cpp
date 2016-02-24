@@ -120,12 +120,12 @@ namespace ta { namespace agent { namespace subsys {
         return new_inst;
     }
 
-    const std::string &control::name( ) const noexcept
+    const std::string &control::name( ) const NOEXCEPT
     {
         return subsys_name;
     }
 
-    std::string control::service_name( ) const noexcept
+    std::string control::service_name( ) const NOEXCEPT
     {
         return ctrl_impl::name( );
     }

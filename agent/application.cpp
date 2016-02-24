@@ -226,7 +226,7 @@ namespace ta { namespace agent {
     }
 
     subsystem_iface *
-    application::get_subsys( const std::type_info &info ) noexcept
+    application::get_subsys( const std::type_info &info ) NOEXCEPT
     {
         auto f = impl_->subsystems_.subsys_.find( vcomm::rtti_wrapper(info) );
 
@@ -238,7 +238,7 @@ namespace ta { namespace agent {
     }
 
     const subsystem_iface *
-    application::get_subsys( const std::type_info &info ) const noexcept
+    application::get_subsys( const std::type_info &info ) const NOEXCEPT
     {
         auto f = impl_->subsystems_.subsys_.find( vcomm::rtti_wrapper(info) );
 
@@ -279,23 +279,23 @@ namespace ta { namespace agent {
         return true;
     }
 
-    vtrc::server::application *application::get_application( ) noexcept
+    vtrc::server::application *application::get_application( ) NOEXCEPT
     {
         return impl_;
     }
 
     const
-    vtrc::server::application *application::get_application( ) const noexcept
+    vtrc::server::application *application::get_application( ) const NOEXCEPT
     {
         return impl_;
     }
 
-    boost::asio::io_service &application::get_io_service( ) noexcept
+    boost::asio::io_service &application::get_io_service( ) NOEXCEPT
     {
         return impl_->get_io_service( );
     }
 
-    boost::asio::io_service &application::get_rpc_service( ) noexcept
+    boost::asio::io_service &application::get_rpc_service( ) NOEXCEPT
     {
         return impl_->get_rpc_service( );
     }
@@ -323,13 +323,13 @@ namespace ta { namespace agent {
     }
 
     application
-    *application::service_wrapper_impl::get_application( ) noexcept
+    *application::service_wrapper_impl::get_application( ) NOEXCEPT
     {
         return app_;
     }
 
     const application
-    *application::service_wrapper_impl::get_application( ) const noexcept
+    *application::service_wrapper_impl::get_application( ) const NOEXCEPT
     {
         return app_;
     }
@@ -374,12 +374,12 @@ namespace ta { namespace agent {
         impl_->get_rpc_service( ).post( [this]( ) {impl_->stop_all( );} );
     }
 
-    agent::logger &application::get_logger( ) noexcept
+    agent::logger &application::get_logger( ) NOEXCEPT
     {
         return impl_->logger_;
     }
 
-    const agent::logger &application::get_logger( ) const noexcept
+    const agent::logger &application::get_logger( ) const NOEXCEPT
     {
         return impl_->logger_;
     }

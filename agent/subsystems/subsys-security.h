@@ -26,7 +26,7 @@ namespace subsys {
         typedef std::shared_ptr<security> shared_type;
         static shared_type create( application *app );
 
-        const std::string &name( )  const noexcept override;
+        const std::string &name( )  const NOEXCEPT override;
 
         void init( )  override;
         void start( ) override;

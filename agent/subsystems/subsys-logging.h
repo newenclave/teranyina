@@ -34,7 +34,7 @@ namespace subsys {
 
     public:
 
-        const std::string &name( ) const noexcept override ;
+        const std::string &name( ) const NOEXCEPT override ;
         void init( )  override;
         void start( ) override;
         void stop( )  override;
