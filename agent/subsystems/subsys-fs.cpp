@@ -14,6 +14,8 @@
 #include "protocol/fs.pb.h"
 #include "vtrc-common/protocol/vtrc-errors.pb.h"
 
+#include "google/protobuf/descriptor.h"
+
 #include "../files.h"
 
 #define LOG(lev) log_(lev) << "[      fs] "

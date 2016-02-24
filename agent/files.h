@@ -1,5 +1,5 @@
-#ifndef FR_FILEIFACE_H
-#define FR_FILEIFACE_H
+#ifndef TA_FILEIFACE_H
+#define TA_FILEIFACE_H
 
 #include "vtrc-stdint.h"
 
@@ -35,18 +35,20 @@ namespace ta { namespace agent {
     typedef file_iface * file_ptr;
 
     namespace file {
+#ifndef _WIN32
         file_ptr create( std::string const &path, int flags );
         file_ptr create( std::string const &path, int flags, mode_t mode );
+#endif
         file_ptr create( std::string const &path, const std::string &mode );
     }
 
-#ifndef _WIN32
     namespace device {
+#ifndef _WIN32
         file_ptr create( std::string const &path, int flags );
         file_ptr create( std::string const &path, int flags, mode_t mode );
+#endif
         file_ptr create( std::string const &path, const std::string &mode );
     }
-#endif
 
 }}
 

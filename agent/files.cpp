@@ -3,6 +3,7 @@
 
 #include <sstream>
 #include <stdexcept>
+#include <cstdint>
 
 #include <errno.h>
 #include <stdio.h>
@@ -17,6 +18,12 @@
 #include <sys/stat.h>
 
 #else
+
+#include <io.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#define ssize_t long
 
 #endif
 
@@ -169,14 +176,18 @@ namespace ta { namespace agent {
 
             void ioctl( int code, unsigned long data ) override
             {
+#ifndef _WIN32
                 int res = ::ioctl( fd_, code, data );
                 errno_error::errno_assert( res != -1, "ioctl" );
+#endif
             }
 
             void ioctl( int code, void *data ) override
             {
+#ifndef _WIN32
                 int res = ::ioctl( fd_, code, data );
                 errno_error::errno_assert( res != -1, "ioctl" );
+#endif
             }
 
             size_t read( void *data, size_t length ) override
@@ -188,7 +199,9 @@ namespace ta { namespace agent {
 
             void flush( ) override
             {
+#ifndef _WIN32
                 syncfs( fd_ );
+#endif
             }
 
             int handle( ) const override
@@ -298,14 +311,18 @@ namespace ta { namespace agent {
 
             void ioctl( int code, unsigned long data ) override
             {
+#ifndef _WIN32
                 int res = ::ioctl( fd_, code, data );
                 errno_error::errno_assert( res != -1, "ioctl" );
+#endif
             }
 
             void ioctl( int code, void *data ) override
             {
+#ifndef _WIN32
                 int res = ::ioctl( fd_, code, data );
                 errno_error::errno_assert( res != -1, "ioctl" );
+#endif
             }
 
             size_t write( const void *data, size_t length ) override
@@ -326,7 +343,9 @@ namespace ta { namespace agent {
 
             void flush( ) override
             {
+#ifndef _WIN32
                 syncfs( fd_ );
+#endif
             }
 
             int handle( ) const override
@@ -339,6 +358,8 @@ namespace ta { namespace agent {
 
 
     namespace file {
+
+#ifndef _WIN32
         file_ptr create( std::string const &path, int flags )
         {
             return new file_impl( path, flags );
@@ -348,6 +369,7 @@ namespace ta { namespace agent {
         {
             return new file_impl( path, flags, mode );
         }
+#endif
 
         file_ptr create( std::string const &path, const std::string &mode )
         {
@@ -357,6 +379,7 @@ namespace ta { namespace agent {
     }
 
     namespace device {
+#ifndef _WIN32
         file_ptr create( std::string const &path, int flags )
         {
             return new device_file_impl( path, flags );
@@ -366,7 +389,7 @@ namespace ta { namespace agent {
         {
             return new device_file_impl( path, flags, mode );
         }
-
+#endif
         file_ptr create( std::string const &path, const std::string &mode )
         {
             return new device2_file_impl( path, mode );
