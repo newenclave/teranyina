@@ -41,6 +41,7 @@ endforeach(dep)
 list( APPEND dependencies
       Boost
       PROTOBUF
+      OPENSSL
     )
 
 message( "-- Seting up dependencies for " ${exe_name} )

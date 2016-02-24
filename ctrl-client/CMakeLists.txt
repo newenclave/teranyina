@@ -34,9 +34,10 @@ if( LUA_FOUND )
     add_dependencies( ${exe_name} lua_lib )
 endif( )
 
-list(APPEND dependencies
-    Boost
-    PROTOBUF
+list( APPEND dependencies
+      Boost
+      PROTOBUF
+      OPENSSL
     )
 
 message( "-- Seting up dependencies for " ${exe_name} )

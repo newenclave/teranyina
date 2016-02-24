@@ -48,9 +48,10 @@ endforeach(dep)
 #    #add_dependencies( ${lib_name} lua_lib )
 #endif( )
 
-list(APPEND dependencies
-    Boost
-    PROTOBUF
+list( APPEND dependencies
+      Boost
+      PROTOBUF
+      OPENSSL
     )
 
 message( "-- Seting up dependencies for " ${lib_name} )
