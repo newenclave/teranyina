@@ -28,8 +28,6 @@ if(NOT CXX11_ENABLED)
     message( FATAL_ERROR "Compiler has no C++11 support" )
 endif(NOT CXX11_ENABLED)
 
-#find_package(OpenSSL REQUIRED)
-
 if(NOT VTRC_OPENSSL_ENABLED)
     message( FATAL_ERROR "OpenSSL is require" )
 endif(NOT VTRC_OPENSSL_ENABLED)
@@ -44,6 +42,9 @@ if( ${VTRC_LINK_TYPE} MATCHES ${VTRC_LINK_TYPE_STATIC} )
 endif( )
 
 set(Boost_USE_MULTITHREADED   ON)
+
+find_package( OpenSSL REQUIRED )
+set( OPENSSL_INCLUDE_DIRS ${OPENSSL_INCLUDE_DIR} )
 
 if(MSVC)
 
