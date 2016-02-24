@@ -186,9 +186,10 @@ namespace ta { namespace agent { namespace subsys {
         };
 
         /// works on dispatcher
-        void console_log( console_info &inf, level lvl,
+        void console_log( console_info &inf, int ilvl,
                           bpt::ptime const &tim, stringlist const &data )
         {
+            level lvl = static_cast<level>(ilvl);
             level_color _( *inf.o_, lvl );
             if( (lvl >= inf.minl_) && (lvl <= inf.maxl_) ) {
                 for( auto &s: data ) {
@@ -199,10 +200,11 @@ namespace ta { namespace agent { namespace subsys {
         }
 
         /// works on dispatcher
-        void file_out_log( ostream_inf &inf, level lvl,
+        void file_out_log( ostream_inf &inf, int ilvl,
                            bpt::ptime const &tim, stringlist const &data )
         {
             //console_log( *inf.stream_, inf.min_, inf.max_, lvl, tim, data );
+            level lvl = static_cast<level>(ilvl);
             std::ostringstream oss;
             if( (lvl >= inf.min_) && (lvl <= inf.max_) ) {
                 for( auto &s: data ) {

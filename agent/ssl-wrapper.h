@@ -1,6 +1,8 @@
 #ifndef SSL_WRAPPER_H
 #define SSL_WRAPPER_H
 
+#define NOMINMAX // crutch for fkn Windows
+
 #include <string>
 #include <sstream>
 #include <stdexcept>

@@ -68,7 +68,7 @@ namespace ta { namespace agent {
         } else {
             all.push_back( data );
         }
-        on_write_( lvl, tim, all );
+        on_write_( static_cast<int>(lvl), tim, all );
     }
 
 }}
