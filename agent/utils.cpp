@@ -2,6 +2,9 @@
 #include <stdexcept>
 
 #include "utils.h"
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 namespace {
 

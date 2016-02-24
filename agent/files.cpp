@@ -7,11 +7,11 @@
 #include <errno.h>
 #include <stdio.h>
 
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
 
 #include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include "errno-check.h"
 
