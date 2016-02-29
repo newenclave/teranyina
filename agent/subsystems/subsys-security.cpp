@@ -3,7 +3,7 @@
 #include "../application.h"
 
 #include "../ssl-wrapper.h"
-#include "../utils.h"
+#include "common/utils.h"
 
 #include "vtrc-common/vtrc-random-device.h"
 

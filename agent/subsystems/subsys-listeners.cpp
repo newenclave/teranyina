@@ -10,7 +10,7 @@
 #include "vtrc-server/vtrc-listener-ssl.h"
 #include "vtrc-server/vtrc-listener-local.h"
 
-#include "utils.h"
+#include "common/utils.h"
 
 #include "boost/system/error_code.hpp"
 

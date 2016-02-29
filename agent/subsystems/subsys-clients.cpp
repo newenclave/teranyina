@@ -6,7 +6,7 @@
 #include "subsys-listeners.h"
 
 #include "../application.h"
-#include "../utils.h"
+#include "common/utils.h"
 
 #include "vtrc-server/vtrc-listener.h"
 #include "vtrc-client/vtrc-client.h"

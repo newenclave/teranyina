@@ -6,7 +6,7 @@
 #include "subsys-logging.h"
 #include "../application.h"
 #include "../logger.h"
-#include "../utils.h"
+#include "common/utils.h"
 
 #include "vtrc-common/vtrc-delayed-call.h"
 
