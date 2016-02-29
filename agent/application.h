@@ -9,7 +9,7 @@
 #include "vtrc-common/vtrc-rtti-wrapper.h"
 #include "vtrc-common/vtrc-connection-iface.h"
 #include "vtrc-common/vtrc-pool-pair.h"
-#include "vtrc-common/vtrc-noexcept.h"
+#include "common/noexcept.hpp"
 
 #include "vtrc-function.h"
 

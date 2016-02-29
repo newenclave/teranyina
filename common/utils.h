@@ -6,7 +6,6 @@
 #include <ostream>
 
 #include "result.hpp"
-#include "vtrc-common/vtrc-noexcept.h"
 
 namespace ta { namespace utilities {
 

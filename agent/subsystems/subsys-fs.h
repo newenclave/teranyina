@@ -3,7 +3,7 @@
 #define TA_SUBSYS_fs_H
 
 #include "subsys-iface.h"
-#include "vtrc-common/vtrc-noexcept.h"
+#include "common/noexcept.hpp"
 
 namespace ta { namespace agent {
 

@@ -6,7 +6,7 @@
 
 #include "common/logger.hxx"
 #include "vtrc-common/vtrc-signal-declaration.h"
-#include "vtrc-common/vtrc-noexcept.h"
+#include "common/noexcept.hpp"
 
 namespace boost {
 namespace asio {

@@ -8,17 +8,25 @@
 
 namespace ta {
 
-    class error_message {
+    class error_type {
 
+        int val_          = no_error;
         const char *mess_ = "Success";
 
         public:
 
-        error_message( )
+        static const int no_error = 0;
+
+        error_type( )
         { }
 
-        explicit error_message(const char *mess)
+        explicit error_type(const char *mess)
             :mess_(mess)
+        { }
+
+        explicit error_type(const char *mess, int val)
+            :val_(val)
+            ,mess_(mess)
         { }
 
         const char *message( ) const
@@ -28,12 +36,17 @@ namespace ta {
 
         int value( ) const
         {
-            return -1;
+            return val_;
+        }
+
+        operator bool ( ) const
+        {
+            return value( ) != no_error;
         }
 
     };
 
-    template <typename T, typename Err = error_message>
+    template <typename T, typename Err = error_type>
     struct result_type {
 
         typedef Err error_type;
