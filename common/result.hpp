@@ -67,6 +67,18 @@ namespace ta {
             ,err(e)
         { }
     };
+
+    template <typename T>
+    std::ostream & operator << ( std::ostream &o, const result_type<T> &res )
+    {
+        if( !res.err ) {
+            o << "Ok: " << res.result;
+        } else {
+            o << "Fail: " << res.err.message( );
+        }
+        return o;
+    }
+
 }
 
 #endif // RESULT_HPP

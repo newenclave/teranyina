@@ -13,12 +13,6 @@ namespace ta { namespace utilities {
     result_type<std::string> bin2hex( std::string const &input );
     result_type<std::string> hex2bin( std::string const &input );
 
-    template <typename T>
-    std::ostream & operator << ( std::ostream &o, const result_type<T> &res )
-    {
-        o << ( res ? "Ok: " : "Fail: " ) << res.result;
-        return o;
-    }
 
     namespace console {
         std::ostream &light ( std::ostream &s );
