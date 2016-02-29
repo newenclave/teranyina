@@ -2,13 +2,20 @@
 #define TERANYINA_RESULT_HPP
 
 #include <system_error>
+#include <utility>
+
 #include "noexcept.hpp"
 
 namespace ta {
 
     class error_message {
-        const char *mess_;
+
+        const char *mess_ = "Success";
+
         public:
+
+        error_message( )
+        { }
 
         explicit error_message(const char *mess)
             :mess_(mess)
@@ -28,9 +35,24 @@ namespace ta {
 
     template <typename T, typename Err = error_message>
     struct result_type {
-        error_message err_;
-        T result_;
 
+        typedef Err error_type;
+        typedef T   value_type;
+
+        value_type result;
+        error_type err;
+
+        result_type( )
+        { }
+
+        result_type( T &&res )
+            :result(std::forward<T>(res))
+        { }
+
+        result_type( T &&res, Err e )
+            :result(std::forward<T>(res))
+            ,err(e)
+        { }
     };
 }
 

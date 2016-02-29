@@ -131,8 +131,11 @@ namespace ta { namespace utilities {
     result_type<std::string> bin2hex( void const *bytes, size_t length )
     {
 
+        using result_type = result_type<std::string>;
+        using error_type  = result_type::error_type;
+
         if( (NULL == bytes) || (0 == length) ) {
-            return result_type<std::string>(false, "");
+            return result_type("", error_type("invalid"));
         }
 
         static
@@ -155,8 +158,7 @@ namespace ta { namespace utilities {
             }
         } int_to_hex;
 
-        result_type<std::string> tmp;
-        tmp.ok = true; /// impossible to fail
+        result_type tmp;
 
         tmp.result.reserve( length * 2 + 1);
         char const * c = static_cast<char const *>(bytes);
@@ -173,6 +175,9 @@ namespace ta { namespace utilities {
 
     result_type<std::string> hex2bin( std::string const &input )
     {
+        using result_type = result_type<std::string>;
+        using error_type  = result_type::error_type;
+
         struct {
             unsigned char operator ( ) ( const char in_ ) {
                 switch(in_) {
@@ -196,7 +201,7 @@ namespace ta { namespace utilities {
             }
         } static hex_to_int;
 
-        result_type<std::string> res;
+        result_type res;
         std::string tmp;
         tmp.reserve( input.size( ) / 2 + 1 );
 
@@ -206,7 +211,7 @@ namespace ta { namespace utilities {
             unsigned char h = hex_to_int( *b );
 
             if( h == 0xFF ) {
-                res.ok = false;
+                res.err = error_type( "Bad serialized string" );
                 return res;
             }
 
@@ -220,7 +225,6 @@ namespace ta { namespace utilities {
             next |= (l & 0xF);
             tmp.push_back(next);
         }
-        res.ok = true;
         res.result.swap(tmp);
         return res;
     }

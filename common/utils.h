@@ -10,46 +10,6 @@
 
 namespace ta { namespace utilities {
 
-    template <typename T>
-    struct result_type {
-
-        T result;
-        bool ok;
-
-        result_type(const result_type &o)
-            :result(o.result)
-            ,ok(o.ok)
-        { }
-
-        result_type(result_type &&o)
-            :result(std::move(o.result))
-            ,ok(o.ok)
-        { }
-
-        result_type( )
-            :ok(false)
-        { }
-
-        result_type( bool f )
-            :ok(f)
-        { }
-
-        result_type( bool f, const T &s )
-            :result(s)
-            ,ok(f)
-        { }
-
-        result_type( bool f, T &&s )
-            :result(s)
-            ,ok(f)
-        { }
-
-        operator bool ( ) const
-        {
-            return ok;
-        }
-    };
-
     result_type<std::string> bin2hex( void const *bytes, size_t length );
     result_type<std::string> bin2hex( std::string const &input );
     result_type<std::string> hex2bin( std::string const &input );
