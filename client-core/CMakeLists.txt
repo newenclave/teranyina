@@ -22,6 +22,7 @@ add_library( ${lib_name} STATIC ${lib_src} )
 set( CORE_INCLUDE_DIRS "${TA_INCLUDE_DIRS}/${lib_dirname}" )
 
 list( APPEND internal
+    ${INTERNAL_PROJECT_NAME}_common
     ${INTERNAL_PROJECT_NAME}_protocol
     VTRC_CLIENT
     VTRC_COMMON
@@ -84,3 +85,31 @@ set(${lib_name}_INCLUDE_DIRS
 )
 
 set(${lib_name}_LIBRARIES ${${lib_name}_LOCATION} PARENT_SCOPE)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

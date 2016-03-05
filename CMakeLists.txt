@@ -148,10 +148,10 @@ endif( )
 configure_file ("${PROJECT_SOURCE_DIR}/teranyina-config.h.in"
                 "${TA_INCLUDE_DIRS}/teranyina-config.h" )
 
+add_subdirectory( common )
 add_subdirectory( protocol )
 add_subdirectory( client-core )
 add_subdirectory( ctrl-client )
-add_subdirectory( common )
 add_subdirectory( agent )
 
 if(LUA_FOUND)

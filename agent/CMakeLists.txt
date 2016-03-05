@@ -49,7 +49,6 @@ message( "-- Seting up dependencies for " ${exe_name} )
 foreach( dep ${dependencies} )
 
     #message( "\tAdd dependence: " ${dep} )
-    message( "\tAdd dependence: " ${${dep}_LIBRARIES} )
 
     add_dependencies(       ${exe_name} ${dep}      )
     add_definitions(        ${${dep}_DEFINITIONS}   )

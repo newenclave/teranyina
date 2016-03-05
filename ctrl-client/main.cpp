@@ -149,11 +149,6 @@ namespace {
                   << "Command options: \n" << desc << "\n";
     }
 
-
-//    void connect_success( boost::system::error_code const &err )
-//    {
-//        std::cout << err.message( ) << "\n";
-//    }
 }
 
 namespace {
@@ -246,12 +241,10 @@ int main( int argc, const char **argv )
         client.get_client( ).set_session_key( hs );
     }
 
-#if 0
-    client.get_client( ).on_connect_connect(    &on_connect    );
-    client.get_client( ).on_disconnect_connect( &on_disconnect );
-    client.get_client( ).on_ready_connect(      &on_ready      );
-    client.get_client( ).on_init_error_connect( &on_init_error );
-#endif
+    client.on_connect_connect(    &on_connect    );
+    client.on_disconnect_connect( &on_disconnect );
+    client.on_ready_connect(      &on_ready      );
+    client.on_init_error_connect( &on_init_error );
 
     vm = parse_command( argc, argv, current_command, desc );
 

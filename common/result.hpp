@@ -72,7 +72,7 @@ namespace ta {
     std::ostream & operator << ( std::ostream &o, const result_type<T> &res )
     {
         if( !res.err ) {
-            o << "Ok: " << res.result;
+            o << "Ok: "   << res.result;
         } else {
             o << "Fail: " << res.err.message( );
         }

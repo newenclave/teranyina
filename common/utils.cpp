@@ -148,8 +148,8 @@ namespace ta { namespace utilities {
             char line[3];
             unsigned char h :4;
             unsigned char l :4;
-            hi_lo_struct(): h(0), l(0) { line[2] = 0; }
-            const char * operator()(const char in_) {
+            hi_lo_struct( ): h(0), l(0) { line[2] = 0; }
+            const char * operator( )(const char in_) {
                 h = (in_ >> 4);
                 l = (in_ & 0xF);
                 line[0] = hexes_[h];

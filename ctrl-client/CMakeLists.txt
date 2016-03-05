@@ -21,9 +21,9 @@ message( "Core " ${${INTERNAL_PROJECT_NAME}_client_core_INCLUDE_DIRS} )
 message( "-- Seting up internal dependencies for " ${exe_name} )
 foreach( dep ${internal} )
 
-    message( "\tAdd dependence: " ${dep} )
+    message( "\tAdd dependence: " ${dep} ${${dep}_LIBRARIES} )
 
-    add_dependencies(       ${exe_name} ${dep}      )
+    add_dependencies(       ${exe_name} ${dep}  ${${dep}_LIBRARIES}    )
     add_definitions(        ${${dep}_DEFINITIONS}   )
     target_link_libraries(  ${exe_name} ${${dep}_LIBRARIES} )
 
