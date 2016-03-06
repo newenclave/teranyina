@@ -241,9 +241,9 @@ int main( int argc, const char **argv )
         client.get_client( ).set_session_key( hs );
     }
 
-    client.on_connect_connect(    &on_connect    );
+    client.on_connect_connect   ( &on_connect    );
     client.on_disconnect_connect( &on_disconnect );
-    client.on_ready_connect(      &on_ready      );
+    client.on_ready_connect     ( &on_ready      );
     client.on_init_error_connect( &on_init_error );
 
     vm = parse_command( argc, argv, current_command, desc );
