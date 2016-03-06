@@ -37,6 +37,8 @@ namespace subsys {
 
     public:
 
+        static const void *get_uuid( );
+
         ~multicast( );
 
         typedef std::shared_ptr<multicast> shared_type;

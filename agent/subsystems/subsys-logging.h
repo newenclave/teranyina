@@ -23,6 +23,8 @@ namespace subsys {
 
     public:
 
+        static const void *get_uuid( );
+
         ~logging( );
 
         typedef std::shared_ptr<logging> shared_type;

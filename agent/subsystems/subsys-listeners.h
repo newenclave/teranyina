@@ -45,6 +45,8 @@ namespace subsys {
 
     public:
 
+        static const void *get_uuid( );
+
         ~listeners( );
 
         typedef std::shared_ptr<listeners> shared_type;

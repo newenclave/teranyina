@@ -25,6 +25,8 @@ namespace subsys {
 
     public:
 
+        static const void *get_uuid( );
+
         ~clients( );
 
         typedef std::shared_ptr<clients> shared_type;

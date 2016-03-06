@@ -91,6 +91,12 @@ namespace ta { namespace agent { namespace subsys {
         :impl_(new impl(app))
     { }
 
+    const void *clients::get_uuid( )
+    {
+        static const clients *i = nullptr;
+        return &i;
+    }
+
     clients::~clients( )
     {
         delete impl_;
@@ -166,7 +172,6 @@ namespace ta { namespace agent { namespace subsys {
     {
         impl_->LOGINF << "Stopped";
     }
-
 
 }}}
 

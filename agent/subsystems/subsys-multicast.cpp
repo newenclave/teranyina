@@ -210,6 +210,12 @@ namespace ta { namespace agent { namespace subsys {
         impl_->parent_ = this;
     }
 
+    const void *multicast::get_uuid()
+    {
+        static const multicast *i = nullptr;
+        return &i;
+    }
+
     multicast::~multicast( )
     {
         delete impl_;
@@ -249,7 +255,6 @@ namespace ta { namespace agent { namespace subsys {
         impl_->stop_all( );
         impl_->LOGINF << "Stopped";
     }
-
 
 }}}
 

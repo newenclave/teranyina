@@ -33,6 +33,7 @@ namespace ta { namespace agent {
     public:
 
         using level = common::logger::level;
+        static const int id = 0;
 
         logger( boost::asio::io_service &ios, level lvl,
                 const char *split_string = "\n" );

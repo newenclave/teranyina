@@ -27,6 +27,7 @@ namespace subsys {
         typedef std::shared_ptr<fs> shared_type;
         static shared_type create( application *app );
 
+        static const void *get_uuid( );
         const std::string &name( ) const NOEXCEPT override;
 
         void init( )  override;

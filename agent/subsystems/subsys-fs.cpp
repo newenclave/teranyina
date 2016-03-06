@@ -728,6 +728,12 @@ namespace ta { namespace agent { namespace subsys {
         :impl_(new impl(app))
     { }
 
+    const void *fs::get_uuid()
+    {
+        static const fs *i = nullptr;
+        return &i;
+    }
+
     fs::~fs( )
     {
         delete impl_;

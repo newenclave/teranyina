@@ -33,7 +33,8 @@ namespace subsys {
         typedef std::shared_ptr<%ss-name%> shared_type;
         static shared_type create( application *app );
 
-        const std::string &name( ) const noexcept override;
+        static const void *get_uuid( );
+        const std::string &name( ) const NOEXCEPT override;
 
         void init( )  override;
         void start( ) override;
@@ -97,9 +98,7 @@ namespace ta { namespace agent { namespace subsys {
         {
             app_->unregister_service_factory( name );
         }
-
     };
-
 
     %ss-name%::%ss-name%( application *app )
         :impl_(new impl(app))
@@ -115,6 +114,12 @@ namespace ta { namespace agent { namespace subsys {
     {
         shared_type new_inst(new %ss-name%(app));
         return new_inst;
+    }
+
+    const void *%ss-name%::get_uuid( )
+    {
+        static const %ss-name% *i = nullptr;
+        return &i;
     }
 
     const std::string &%ss-name%::name( ) const noexcept
@@ -136,7 +141,6 @@ namespace ta { namespace agent { namespace subsys {
     {
         impl_->LOGINF << "Stopped";
     }
-
 
 }}}
 

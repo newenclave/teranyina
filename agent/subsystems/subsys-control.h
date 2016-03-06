@@ -21,6 +21,8 @@ namespace subsys {
 
     public:
 
+        static const void *get_uuid( );
+
         ~control( );
 
         typedef std::shared_ptr<control> shared_type;

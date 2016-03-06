@@ -21,6 +21,8 @@ namespace subsys {
 
     public:
 
+        static const void *get_uuid( );
+
         ~security( );
 
         typedef std::shared_ptr<security> shared_type;
