@@ -91,7 +91,7 @@ namespace ta { namespace agent { namespace subsys {
         :impl_(new impl(app))
     { }
 
-    const void *clients::get_uuid( )
+    subsystem_iface::uuid_type clients::get_uuid( )
     {
         static const clients *i = nullptr;
         return &i;

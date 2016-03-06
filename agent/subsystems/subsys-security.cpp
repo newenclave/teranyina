@@ -93,7 +93,7 @@ namespace ta { namespace agent { namespace subsys {
         :impl_(new impl(app))
     { }
 
-    const void *security::get_uuid()
+    subsystem_iface::uuid_type security::get_uuid()
     {
         static const security *i = nullptr;
         return &i;

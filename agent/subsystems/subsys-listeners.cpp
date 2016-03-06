@@ -221,7 +221,7 @@ namespace ta { namespace agent { namespace subsys {
         impl_->parent_ = this;
     }
 
-    const void *listeners::get_uuid()
+    subsystem_iface::uuid_type listeners::get_uuid()
     {
         static const listeners *i = nullptr;
         return &i;

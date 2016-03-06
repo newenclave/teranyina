@@ -23,7 +23,7 @@ namespace subsys {
 
     public:
 
-        static const void *get_uuid( );
+        static subsystem_iface::uuid_type get_uuid( );
 
         ~logging( );
 

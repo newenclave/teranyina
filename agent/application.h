@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <assert.h>
-#include <iostream>
+//#include <iostream>
 
 #include "vtrc-server/vtrc-application.h"
 #include "vtrc-common/vtrc-signal-declaration.h"
@@ -94,7 +94,7 @@ namespace ta { namespace agent {
         template <typename T>
         void add_subsystem( )
         {
-            std::cout << "add id: " << T::get_uuid( ) << "\n";
+            //std::cout << "add id: " << T::get_uuid( ) << "\n";
             subsystem_sptr subsys ( T::create( this ) );
             add_subsys( typeid( T ), subsys );
         }
@@ -102,7 +102,7 @@ namespace ta { namespace agent {
         template <typename T, typename ... Args >
         void add_subsystem( const Args & ... pars )
         {
-            std::cout << "add id: " << T::get_uuid( ) << "\n";
+            //std::cout << "add id: " << T::get_uuid( ) << "\n";
             subsystem_sptr subsys ( T::create( this, pars ... ) );
             add_subsys( typeid( T ), subsys );
         }

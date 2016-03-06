@@ -210,7 +210,7 @@ namespace ta { namespace agent { namespace subsys {
         impl_->parent_ = this;
     }
 
-    const void *multicast::get_uuid()
+    subsystem_iface::uuid_type multicast::get_uuid()
     {
         static const multicast *i = nullptr;
         return &i;

@@ -12,6 +12,7 @@ namespace ta { namespace agent {
 
     struct subsystem_iface: public enable_sft<subsystem_iface>
     {
+        typedef const void * uuid_type;
         subsystem_iface( ) { }
 
         virtual ~subsystem_iface( ) { }
