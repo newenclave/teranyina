@@ -18,13 +18,13 @@ struct type_unique_id {
 
 int main( int argc, const char *argv[ ] )
 {
-    std::cout << type_unique_id<std::string>::id( ) << "\n";
-    std::cout << type_unique_id<std::string>::id( ) << "\n";
-    std::cout << type_unique_id<int>::id( ) << "\n";
-    std::cout << type_unique_id<long>::id( ) << "\n";
-    std::cout << type_unique_id<ta::agent::application>::id( ) << "\n";
+//    std::cout << type_unique_id<std::string>::id( ) << "\n";
+//    std::cout << type_unique_id<std::string>::id( ) << "\n";
+//    std::cout << type_unique_id<int>::id( ) << "\n";
+//    std::cout << type_unique_id<long>::id( ) << "\n";
+//    std::cout << type_unique_id<ta::agent::application>::id( ) << "\n";
 
-    return 0;
+//    return 0;
     try {
         ta::agent::application tapp;
         tapp.run( argc, argv );
