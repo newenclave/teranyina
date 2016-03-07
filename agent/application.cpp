@@ -24,7 +24,11 @@ namespace ta { namespace agent {
         namespace vcomm = vtrc::common;
         namespace gpb   = google::protobuf;
 
+#ifdef TA_RTTI_DISABLE
+        using subsys_map    = std::map<std::uintptr_t, subsystem_sptr>;
+#else
         using subsys_map    = std::map<vcomm::rtti_wrapper, subsystem_sptr>;
+#endif
         using subsys_vector = std::vector<subsystem_sptr>;
         using string_vector = std::vector<std::string>;
 
@@ -218,6 +222,39 @@ namespace ta { namespace agent {
         delete impl_;
     }
 
+#ifdef TA_RTTI_DISABLE
+    void application::add_subsys( std::uintptr_t info,
+                                  subsystem_sptr inst )
+    {
+        impl_->subsystems_.subsys_[info] = inst;
+        impl_->subsystems_.subsys_order_.push_back( inst );
+    }
+
+    subsystem_iface *
+    application::get_subsys( std::uintptr_t info ) NOEXCEPT
+    {
+        auto f = impl_->subsystems_.subsys_.find( info );
+
+        if( f == impl_->subsystems_.subsys_.end( ) ) {
+            return nullptr;
+        } else {
+            return f->second.get( );
+        }
+    }
+
+    const subsystem_iface *
+    application::get_subsys( std::uintptr_t info ) const NOEXCEPT
+    {
+        auto f = impl_->subsystems_.subsys_.find( info );
+
+        if( f == impl_->subsystems_.subsys_.end( ) ) {
+            return nullptr;
+        } else {
+            return f->second.get( );
+        }
+    }
+
+#else
     void application::add_subsys( const std::type_info &info,
                                   subsystem_sptr inst )
     {
@@ -248,6 +285,7 @@ namespace ta { namespace agent {
             return f->second.get( );
         }
     }
+#endif
 
     void application::start_all( )
     {

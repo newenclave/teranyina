@@ -20,6 +20,12 @@
 
 //#define TA_RTTI_DISABLE
 
+#ifdef TA_RTTI_DISABLE
+#   define TA_TYPE_ID( T ) utilities::type_uid<T>::uid( )
+#else
+#   define TA_TYPE_ID( T ) typeid( T )
+#endif
+
 namespace ta { namespace agent {
 
     class application {
@@ -99,7 +105,7 @@ namespace ta { namespace agent {
         {
             //std::cout << "add id: " << T::get_uuid( ) << "\n";
             subsystem_sptr subsys ( T::create( this ) );
-            add_subsys( typeid( T ), subsys );
+            add_subsys( TA_TYPE_ID(T), subsys );
         }
 
         template <typename T, typename ... Args >
@@ -107,13 +113,13 @@ namespace ta { namespace agent {
         {
             //std::cout << "add id: " << T::get_uuid( ) << "\n";
             subsystem_sptr subsys ( T::create( this, pars ... ) );
-            add_subsys( typeid( T ), subsys );
+            add_subsys( TA_TYPE_ID(T), subsys );
         }
 
         template <typename T>
         T &subsystem( )
         {
-            subsystem_iface *subsys = get_subsys( typeid(T) );
+            subsystem_iface *subsys = get_subsys( TA_TYPE_ID(T) );
             if( nullptr == subsys ) {
                 throw std::runtime_error( "Invalid subsystem" );
             }
@@ -123,7 +129,7 @@ namespace ta { namespace agent {
         template <typename T>
         const T &subsystem( ) const
         {
-            const subsystem_iface *subsys = get_subsys( typeid(T) );
+            const subsystem_iface *subsys = get_subsys( TA_TYPE_ID(T) );
             if( nullptr == subsys ) {
                 throw std::runtime_error( "Invalid subsystem" );
             }
@@ -133,14 +139,14 @@ namespace ta { namespace agent {
         template <typename T>
         T *subsystem_safe( ) NOEXCEPT
         {
-            subsystem_iface *subsys = get_subsys( typeid(T) );
+            subsystem_iface *subsys = get_subsys( TA_TYPE_ID(T) );
             return poly_downcast<const T *>( subsys );
         }
 
         template <typename T>
         const T *subsystem_safe( ) const NOEXCEPT
         {
-            const subsystem_iface *subsys = get_subsys( typeid(T) );
+            const subsystem_iface *subsys = get_subsys( TA_TYPE_ID(T) );
             return poly_downcast<const T *>( subsys );
         }
 
@@ -158,7 +164,6 @@ namespace ta { namespace agent {
         void start_all( );
         void stop_all( );
 
-
         void run( int argc, const char *argv[ ] );
 
     private:
@@ -170,8 +175,23 @@ namespace ta { namespace agent {
             return static_cast<Tgt>(x);
         }
 
-        void add_subsys( const std::type_info &info, subsystem_sptr inst );
+#ifdef TA_RTTI_DISABLE
 
+        void add_subsys( std::uintptr_t info, subsystem_sptr inst );
+        /* === nothrow === */
+        /*
+         * return nullptr if not found
+        */
+        subsystem_iface *
+        get_subsys( std::uintptr_t info ) NOEXCEPT;
+
+        const subsystem_iface *
+        get_subsys( std::uintptr_t info) const NOEXCEPT;
+
+        /* =============== */
+#else
+
+        void add_subsys( const std::type_info &info, subsystem_sptr inst );
         /* === nothrow === */
         /*
          * return nullptr if not found
@@ -183,6 +203,8 @@ namespace ta { namespace agent {
         get_subsys( const std::type_info &info) const NOEXCEPT;
 
         /* =============== */
+#endif
+
     };
 }}
 
