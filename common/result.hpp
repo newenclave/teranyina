@@ -15,13 +15,14 @@ namespace ta {
 
         public:
 
-        static const int no_error = 0;
+        enum { failed = -1, no_error = 0 };
 
         error_type( )
         { }
 
         explicit error_type(const char *mess)
-            :mess_(mess)
+            :val_(failed)
+            ,mess_(mess)
         { }
 
         explicit error_type(const char *mess, int val)

@@ -135,7 +135,7 @@ namespace ta { namespace utilities {
         using error_type  = result_type::error_type;
 
         if( (NULL == bytes) || (0 == length) ) {
-            return result_type("", error_type("invalid"));
+            return result_type("", error_type("nullptr"));
         }
 
         static

@@ -84,7 +84,7 @@ namespace ta { namespace agent {
         /// func( app, connection )
         ///
         typedef std::function <
-            service_wrapper_sptr( ta_app *, connection_iface_wptr )
+            service_wrapper_sptr (ta_app *, connection_iface_wptr)
         > service_getter_type;
 
         service_wrapper_sptr wrap_service ( connection_iface_wptr c,
