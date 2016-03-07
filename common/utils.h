@@ -9,10 +9,19 @@
 
 namespace ta { namespace utilities {
 
+    template <typename T>
+    struct type_uid {
+        typedef T type;
+        static std::uintptr_t uid( )
+        {
+            static const char i = '!';
+            return reinterpret_cast<std::uintptr_t>(&i);
+        }
+    };
+
     result_type<std::string> bin2hex( void const *bytes, size_t length );
     result_type<std::string> bin2hex( std::string const &input );
     result_type<std::string> hex2bin( std::string const &input );
-
 
     namespace console {
         std::ostream &light ( std::ostream &s );

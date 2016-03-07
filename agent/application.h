@@ -10,12 +10,15 @@
 #include "vtrc-common/vtrc-rtti-wrapper.h"
 #include "vtrc-common/vtrc-connection-iface.h"
 #include "vtrc-common/vtrc-pool-pair.h"
-#include "common/noexcept.hpp"
+
+#include "common/utils.h"
 
 #include "vtrc-function.h"
 
 #include "subsystems/subsys-iface.h"
 #include "logger.h"
+
+//#define TA_RTTI_DISABLE
 
 namespace ta { namespace agent {
 
