@@ -18,10 +18,10 @@
 #include "subsystems/subsys-iface.h"
 #include "logger.h"
 
-//#define TA_RTTI_DISABLE
+#define TA_RTTI_DISABLE
 
 #ifdef TA_RTTI_DISABLE
-#   define TA_TYPE_ID( T ) utilities::type_uid<T>::uid( )
+#   define TA_TYPE_ID( T ) ta::utilities::type_uid<T>::uid( )
 #else
 #   define TA_TYPE_ID( T ) typeid( T )
 #endif

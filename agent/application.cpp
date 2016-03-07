@@ -226,6 +226,9 @@ namespace ta { namespace agent {
     void application::add_subsys( std::uintptr_t info,
                                   subsystem_sptr inst )
     {
+        get_logger( )(level::debug)
+                << "[     app] add subsystem with id 0x"
+                << std::hex << info;
         impl_->subsystems_.subsys_[info] = inst;
         impl_->subsystems_.subsys_order_.push_back( inst );
     }

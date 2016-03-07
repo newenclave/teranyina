@@ -675,7 +675,9 @@ namespace ta { namespace agent { namespace subsys {
                 auto inst(vtrc::make_shared<proto_fs_impl>( app, cl ));
 
                 app->get_logger( )( level::debug )
-                        << "[     fs] Create FS service.";
+                        << "[      fs] Create "
+                        << proto_fs_impl::name( )
+                        << " service.";
 
                 return app->wrap_service( cl, inst );
             } else {
@@ -691,7 +693,9 @@ namespace ta { namespace agent { namespace subsys {
                 auto inst(vtrc::make_shared<proto_file_impl>( app, cl ) );
 
                 app->get_logger( )( level::debug )
-                        << "[     fs] Create FILE service.";
+                        << "[      fs] Create "
+                        << proto_file_impl::name( )
+                        << " service.";
 
                 return app->wrap_service( cl, inst );
             } else {
