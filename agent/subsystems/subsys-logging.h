@@ -23,8 +23,6 @@ namespace subsys {
 
     public:
 
-        static subsystem_iface::uuid_type get_uuid( );
-
         ~logging( );
 
         typedef std::shared_ptr<logging> shared_type;

@@ -319,12 +319,6 @@ namespace ta { namespace agent { namespace subsys {
         :impl_(new impl(app))
     { }
 
-    subsystem_iface::uuid_type logging::get_uuid()
-    {
-        static const logging *i = nullptr;
-        return &i;
-    }
-
     logging::~logging( )
     {
         delete impl_;

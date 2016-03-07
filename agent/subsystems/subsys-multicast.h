@@ -37,8 +37,6 @@ namespace subsys {
 
     public:
 
-        static subsystem_iface::uuid_type get_uuid( );
-
         ~multicast( );
 
         typedef std::shared_ptr<multicast> shared_type;

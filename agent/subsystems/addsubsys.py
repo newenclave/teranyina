@@ -33,7 +33,6 @@ namespace subsys {
         typedef std::shared_ptr<%ss-name%> shared_type;
         static shared_type create( application *app );
 
-        static subsystem_iface::uuid_type get_uuid( );
         const std::string &name( ) const NOEXCEPT override;
 
         void init( )  override;
@@ -114,12 +113,6 @@ namespace ta { namespace agent { namespace subsys {
     {
         shared_type new_inst(new %ss-name%(app));
         return new_inst;
-    }
-
-    subsystem_iface::uuid_type %ss-name%::get_uuid( )
-    {
-        static const %ss-name% *i = nullptr;
-        return &i;
     }
 
     const std::string &%ss-name%::name( ) const noexcept

@@ -21,8 +21,6 @@ namespace subsys {
 
     public:
 
-        static subsystem_iface::uuid_type get_uuid( );
-
         ~security( );
 
         typedef std::shared_ptr<security> shared_type;

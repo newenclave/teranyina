@@ -221,12 +221,6 @@ namespace ta { namespace agent { namespace subsys {
         impl_->parent_ = this;
     }
 
-    subsystem_iface::uuid_type listeners::get_uuid()
-    {
-        static const listeners *i = nullptr;
-        return &i;
-    }
-
     listeners::~listeners( )
     {
         delete impl_;

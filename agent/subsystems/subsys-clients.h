@@ -25,8 +25,6 @@ namespace subsys {
 
     public:
 
-        static subsystem_iface::uuid_type get_uuid( );
-
         ~clients( );
 
         typedef std::shared_ptr<clients> shared_type;
