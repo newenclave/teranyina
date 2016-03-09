@@ -179,11 +179,8 @@ namespace ta { namespace agent {
         /*
          * return nullptr if not found
         */
-        subsystem_iface *
-        get_subsys( std::uintptr_t info ) NOEXCEPT;
-
-        const subsystem_iface *
-        get_subsys( std::uintptr_t info) const NOEXCEPT;
+        subsystem_iface       *get_subsys( std::uintptr_t info )      NOEXCEPT;
+        const subsystem_iface *get_subsys( std::uintptr_t info) const NOEXCEPT;
 
         /* =============== */
 #else
