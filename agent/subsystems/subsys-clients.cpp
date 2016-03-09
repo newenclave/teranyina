@@ -65,11 +65,12 @@ namespace ta { namespace agent { namespace subsys {
 
     struct clients::impl {
 
-        application     *app_;
-        logger          &log_;
+        application                   *app_;
+        logger                        &log_;
         std::vector<vtrc_client_sptr>  clients_;
 
-        clinet_list      connections_;
+        clinet_list         connections_;
+        vtrc::shared_mutex  connections_lock_;
 
         impl( application *app )
             :app_(app)
@@ -87,12 +88,12 @@ namespace ta { namespace agent { namespace subsys {
             app_->unregister_service_factory( name );
         }
 
-        void on_new_connection( const connection_iface &c, vlistener &vl )
+        void on_new_connection( connection_iface &c, vlistener &vl )
         {
 
         }
 
-        void on_stop_connection( const connection_iface &c )
+        void on_stop_connection( connection_iface &c )
         {
 
         }

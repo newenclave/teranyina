@@ -34,10 +34,10 @@ namespace subsys {
         using vlistener        = vtrc::server::listener;
 
         VTRC_DECLARE_SIGNAL( on_new_connection,
-                             void ( const connection_iface &, vlistener & ) );
+                             void ( connection_iface &, vlistener & ) );
 
         VTRC_DECLARE_SIGNAL( on_stop_connection,
-                             void ( const connection_iface & ) );
+                             void ( connection_iface & ) );
 
     protected:
 

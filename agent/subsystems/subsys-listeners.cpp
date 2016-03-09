@@ -100,7 +100,7 @@ namespace ta { namespace agent { namespace subsys {
             }
         }
 
-        void cb_on_new_connection( const vcomm::connection_iface *cl,
+        void cb_on_new_connection( vcomm::connection_iface *cl,
                                    listener_wptr inst )
         {
             auto lck = inst.lock( );
@@ -113,7 +113,7 @@ namespace ta { namespace agent { namespace subsys {
                    ;
         }
 
-        void cb_on_stop_connection( const vcomm::connection_iface *cl,
+        void cb_on_stop_connection( vcomm::connection_iface *cl,
                                     listener_wptr inst )
         {
             auto lck = inst.lock( );
