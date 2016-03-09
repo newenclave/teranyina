@@ -11,6 +11,7 @@
 #include "vtrc-server/vtrc-listener.h"
 #include "vtrc-client/vtrc-client.h"
 #include "vtrc-common/vtrc-connection-iface.h"
+#include "vtrc-common/vtrc-mutex-typedefs.h"
 
 #include "boost/system/error_code.hpp"
 
@@ -25,8 +26,6 @@ namespace ta { namespace agent { namespace subsys {
 
     namespace {
 
-        using level = agent::logger::level;
-
         using vtrc_client           = vtrc::client::vtrc_client;
         using vtrc_client_sptr      = vtrc::client::vtrc_client_sptr;
         using vtrc_client_wptr      = vtrc::client::vtrc_client_wptr;
@@ -34,6 +33,18 @@ namespace ta { namespace agent { namespace subsys {
         using connection_iface      = vtrc::common::connection_iface;
         using connection_iface_wptr = std::weak_ptr<connection_iface>;
         using vlistener             = vtrc::server::listener;
+        using rpc_error_cont        = vtrc::rpc::errors::container;
+
+        struct client_info {
+            bool is_client_ = true;
+            std::string      address_;
+            vtrc_client_wptr client_;
+        };
+
+        using clinet_list = std::list<client_info>;
+
+        using level = agent::logger::level;
+
 
         struct client_context {
             std::string path_;
@@ -57,6 +68,8 @@ namespace ta { namespace agent { namespace subsys {
         application     *app_;
         logger          &log_;
         std::vector<vtrc_client_sptr>  clients_;
+
+        clinet_list      connections_;
 
         impl( application *app )
             :app_(app)
@@ -84,6 +97,57 @@ namespace ta { namespace agent { namespace subsys {
 
         }
 
+        void on_client_connect( vtrc_client_sptr cl )
+        {
+
+        }
+
+        void on_client_diconnect( vtrc_client_sptr cl )
+        {
+
+        }
+
+        void on_client_init_error( vtrc_client_sptr cl,
+                                   const rpc_error_cont &err,
+                                   const char *mess )
+        {
+
+        }
+
+        void on_client_ready( vtrc_client_sptr cl )
+        {
+
+        }
+
+        void add_client( const std::string &path )
+        {
+            auto ep = utilities::get_endpoint_info( path );
+            auto cl = vtrc_client::create( app_->get_io_service( ),
+                                           app_->get_rpc_service( ) );
+
+            cl->connection( );
+            cl->on_connect_connect( [this, cl]( )
+            {
+                on_client_connect( cl );
+            } );
+
+            cl->on_disconnect_connect( [this, cl]( )
+            {
+                on_client_diconnect( cl );
+            } );
+
+            cl->on_ready_connect( [this, cl]( )
+            {
+                on_client_ready( cl );
+            } );
+
+            cl->on_init_error_connect( [this, cl]( const rpc_error_cont &err,
+                                                   const char *mess )
+            {
+                on_client_init_error( cl, err, mess );
+            } );
+        }
+
     };
 
 
@@ -105,34 +169,7 @@ namespace ta { namespace agent { namespace subsys {
 
     void clients::add_client( const std::string &path )
     {
-        auto ep = utilities::get_endpoint_info( path );
-        auto cl = vtrc_client::create( impl_->app_->get_io_service( ),
-                                       impl_->app_->get_rpc_service( ) );
-
-        cl->connection( );
-        impl_->clients_.push_back( cl );
-
-        if( ep.is_local( ) ) {
-        } else {
-            cl->async_connect( ep.addpess, ep.service,
-                            [this, cl]( const boost::system::error_code &e ) {
-                                impl_->LOGINF << "Connected to "
-                                     << cl->connection( )->name( )
-                                     << "; " << e.message( )
-                                      ;
-                                if( !e ) {
-                                    auto ch = cl->create_channel( vtrc::common::rpc_channel::DISABLE_WAIT);
-                                    ta::proto::ctrl_Stub s( ch );
-                                    s.shutdown( NULL, NULL, NULL, NULL );
-                                    impl_->LOGINF << "Shutdown message "
-                                         << cl->connection( )->name( )
-                                         << "; " << e.message( );
-
-                                }
-                            }, true );
-        }
-
-        //impl_->LOGINF << ep;
+        impl_->add_client( path );
     }
 
     const std::string &clients::name( )  const

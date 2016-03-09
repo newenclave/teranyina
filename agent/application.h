@@ -168,7 +168,9 @@ namespace ta { namespace agent {
         template <class Tgt, class Src>
         static Tgt poly_downcast ( Src * x )
         {
+//#ifndef TA_RTTI_DISABLE
             assert( dynamic_cast<Tgt>(x) == x );
+//#endif
             return static_cast<Tgt>(x);
         }
 
