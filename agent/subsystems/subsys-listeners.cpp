@@ -14,10 +14,6 @@
 
 #include "boost/system/error_code.hpp"
 
-//#include "subsys-log.h"
-
-//#include "vtrc-memory.h"
-
 #define LOG(lev) log_(lev) << "[listener] "
 #define LOGINF   LOG(logger::level::info)
 #define LOGDBG   LOG(logger::level::debug)
