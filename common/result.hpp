@@ -69,8 +69,8 @@ namespace ta {
         { }
     };
 
-    template <typename T>
-    std::ostream & operator << ( std::ostream &o, const result_type<T> &res )
+    template <typename T, typename E>
+    std::ostream & operator << ( std::ostream &o, const result_type<T, E> &res )
     {
         if( !res.err ) {
             o << "Ok: "   << res.result;
