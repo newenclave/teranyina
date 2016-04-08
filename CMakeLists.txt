@@ -155,7 +155,7 @@ add_subdirectory( ctrl-client )
 add_subdirectory( agent )
 
 if(LUA_FOUND)
-    add_subdirectory( lua-client )
+#    add_subdirectory( lua-client )
 endif(LUA_FOUND)
 
 #if( NOT WIN32 )
