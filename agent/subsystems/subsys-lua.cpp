@@ -87,7 +87,9 @@ namespace ta { namespace agent { namespace subsys {
 
     void lua::start( )
     {
-        impl_->LOGINF << "Started";
+        impl_->LOGINF << LUA_COPYRIGHT;
+        impl_->LOGINF << LUA_AUTHORS;
+        impl_->LOGINF << "Started.";
     }
 
     void lua::stop( )

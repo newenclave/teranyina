@@ -195,7 +195,8 @@ namespace ta { namespace agent {
     {
         get_logger( )(level::debug)
                 << "[     app] add subsystem with id 0x"
-                << std::hex << info;
+                << std::hex << info
+                << " " << inst->name( );
         impl_->subsystems_.subsys_[info] = inst;
         impl_->subsystems_.subsys_order_.push_back( inst );
     }
