@@ -142,7 +142,6 @@ namespace ta { namespace agent { namespace subsys {
                     to->assign( str.begin( ) + delim_pos, str.end( ) );
                 }
             }
-
             return path;
         }
 
