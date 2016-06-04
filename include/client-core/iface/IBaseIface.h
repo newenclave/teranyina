@@ -18,4 +18,4 @@ namespace ta { namespace client { namespace interfaces {
 
 }}
 
-#endif // FR_IBASEIFACE_H
+#endif // TA_IBASEIFACE_H

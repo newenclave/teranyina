@@ -8,7 +8,7 @@ namespace ta { namespace agent {
 }}
 
 namespace ta { namespace agent { namespace luawork {
-    void init_globals( lua_State *L, application &app );
+    void init_globals(lua_State *L, application *app );
 }}}
 
 #endif // LUA_GLOBALS_H
