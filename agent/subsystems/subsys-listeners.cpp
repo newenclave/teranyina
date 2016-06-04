@@ -192,6 +192,11 @@ namespace ta { namespace agent { namespace subsys {
                               ;
                 }
 
+                if( inf.is_dummy( ) ) {
+                    namespace lld = vcomm::lowlevel::dummy;
+                    next->assign_lowlevel_protocol_factory( &lld::create );
+                }
+
                 if( next ) {
                     connect_signals( next );
                     next->start( );
@@ -230,6 +235,16 @@ namespace ta { namespace agent { namespace subsys {
         new_inst->impl_->endpoints_.assign( def.begin( ), def.end( ) );
 
         return new_inst;
+    }
+
+    void listeners::add_listener( const std::string &name,
+                                  bool ssl, bool dummy )
+    {
+        utilities::endpoint_info epi = utilities::get_endpoint_info( name );
+        if( dummy ) {
+            epi.flags |= utilities::endpoint_info::FLAG_DUMMY;
+        }
+        impl_->create_from_endpoint_info( epi, name );
     }
 
     const std::string &listeners::name( ) const

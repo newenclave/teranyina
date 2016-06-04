@@ -51,6 +51,8 @@ namespace subsys {
         static shared_type create( application *app,
                                    const std::vector<std::string> &def );
 
+        void add_listener( const std::string &name, bool ssl, bool dummy );
+
         const std::string &name( ) const;
 
         void init( )  ;

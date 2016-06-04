@@ -91,7 +91,7 @@ namespace ta { namespace agent { namespace subsys {
 
     void lua::init( )
     {
-        impl_->LOGINF << "Init.";
+        impl_->LOGINF << "Init";
         impl_->LOGINF << LUA_COPYRIGHT;
         impl_->LOGINF << LUA_AUTHORS;
         luawork::init_globals( impl_->state_.get_state( ), impl_->app_ );
@@ -100,7 +100,7 @@ namespace ta { namespace agent { namespace subsys {
 
     void lua::start( )
     {
-        impl_->LOGINF << "Started.";
+        impl_->LOGINF << "Started";
     }
 
     void lua::stop( )

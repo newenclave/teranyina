@@ -40,7 +40,8 @@ namespace ta { namespace utilities {
             ,ENDPOINT_TCP    = 2
         };
         enum ep_flags {
-             FLAG_SSL = 0x01
+             FLAG_SSL   = 0x01
+            ,FLAG_DUMMY = 0x01 << 1
         };
         std::string    addpess;
         std::uint16_t  service = 0;
@@ -60,6 +61,11 @@ namespace ta { namespace utilities {
         bool is_ssl( ) const NOEXCEPT
         {
             return flags & FLAG_SSL;
+        }
+
+        bool is_dummy( ) const NOEXCEPT
+        {
+            return flags & FLAG_DUMMY;
         }
 
         operator bool( ) const NOEXCEPT
