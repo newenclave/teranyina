@@ -6,3 +6,4 @@
 #include "subsys-security.h"
 #include "subsys-control.h"
 #include "subsys-fs.h"
+#include "subsys-lua.h"

@@ -3,6 +3,13 @@ list( APPEND src_dirs
         ./subsystems
     )
 
+if( LUA_FOUND )
+list( APPEND src_dirs
+        ./lua
+    )
+endif( )
+
+
 foreach( dir ${src_dirs} )
     aux_source_directory( ${dir} src_dir )
 endforeach(dir)
