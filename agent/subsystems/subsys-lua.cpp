@@ -2,7 +2,11 @@
 #include "subsys-lua.h"
 #include "../application.h"
 
-#define LOG(lev) log_(lev) << "[lua] "
+#if LUA_FOUND
+#include "common/lua-wrapper/lua-wrapper.hpp"
+#endif
+
+#define LOG(lev) log_(lev) << "[     lua] "
 #define LOGINF   LOG(level::info)
 #define LOGDBG   LOG(level::debug)
 #define LOGERR   LOG(level::error)
@@ -16,15 +20,15 @@ namespace ta { namespace agent { namespace subsys {
 
         using level = agent::logger::level;
 
-        application::service_wrapper_sptr create_service(
-                                      ta::agent::application * /*app*/,
-                                      vtrc::common::connection_iface_wptr cl )
-        {
-            ///auto inst = std::make_shared<impl_type_here>( app, cl );
-            ///return app->wrap_service( cl, inst );
+//        application::service_wrapper_sptr create_service(
+//                                      ta::agent::application * /*app*/,
+//                                      vtrc::common::connection_iface_wptr cl )
+//        {
+//            ///auto inst = std::make_shared<impl_type_here>( app, cl );
+//            ///return app->wrap_service( cl, inst );
 
-            return application::service_wrapper_sptr( );
-        }
+//            return application::service_wrapper_sptr( );
+//        }
     }
 
     struct lua::impl {
@@ -32,9 +36,15 @@ namespace ta { namespace agent { namespace subsys {
         application     *app_;
         agent::logger   &log_;
 
-        impl( application *app )
+#if LUA_FOUND
+        const std::string conf_;
+        ta::lua::state    state_;
+#endif
+
+        impl( application *app, const std::string &conf )
             :app_(app)
             ,log_(app_->get_logger( ))
+            ,conf_(conf)
         { }
 
         void reg_creator( const std::string &name,
@@ -49,8 +59,8 @@ namespace ta { namespace agent { namespace subsys {
         }
     };
 
-    lua::lua( application *app )
-        :impl_(new impl(app))
+    lua::lua( application *app, const std::string &conf )
+        :impl_(new impl(app, conf))
     { }
 
     lua::~lua( )
@@ -59,9 +69,9 @@ namespace ta { namespace agent { namespace subsys {
     }
 
     /// static
-    lua::shared_type lua::create( application *app )
+    lua::shared_type lua::create( application *app, const std::string &conf )
     {
-        shared_type new_inst(new lua(app));
+        shared_type new_inst(new lua(app, conf));
         return new_inst;
     }
 

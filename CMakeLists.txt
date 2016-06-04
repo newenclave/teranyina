@@ -96,22 +96,10 @@ if( NOT DISABLE_LUA )
 
         add_subdirectory( lua-build )
         set( LUA_FOUND 1 )
-
+        ADD_DEFINITIONS(-DLUA_FOUND=1)
+        ADD_DEFINITIONS(-DLUA_WRAPPER_TOP_NAMESPACE=ta)
     else( )
-
-        find_package( Lua51 )
-
-        if( ${LUA51_FOUND} )
-
-            set( LUA_FOUND 1 )
-        else( )
-            find_package( Lua50 )
-            if( ${LUA50_FOUND} )
-                set( LUA_FOUND 1 )
-            endif( )
-
-        endif( )
-
+        error( "Lua was not found." )
     endif( )
 endif( )
 

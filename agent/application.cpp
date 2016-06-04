@@ -63,16 +63,6 @@ namespace ta { namespace agent {
             return vm;
         }
 
-        po::variables_map create_file_params( const std::string &path,
-                                           po::options_description const dsc )
-        {
-            po::variables_map vm;
-            std::ifstream ini_file(path);
-            po::store(po::parse_config_file( ini_file, dsc, true ), vm);
-            po::notify( vm );
-            return vm;
-        }
-
         void show_help( po::options_description const &desc )
         {
             std::cout << "Usage: ./teranyina_agent <options>\n"
@@ -120,31 +110,6 @@ namespace ta { namespace agent {
              ;
         }
 
-        void get_file_options( po::options_description& desc )
-        {
-            desc.add_options( )
-            /// threading
-            ( "threads.io", po::value<unsigned>(&io_count_)->default_value(1),
-                      "io threads count" )
-            ( "threads.rpc", po::value<unsigned>(&rpc_count_)->default_value(1),
-                      "rpc threads count" )
-
-            /// listeners
-            ( "server.value", po::value<string_vector>(&servers_),
-                      "servers points" )
-
-            /// multicast
-            ( "multicast.value", po::value<string_vector>(&mcs_),
-                       "multicast listeners" )
-            /// logger output
-            ( "logger.value", po::value<string_vector>(&loggers_),
-                       "logger output device; /path/to/logger[[level[-level]]]")
-            ( "logger.level", po::value<std::string>(&log_level_)
-                                           ->default_value("dbg"),
-                       "default logger level; err, inf, wrn, dbg[default]")
-            ;
-        }
-
         void get_cmd_options( po::options_description& desc )
         {
             desc.add_options( )
@@ -182,6 +147,8 @@ namespace ta { namespace agent {
             parent_->add_subsystem<subsys::multicast>( mcs_ );
             parent_->add_subsystem<subsys::listeners>( servers_ );
             parent_->add_subsystem<subsys::clients>  ( );
+
+            parent_->add_subsystem<subsys::lua>      ( config_file_ );
         }
 
         vtrc::shared_ptr<vtrc::common::rpc_service_wrapper>
@@ -441,13 +408,7 @@ namespace ta { namespace agent {
             return;
         }
 
-        if( !impl_->config_file_.empty( ) )  {
-            po::options_description init_desc;
-            impl_->get_file_options( init_desc );
-            create_file_params( impl_->config_file_, init_desc );
-        } else {
-            create_cmd_params( argc, argv, desc );
-        }
+        create_cmd_params( argc, argv, desc );
 
         get_logger( ).set_level(
                     logger::str2level( impl_->log_level_.c_str( ) ) );

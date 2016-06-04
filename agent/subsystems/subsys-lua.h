@@ -17,14 +17,14 @@ namespace subsys {
 
     protected:
 
-        lua( application *app );
+        lua( application *app , const std::string &conf );
 
     public:
 
         ~lua( );
 
         typedef std::shared_ptr<lua> shared_type;
-        static shared_type create( application *app );
+        static shared_type create( application *app, const std::string &conf );
 
         const std::string &name( ) const NOEXCEPT override;
 
