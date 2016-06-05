@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <thread>
 
 #include "common/logger.hxx"
 #include "vtrc-common/vtrc-signal-declaration.h"
@@ -20,6 +21,7 @@ namespace ta { namespace agent {
         int                      level;
         boost::posix_time::ptime when;
         std::string              name;
+        std::thread::id          tid;
     };
 
     using logger_data_type   = std::vector<std::string>;
@@ -70,21 +72,35 @@ namespace ta { namespace agent {
 
             static lvl2str levels[ ] =
             {
-                { "zero",     level::zero    },
                 { "zer",      level::zero    },
-                { "ZER",      level::zero    },
-                { "error",    level::error   },
                 { "err",      level::error   },
-                { "ERR",      level::error   },
-                { "warning",  level::warning },
                 { "wrn",      level::warning },
-                { "WRN",      level::warning },
-                { "info",     level::info    },
                 { "inf",      level::info    },
-                { "INF",      level::info    },
-                { "debug",    level::debug   },
                 { "dbg",      level::debug   },
-                { "DBG",      level::debug   }
+
+                { "zero",     level::zero    },
+                { "error",    level::error   },
+                { "warning",  level::warning },
+                { "info",     level::info    },
+                { "debug",    level::debug   },
+
+                { "z",        level::zero    },
+                { "e",        level::error   },
+                { "w",        level::warning },
+                { "i",        level::info    },
+                { "d",        level::debug   },
+
+                { "ZER",      level::zero    },
+                { "ERR",      level::error   },
+                { "WRN",      level::warning },
+                { "INF",      level::info    },
+                { "DBG",      level::debug   },
+
+                { "0",        level::zero    },
+                { "1",        level::error   },
+                { "2",        level::warning },
+                { "3",        level::info    },
+                { "4",        level::debug   },
             };
 
             for( auto &lvl: levels ) {

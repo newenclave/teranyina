@@ -39,15 +39,21 @@ namespace ta { namespace agent {
         impl_->dispatcher_.post( call );
     }
 
+    void fill_record_info( log_record_info &info,
+                           logger::level lvl, const std::string &name )
+    {
+        info.level = static_cast<int>(lvl);
+        info.name  = name;
+        info.when  = bpt::microsec_clock::local_time( );
+        info.tid   = std::this_thread::get_id( );
+    }
+
     void logger::send_data( level lev, const std::string &name,
                                        const std::string &data )
     {
         //static const bpt::ptime epoch( bpt::ptime::date_type(1970, 1, 1) );
         log_record_info info;
-        info.level = static_cast<int>(lev);
-        info.name  = name;
-        info.when  = bpt::microsec_clock::local_time( );
-
+        fill_record_info( info, lev, name );
         impl_->dispatcher_.post( std::bind( &logger::do_write, this,
                                             info, data, true ) );
     }
@@ -56,10 +62,7 @@ namespace ta { namespace agent {
                                     const std::string &data )
     {
         log_record_info info;
-        info.level = static_cast<int>(lev);
-        info.name  = name;
-        info.when  = bpt::microsec_clock::local_time( );
-
+        fill_record_info( info, lev, name );
         impl_->dispatcher_.post( std::bind( &logger::do_write, this,
                                             info, data, false ) );
     }
