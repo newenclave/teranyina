@@ -3,6 +3,8 @@
 #include "../application.h"
 #include "lua/globals.h"
 
+#include "protocol/scripting.pb.h"
+
 #include "boost/asio.hpp"
 
 #if LUA_FOUND
@@ -22,16 +24,26 @@ namespace ta { namespace agent { namespace subsys {
         const std::string subsys_name( "lua" );
 
         using level = agent::logger::level;
+        using connection_wptr = vtrc::common::connection_iface_wptr;
 
-//        application::service_wrapper_sptr create_service(
-//                                      ta::agent::application * /*app*/,
-//                                      vtrc::common::connection_iface_wptr cl )
-//        {
-//            ///auto inst = std::make_shared<impl_type_here>( app, cl );
-//            ///return app->wrap_service( cl, inst );
+        class svc_impl: public proto::scripting::instance {
 
-//            return application::service_wrapper_sptr( );
-//        }
+            lua::impl       *impl_;
+            connection_wptr  cl_;
+
+        public:
+
+            svc_impl( lua::impl *imp, connection_wptr cl )
+                :impl_(imp)
+                ,cl_(cl)
+            { }
+
+            static std::string name( )
+            {
+                return proto::scripting::instance::descriptor( )->full_name( );
+            }
+        };
+
     }
 
     struct lua::impl {
@@ -43,11 +55,13 @@ namespace ta { namespace agent { namespace subsys {
         const std::string conf_;
         ta::lua::state    state_;
 #endif
+        boost::asio::io_service::strand dispatcher_;
 
         impl( application *app, const std::string &conf )
             :app_(app)
             ,log_(app_->get_logger( ))
             ,conf_(conf)
+            ,dispatcher_(app_->get_io_service( ))
         { }
 
         void init_file( )
@@ -55,7 +69,7 @@ namespace ta { namespace agent { namespace subsys {
             LOGINF << "Init config file " << conf_;
             try {
                 if( !conf_.empty( ) ) {
-                    state_.check_call_error( state_.load_file( conf_.c_str( ) ) );
+                    state_.check_call_error( state_.load_file( conf_.c_str( )));
                     luawork::load_config( state_.get_state( ), app_, "config" );
                 }
             } catch( const std::exception &ex ) {
@@ -64,15 +78,29 @@ namespace ta { namespace agent { namespace subsys {
             }
         }
 
-        void reg_creator( const std::string &name,
-                          application::service_getter_type func )
+        application::service_wrapper_sptr create_service(
+                                      vtrc::common::connection_iface_wptr cl )
         {
-            app_->register_service_factory( name, func );
+            /// is always !cl.expired( ) here
+            if( app_->is_ctrl_connection( cl.lock( ).get( ) ) ) {
+                auto inst = std::make_shared<svc_impl>( this, cl );
+                return app_->wrap_service( cl, inst );
+            } else {
+                return application::service_wrapper_sptr( );
+            }
         }
 
-        void unreg_creator( const std::string &name )
+        void reg_creator( )
         {
-            app_->unregister_service_factory( name );
+            app_->register_service_factory( svc_impl::name( ),
+                [this]( agent::application */*app*/, connection_wptr c ) {
+                    return create_service( c );
+                });
+        }
+
+        void unreg_creator( )
+        {
+            app_->unregister_service_factory( svc_impl::name( ) );
         }
     };
 
@@ -103,11 +131,13 @@ namespace ta { namespace agent { namespace subsys {
         impl_->LOGINF << LUA_COPYRIGHT;
         impl_->LOGINF << LUA_AUTHORS;
         luawork::init_globals( impl_->state_.get_state( ), impl_->app_ );
+
     }
 
     void lua::start( )
     {
-        impl_->app_->get_io_service( ).post( [this]( ) {
+        impl_->reg_creator( );
+        impl_->dispatcher_.post( [this]( ) {
             impl_->init_file( );
         } );
         impl_->LOGINF << "Started";
@@ -115,6 +145,7 @@ namespace ta { namespace agent { namespace subsys {
 
     void lua::stop( )
     {
+        impl_->unreg_creator( );
         impl_->LOGINF << "Stopped";
     }
 

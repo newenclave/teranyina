@@ -12,7 +12,10 @@ namespace subsys {
 
     class lua: public subsystem_iface {
 
+    public:
         struct  impl;
+
+    private:
         impl   *impl_;
 
     protected:
@@ -31,6 +34,8 @@ namespace subsys {
         void init( )  override;
         void start( ) override;
         void stop( )  override;
+
+    public:
     };
 
 }}}

@@ -1,0 +1,17 @@
+package ta.proto.scripting;
+
+//import "common.proto";
+
+option cc_generic_services = true;
+
+message execute_buffer_req {
+    optional bytes buffer = 1;
+}
+
+message execute_buffer_res { }
+
+
+service instance {
+    rpc execute_buffer(execute_buffer_req) returns (execute_buffer_res);
+}
+
