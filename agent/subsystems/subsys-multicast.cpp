@@ -12,7 +12,7 @@
 
 #include "common/utils.h"
 
-#define LOG(lev) log_(lev) << "[multcast] "
+#define LOG(lev) log_(lev, "multcast")
 #define LOGINF   LOG(logger::level::info)
 #define LOGDBG   LOG(logger::level::debug)
 #define LOGERR   LOG(logger::level::error)

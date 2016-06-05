@@ -18,7 +18,7 @@
 
 #include "../files.h"
 
-#define LOG(lev) log_(lev) << "[      fs] "
+#define LOG(lev) log_(lev, "fs")
 #define LOGINF   LOG(level::info)
 #define LOGDBG   LOG(level::debug)
 #define LOGERR   LOG(level::error)
@@ -674,8 +674,8 @@ namespace ta { namespace agent { namespace subsys {
             if( app->is_ctrl_connection( cl.lock( ).get( ) ) ) {
                 auto inst(vtrc::make_shared<proto_fs_impl>( app, cl ));
 
-                app->get_logger( )( level::debug )
-                        << "[      fs] Create "
+                app->get_logger( )( level::debug, "fs" )
+                        << "Create "
                         << proto_fs_impl::name( )
                         << " service.";
 
@@ -692,8 +692,8 @@ namespace ta { namespace agent { namespace subsys {
             if( app->is_ctrl_connection( cl.lock( ).get( ) ) ) {
                 auto inst(vtrc::make_shared<proto_file_impl>( app, cl ) );
 
-                app->get_logger( )( level::debug )
-                        << "[      fs] Create "
+                app->get_logger( )( level::debug, "fs" )
+                        << "Create "
                         << proto_file_impl::name( )
                         << " service.";
 

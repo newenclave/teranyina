@@ -30,6 +30,7 @@ namespace ta { namespace agent {
 
     logger::~logger( )
     {
+        //while( impl_->dispatcher_.get_io_service( ).poll_one( ) );
         delete impl_;
     }
 
@@ -38,28 +39,33 @@ namespace ta { namespace agent {
         impl_->dispatcher_.post( call );
     }
 
-    void logger::send_data( level lev, const std::string &data )
+    void logger::send_data( level lev, const std::string &name,
+                                       const std::string &data )
     {
         //static const bpt::ptime epoch( bpt::ptime::date_type(1970, 1, 1) );
-
-        bpt::ptime local_time = bpt::microsec_clock::local_time( );
-
-        //bpt::time_duration td( local_time - epoch );
-        //std::cout << std::hex << std::this_thread::get_id( ) << "!\n";
+        log_record_info info;
+        info.level = static_cast<int>(lev);
+        info.name  = name;
+        info.when  = bpt::microsec_clock::local_time( );
 
         impl_->dispatcher_.post( std::bind( &logger::do_write, this,
-                                            lev, local_time, data, true ) );
+                                            info, data, true ) );
     }
 
-    void logger::send_data_nosplit( level lev, const std::string &data )
+    void logger::send_data_nosplit( level lev, const std::string &name,
+                                    const std::string &data )
     {
-        bpt::ptime local_time = bpt::microsec_clock::local_time( );
+        log_record_info info;
+        info.level = static_cast<int>(lev);
+        info.name  = name;
+        info.when  = bpt::microsec_clock::local_time( );
+
         impl_->dispatcher_.post( std::bind( &logger::do_write, this,
-                                            lev, local_time, data, false ) );
+                                            info, data, false ) );
     }
 
 
-    void logger::do_write( level lvl, const bpt::ptime &tim,
+    void logger::do_write( const log_record_info &info,
                            std::string const &data , bool split) NOEXCEPT
     {
         logger_data_type all;
@@ -68,7 +74,7 @@ namespace ta { namespace agent {
         } else {
             all.push_back( data );
         }
-        on_write_( static_cast<int>(lvl), tim, all );
+        on_write_( info, all );
     }
 
 }}

@@ -161,8 +161,8 @@ namespace ta { namespace agent {
                 return f->second( parent_, cl->weak_from_this( ) );
             }
 
-            logger_(level::debug) << "[     app] service " << name
-                                  << " was not found.";
+            logger_(level::debug, "app")
+                    << " service " << name << " was not found.";
 
             return vtrc::shared_ptr<vtrc::common::rpc_service_wrapper>( );
         }
@@ -193,8 +193,8 @@ namespace ta { namespace agent {
     void application::add_subsys( std::uintptr_t info,
                                   subsystem_sptr inst )
     {
-        get_logger( )(level::debug)
-                << "[     app] add subsystem with id 0x"
+        get_logger( )(level::debug, "app")
+                << "add subsystem with id 0x"
                 << std::hex << info
                 << " " << inst->name( );
         impl_->subsystems_.subsys_[info] = inst;
@@ -357,7 +357,7 @@ namespace ta { namespace agent {
     {
         vtrc::lock_guard<vtrc::mutex> lck(impl_->services_lock_);
 
-        get_logger( )( logger::level::debug ) << "[     app] Add service "
+        get_logger( )( logger::level::debug, "app" ) << "Add service "
                                               << name;
 
         auto f = impl_->services_.find( name );

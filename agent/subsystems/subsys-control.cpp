@@ -10,7 +10,7 @@
 
 #include "google/protobuf/descriptor.h"
 
-#define LOG(lev) log_(lev) << "[ control] "
+#define LOG(lev) log_(lev, "control")
 #define LOGINF   LOG(level::info)
 #define LOGDBG   LOG(level::debug)
 #define LOGERR   LOG(level::error)
@@ -68,9 +68,8 @@ namespace ta { namespace agent { namespace subsys {
         {
 
             if( app->is_ctrl_connection( cl.lock( ).get( ) ) ) {
-                app->get_logger( )( level::debug )
-                        << "[ control] Create service ";
-
+                app->get_logger( )(common::logger::level::debug, "control")
+                        << " Create service ";
                 auto inst = std::make_shared<ctrl_impl>( app );
                 return app->wrap_service( cl, inst );
             } else {

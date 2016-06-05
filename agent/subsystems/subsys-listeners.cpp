@@ -14,7 +14,7 @@
 
 #include "boost/system/error_code.hpp"
 
-#define LOG(lev) log_(lev) << "[listener] "
+#define LOG(lev) log_(lev, "listener")
 #define LOGINF   LOG(logger::level::info)
 #define LOGDBG   LOG(logger::level::debug)
 #define LOGERR   LOG(logger::level::error)

@@ -9,8 +9,8 @@
 
 #include "openssl/rand.h"
 
-#define LOG(lev) log_(lev) << "[security] "
-#define LOGNS(lev) log_(lev, false) << "[security] "
+#define LOG(lev) log_(lev, "security")
+#define LOGNS(lev) log_(lev, "security", false)
 
 #define LOGINF     LOG(level::info)
 #define LOGINFNS   LOGNS(level::info)

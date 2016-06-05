@@ -13,7 +13,7 @@
 #include "boost/date_time/posix_time/posix_time.hpp"
 #include "boost/algorithm/string.hpp"
 
-#define LOG(lev) log_(lev) << "[ logging] "
+#define LOG(lev) log_(lev, "logging")
 #define LOGINF   LOG(logger::level::info)
 #define LOGDBG   LOG(logger::level::debug)
 #define LOGERR   LOG(logger::level::error)
@@ -185,29 +185,33 @@ namespace ta { namespace agent { namespace subsys {
         };
 
         /// works on dispatcher
-        void console_log( console_info &inf, int ilvl,
-                          bpt::ptime const &tim, stringlist const &data )
+        void console_log( console_info &inf, const log_record_info &loginf,
+                          stringlist const &data )
         {
-            level lvl = static_cast<level>(ilvl);
+            level lvl = static_cast<level>(loginf.level);
             level_color _( *inf.o_, lvl );
             if( (lvl >= inf.minl_) && (lvl <= inf.maxl_) ) {
                 for( auto &s: data ) {
-                    *inf.o_ << tim << " [" << agent::logger::level2str(lvl)
-                            << "] " << s << std::endl;
+                    *inf.o_ << loginf.when
+                            << " [" << agent::logger::level2str(lvl) << "]"
+                            << " [" << loginf.name << "] "
+                            << s << std::endl;
                 }
             }
         }
 
         /// works on dispatcher
-        void file_out_log( ostream_inf &inf, int ilvl,
-                           bpt::ptime const &tim, stringlist const &data )
+        void file_out_log( ostream_inf &inf, const log_record_info &loginf,
+                           stringlist const &data )
         {
             //console_log( *inf.stream_, inf.min_, inf.max_, lvl, tim, data );
-            level lvl = static_cast<level>(ilvl);
+            level lvl = static_cast<level>(loginf.level);
             std::ostringstream oss;
             if( (lvl >= inf.min_) && (lvl <= inf.max_) ) {
                 for( auto &s: data ) {
-                    oss << tim << " [" << agent::logger::level2str(lvl) << "] "
+                    oss << loginf.when
+                        << " [" << agent::logger::level2str(lvl) << "]"
+                        << " [" << loginf.name << "] "
                         << s << "\n";
                 }
             }
@@ -227,7 +231,7 @@ namespace ta { namespace agent { namespace subsys {
                 stdout_connection_.conn_ = log_.on_write_connect(
                             std::bind( &impl::console_log, this,
                                        console_info(&std::cout, minl, maxl),
-                                       ph::_1, ph::_2, ph::_3 ) );
+                                       ph::_1, ph::_2 ) );
 
             } else if( path == stderr_name ) {  /// cerr
 
@@ -235,7 +239,7 @@ namespace ta { namespace agent { namespace subsys {
                 stderr_connection_.conn_ = log_.on_write_connect(
                             std::bind( &impl::console_log, this,
                                        console_info(&std::cerr, minl, maxl),
-                                       ph::_1, ph::_2, ph::_3 ) );
+                                       ph::_1, ph::_2 ) );
 
             } else {
 
@@ -253,7 +257,7 @@ namespace ta { namespace agent { namespace subsys {
                         l->conn_   = log_.on_write_connect(
                                         std::bind( &impl::file_out_log, this,
                                             std::ref(*l),
-                                            ph::_1, ph::_2, ph::_3 ) );
+                                            ph::_1, ph::_2 ) );
                         l->stream_.swap( stream_impl );
                     } else {
                         //std::cerr

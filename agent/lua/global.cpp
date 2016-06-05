@@ -6,7 +6,7 @@
 #include "subsystems/subsys-list.hxx"
 #include "application.h"
 
-#define LOG(lev) app->get_logger( )(lev) << "[lua scpt] "
+#define LOG(lev) app->get_logger( )(lev, "lua scpt")
 #define LOGINF   LOG(common::logger::level::info)
 #define LOGDBG   LOG(common::logger::level::debug)
 #define LOGERR   LOG(common::logger::level::error)
