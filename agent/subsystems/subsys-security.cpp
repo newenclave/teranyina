@@ -66,12 +66,15 @@ namespace ta { namespace agent { namespace subsys {
 
             SSL_load_error_strings( );
             SSLeay_add_all_algorithms( );
+
+#if 0 /// valgrind is not happy because of generate_block
+
             vcomm::random_device rd;
 
             auto seed = rd.generate_block( 128 );
             RAND_seed( seed.c_str( ), seed.size( ));
 
-#if 0
+//#if 0
             rsa_wrapper rw(rsa_wrapper::generate_keys( 2048 ));
 
             LOGINF << "\n" << rw.pem_pubkey( );

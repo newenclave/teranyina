@@ -249,6 +249,7 @@ int main( int argc, const char **argv )
     vm = parse_command( argc, argv, current_command, desc );
 
     if( current_command->need_connect( ) ) {
+        std::cout << "Connecting...\n";
         //client.async_connect( server, connect_success );
         client.connect( server );
     }

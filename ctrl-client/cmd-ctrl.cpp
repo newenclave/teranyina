@@ -13,6 +13,8 @@ namespace ta { namespace cc { namespace cmd {
 
         namespace po     = boost::program_options;
         namespace ifaces = ta::client::interfaces;
+
+        using rpc_channel = vtrc::common::rpc_channel;
         typedef client::core core;
 
 
@@ -33,6 +35,7 @@ namespace ta { namespace cc { namespace cmd {
                 cmd->ping( );
                 if( vm.count( "shutdown" ) ) {
                     std::cout << "Shuting down agent...";
+                    cmd->channel( )->set_flag( rpc_channel::DISABLE_WAIT );
                     cmd->shutdown( );
                     std::cout << "Ok\n";
                 }
