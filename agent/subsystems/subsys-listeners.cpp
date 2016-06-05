@@ -189,7 +189,7 @@ namespace ta { namespace agent { namespace subsys {
                             ::unlink( inf.addpess.c_str( ) );
                         } else {
                             LOGERR << "File " << inf.addpess << " found. "
-                                   << "But it is not socket. Ignoring.";
+                                   << "But it is not a socket. Ignoring.";
                             return;
                         }
                     }
