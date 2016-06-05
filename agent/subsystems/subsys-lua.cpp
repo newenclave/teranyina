@@ -3,6 +3,8 @@
 #include "../application.h"
 #include "lua/globals.h"
 
+#include "boost/asio.hpp"
+
 #if LUA_FOUND
 #include "common/lua-wrapper/lua-wrapper.hpp"
 #endif
@@ -51,8 +53,14 @@ namespace ta { namespace agent { namespace subsys {
         void init_file( )
         {
             LOGINF << "Init config file " << conf_;
-            if( !conf_.empty( ) ) {
-                state_.check_call_error( state_.load_file( conf_.c_str( ) ) );
+            try {
+                if( !conf_.empty( ) ) {
+                    state_.check_call_error( state_.load_file( conf_.c_str( ) ) );
+                    luawork::load_config( state_.get_state( ), app_, "config" );
+                }
+            } catch( const std::exception &ex ) {
+                LOGERR << "Failed to init config '" << conf_ << "'. "
+                       << ex.what( );
             }
         }
 
@@ -95,11 +103,13 @@ namespace ta { namespace agent { namespace subsys {
         impl_->LOGINF << LUA_COPYRIGHT;
         impl_->LOGINF << LUA_AUTHORS;
         luawork::init_globals( impl_->state_.get_state( ), impl_->app_ );
-        impl_->init_file( );
     }
 
     void lua::start( )
     {
+        impl_->app_->get_io_service( ).post( [this]( ) {
+            impl_->init_file( );
+        } );
         impl_->LOGINF << "Started";
     }
 

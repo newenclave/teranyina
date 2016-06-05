@@ -14,6 +14,12 @@
 
 #include "boost/system/error_code.hpp"
 
+#ifndef _WIN32
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#endif
+
 #define LOG(lev) log_(lev, "listener")
 #define LOGINF   LOG(logger::level::info)
 #define LOGDBG   LOG(logger::level::debug)
@@ -174,7 +180,20 @@ namespace ta { namespace agent { namespace subsys {
             if( inf ) {
                 vserv::listener_sptr next;
                 if( inf.is_local( ) ) {
-
+#ifndef _WIN32
+                    struct stat st = {0};
+                    int r = ::stat( inf.addpess.c_str( ), &st );
+                    if( -1 != r ) {
+                        if( S_ISSOCK( st.st_mode ) ) {
+                            LOGINF << "Socket found. Unlinking...";
+                            ::unlink( inf.addpess.c_str( ) );
+                        } else {
+                            LOGERR << "File " << inf.addpess << " found. "
+                                   << "But it is not socket. Ignoring.";
+                            return;
+                        }
+                    }
+#endif
                     next = local::create( *app_->get_application( ),
                                           inf.addpess );
                     LOGINF << "Start local ep: " << inf.addpess

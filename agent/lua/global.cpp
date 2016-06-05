@@ -104,11 +104,48 @@ namespace ta { namespace agent { namespace luawork {
 
         t.add( "log", new_function( &log_write ) );
         t.add( "logs", new_function( &log_write2 ) );
-        t.add( "listener", new_table( )->add(
-                   "add", new_function( &add_listener ) )
-              );
+//        t.add( "listener", new_table( )->add(
+//                   "add", new_function( &add_listener ) )
+//              );
 
         ls.set_object( table_name, &t );
     }
+
+    void process_listen_table( lua_State *L, application *app,
+                               const objects::base *o )
+    {
+        auto namem = object_by_path( L, o, "name" );
+        auto sslm  = object_by_path( L, o, "ssl" );
+        auto dumm  = object_by_path( L, o, "dummy" );
+
+        if( namem->type_id( ) == objects::base::TYPE_STRING ) {
+            LOGINF << "Add endpoint: " << namem->str( );
+            bool ssl = (sslm ? sslm->num( ) != 0 : false );
+            bool dum = (dumm ? dumm->num( ) != 0 : false );
+            app->subsystem<subsys::listeners>( ).add_listener(
+                        namem->str( ), ssl, dum );
+        } else {
+            LOGERR << "Invalid endpoint: " << namem->str( );
+        }
+    }
+
+    void load_config( lua_State *L, application *app, const std::string &name )
+    {
+        lua::state ls(L);
+        int t = ls.get_table( name.c_str( ) );
+        if( t ) {
+            auto config = ls.get_object( t );
+            /// listeners
+            auto l = object_by_path( L, config.get( ), "listen" );
+            if( l->type_id( ) == objects::base::TYPE_TABLE ) {
+                for( size_t i=0; i<l->count( ); ++i ) {
+                    process_listen_table( L, app, l->at( i )->at( 1 ) );
+                }
+            }
+            ///
+            ls.pop( t );
+        }
+    }
+
 
 }}}
