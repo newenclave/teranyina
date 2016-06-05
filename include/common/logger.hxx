@@ -98,6 +98,12 @@ namespace ta { namespace common {
             return res;
         }
 
+        string_accumulator operator ( )( level lev )
+        {
+            string_accumulator res( *this, lev, "", true );
+            return res;
+        }
+
         string_accumulator operator ( )( const std::string &name, bool split )
         {
             string_accumulator res( *this, level_, name, split );
@@ -112,7 +118,7 @@ namespace ta { namespace common {
 
         string_accumulator operator ( )( )
         {
-            string_accumulator res( *this, level_, "application", true );
+            string_accumulator res( *this, level_, "", true );
             return res;
         }
 

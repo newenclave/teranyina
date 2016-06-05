@@ -52,14 +52,14 @@ namespace ta { namespace agent { namespace subsys {
 
         const std::string subsys_name( "clients" );
 
-        application::service_wrapper_sptr create_service( application * /*app*/,
-                                      vtrc::common::connection_iface_wptr cl )
-        {
-            ///auto inst = std::make_shared<impl_type_here>( app, cl );
-            ///return app->wrap_service( cl, inst );
+//        application::service_wrapper_sptr create_service( application * /*app*/,
+//                                      vtrc::common::connection_iface_wptr cl )
+//        {
+//            ///auto inst = std::make_shared<impl_type_here>( app, cl );
+//            ///return app->wrap_service( cl, inst );
 
-            return application::service_wrapper_sptr( );
-        }
+//            return application::service_wrapper_sptr( );
+//        }
 
     }
 

@@ -27,15 +27,15 @@ namespace ta { namespace agent { namespace subsys {
 
         using level = agent::logger::level;
 
-        application::service_wrapper_sptr create_service(
-                                      ta::agent::application * /*app*/,
-                                      vtrc::common::connection_iface_wptr cl )
-        {
-            ///auto inst = std::make_shared<impl_type_here>( app, cl );
-            ///return app->wrap_service( cl, inst );
+//        application::service_wrapper_sptr create_service(
+//                                      ta::agent::application * /*app*/,
+//                                      vtrc::common::connection_iface_wptr cl )
+//        {
+//            ///auto inst = std::make_shared<impl_type_here>( app, cl );
+//            ///return app->wrap_service( cl, inst );
 
-            return application::service_wrapper_sptr( );
-        }
+//            return application::service_wrapper_sptr( );
+//        }
     }
 
     struct security::impl {
