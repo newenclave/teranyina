@@ -5,13 +5,22 @@ package ta.proto.scripting;
 option cc_generic_services = true;
 
 message execute_buffer_req {
-    optional bytes buffer = 1;
+    optional string name        = 1;
+    optional bytes  buffer      = 2;
+    optional string function    = 3;
+}
+
+message execute_file_req {
+    optional string path        = 1;
+    optional string function    = 3;
 }
 
 message execute_buffer_res { }
+message execute_file_res { }
 
 
 service instance {
     rpc execute_buffer(execute_buffer_req) returns (execute_buffer_res);
+    rpc execute_file(execute_file_req) returns (execute_file_res);
 }
 

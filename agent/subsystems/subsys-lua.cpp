@@ -7,6 +7,8 @@
 
 #include "boost/asio.hpp"
 
+#include "vtrc-common/vtrc-closure-holder.h"
+
 #if LUA_FOUND
 #include "common/lua-wrapper/lua-wrapper.hpp"
 #endif
@@ -22,6 +24,7 @@ namespace ta { namespace agent { namespace subsys {
     namespace {
 
         const std::string subsys_name( "lua" );
+        namespace vcomm = vtrc::common;
 
         using level = agent::logger::level;
         using connection_wptr = vtrc::common::connection_iface_wptr;
@@ -37,6 +40,17 @@ namespace ta { namespace agent { namespace subsys {
                 :impl_(imp)
                 ,cl_(cl)
             { }
+
+            void execute_buffer(
+                    ::google::protobuf::RpcController* controller,
+                    const ::ta::proto::scripting::execute_buffer_req* request,
+                    ::ta::proto::scripting::execute_buffer_res* response,
+                    ::google::protobuf::Closure* done ) override;
+
+            void execute_file( ::google::protobuf::RpcController* controller,
+                    const ::ta::proto::scripting::execute_file_req* request,
+                    ::ta::proto::scripting::execute_file_res* response,
+                    ::google::protobuf::Closure* done) override;
 
             static std::string name( )
             {
@@ -102,7 +116,53 @@ namespace ta { namespace agent { namespace subsys {
         {
             app_->unregister_service_factory( svc_impl::name( ) );
         }
+
+        void execute_buffer( const std::string &buf,
+                             const std::string &name, const std::string &func )
+        {
+            state_.check_call_error( state_.load_buffer( buf.c_str( ),
+                                                         buf.size( ),
+                                                         name.c_str( ) ) );
+            if( !func.empty( ) ) {
+                state_.exec_function( func.c_str( ) );
+            }
+        }
+
+        void execute_file( const std::string &path, const std::string &func )
+        {
+            state_.check_call_error( state_.load_file( path.c_str( ) ) );
+            if( !func.empty( ) ) {
+                state_.exec_function( func.c_str( ) );
+            }
+        }
+
     };
+
+    namespace {
+
+        void svc_impl::execute_buffer(
+            ::google::protobuf::RpcController*          /*controller*/,
+            const ::ta::proto::scripting::execute_buffer_req* request,
+            ::ta::proto::scripting::execute_buffer_res* /*response*/,
+            ::google::protobuf::Closure* done )
+        {
+            vcomm::closure_holder _(done);
+            impl_->execute_buffer( request->buffer( ), request->name( ),
+                                   request->function( ) );
+        }
+
+        void svc_impl::execute_file(
+                ::google::protobuf::RpcController*        /*controller*/,
+                const ::ta::proto::scripting::execute_file_req* request,
+                ::ta::proto::scripting::execute_file_res* /*response*/,
+                ::google::protobuf::Closure* done)
+        {
+            vcomm::closure_holder _(done);
+            impl_->execute_file( request->path( ), request->function( ) );
+        }
+
+
+    }
 
     lua::lua( application *app, const std::string &conf )
         :impl_(new impl(app, conf))
@@ -131,7 +191,6 @@ namespace ta { namespace agent { namespace subsys {
         impl_->LOGINF << LUA_COPYRIGHT;
         impl_->LOGINF << LUA_AUTHORS;
         luawork::init_globals( impl_->state_.get_state( ), impl_->app_ );
-
     }
 
     void lua::start( )

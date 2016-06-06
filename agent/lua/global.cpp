@@ -40,11 +40,11 @@ namespace ta { namespace agent { namespace luawork {
                 if( split ) {
                     bool next = false;
                     for( int i=2; i<=ls.get_top( ); ++i ) {
-                        oss << ls.get_object( i )->str( );
                         if( next ) {
                             oss << " ";
                         }
                         next = true;
+                        oss << ls.get_object( i )->str( );
                     }
                 } else {
                     for( int i=2; i<=ls.get_top( ); ++i ) {
