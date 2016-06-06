@@ -50,9 +50,10 @@ namespace ta { namespace cc { namespace cmd {
                 /// "rpc-pool-size,r"
                 desc.add_options( )
                     ( "function,f", po::value<std::string>( ),
-                                 "execute function (for -B)" )
+                                 "execute function; for -B or -F" )
+                    ( "file,F", po::value<std::string>( ),   "execute file" )
                     ( "buffer,B", po::value<std::string>( ), "execute buffer" )
-                    ( "name,n", po::value<std::string>( ), "buffer name" )
+                    ( "name,n", po::value<std::string>( ),   "buffer name" )
                         ;
             }
 
