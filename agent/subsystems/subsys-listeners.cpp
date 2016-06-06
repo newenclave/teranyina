@@ -210,7 +210,6 @@ namespace ta { namespace agent { namespace subsys {
 
         void start_all( )
         {
-            vtrc::shared_lock _(listeners_lock_);
             for( auto &ep: endpoints_ ) {
                 auto inf = utilities::get_endpoint_info( ep );
                 create_from_endpoint_info( inf, ep );
