@@ -99,7 +99,7 @@ if( NOT DISABLE_LUA )
         ADD_DEFINITIONS(-DLUA_FOUND=1)
         ADD_DEFINITIONS(-DLUA_WRAPPER_TOP_NAMESPACE=ta)
     else( )
-        error( "Lua was not found." )
+        message( FATAL_ERROR "Lua was not found." )
     endif( )
 endif( )
 
