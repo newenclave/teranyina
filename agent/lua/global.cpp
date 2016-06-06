@@ -93,7 +93,7 @@ namespace ta { namespace agent { namespace luawork {
                     LOGERR << "Invalid parameter for " << o->str( )
                         << ". 'table' expected but '"
                         << objects::base::type2string( o->type_id( ) )
-                        << "' reached.";
+                        << "' was obtained.";
                     continue;
                 }
                 auto ossl   = object_by_path( L, o.get( ), "ssl" );
