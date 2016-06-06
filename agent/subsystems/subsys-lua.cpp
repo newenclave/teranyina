@@ -134,7 +134,7 @@ namespace ta { namespace agent { namespace subsys {
             :app_(app)
             ,log_(app_->get_logger( ))
             ,conf_(conf)
-            ,dispatcher_(app_->get_io_service( ))
+            ,dispatcher_(app_->get_rpc_service( ))
         { }
 
         void init_file( )
@@ -183,7 +183,7 @@ namespace ta { namespace agent { namespace subsys {
         svc_impl::svc_impl( lua::impl *imp, connection_wptr cl )
             :impl_(imp)
             ,cl_(cl)
-            ,dispatcher_(impl_->app_->get_io_service( ))
+            ,dispatcher_(impl_->app_->get_rpc_service( ))
         { }
 
         void svc_impl::init(
