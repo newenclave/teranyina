@@ -105,6 +105,10 @@ namespace ta { namespace agent { namespace subsys {
                     ::ta::proto::scripting::execute_file_res* response,
                     ::google::protobuf::Closure* done) override;
 
+            void execute_function(::google::protobuf::RpcController* controller,
+                    const ::ta::proto::scripting::execute_function_req* request,
+                    ::ta::proto::scripting::execute_function_res* response,
+                    ::google::protobuf::Closure* done) override;
 
 
             static std::string name( )
@@ -224,6 +228,18 @@ namespace ta { namespace agent { namespace subsys {
             DISPATCH_CLIENT_CALL_POSTFIX;
         }
 
+        void svc_impl::execute_function(
+                ::google::protobuf::RpcController* controller,
+                const ::ta::proto::scripting::execute_function_req* request,
+                ::ta::proto::scripting::execute_function_res* response,
+                ::google::protobuf::Closure* done)
+        {
+            DISPATCH_CLIENT_CALL_PREFIX( dispatcher_, cl_ )
+            {
+                run_function( controller, request->name( ) );
+            }
+            DISPATCH_CLIENT_CALL_POSTFIX;
+        }
 
     }
 
