@@ -43,6 +43,7 @@ namespace ta { namespace common {
             string_accumulator( string_accumulator &other )
                 :parent_(other.parent_)
                 ,level_(other.level_)
+                ,name_(other.name_)
                 ,act_(true)
             {
                 other.act_ = false;
@@ -51,6 +52,7 @@ namespace ta { namespace common {
             string_accumulator& operator = ( string_accumulator &other )
             {
                 level_     = other.level_;
+                name_      = other.name_;
                 other.act_ = false;
                 return *this;
             }
