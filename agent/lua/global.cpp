@@ -74,7 +74,7 @@ namespace ta { namespace agent { namespace luawork {
         {
             LUA_CALL_PREFIX_APP( L );
             for( int i=0; i<ls.get_top( ); ++i ) {
-                auto o = ls.get_opt<std::string>( i );
+                auto o = ls.get_opt<std::string>( i + 1 );
                 if( !o.empty( ) ) {
                     LOGINF << "Delete endpoint: " << o;
                     app->subsystem<subsys::listeners>( ).del_listener( o );
