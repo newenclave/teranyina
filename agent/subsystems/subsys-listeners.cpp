@@ -10,6 +10,8 @@
 #include "vtrc-server/vtrc-listener-ssl.h"
 #include "vtrc-server/vtrc-listener-local.h"
 
+#include "vtrc-common/vtrc-mutex-typedefs.h"
+
 #include "common/utils.h"
 
 #include "boost/system/error_code.hpp"
@@ -47,8 +49,9 @@ namespace ta { namespace agent { namespace subsys {
         agent::logger   &log_;
         listeners       *parent_;
 
-        string_vector    endpoints_;
-        listerens_map    listeners_;
+        string_vector       endpoints_;
+        listerens_map       listeners_;
+        vtrc::shared_mutex  listeners_lock_;
 
         impl( application *app )
             :app_(app)
@@ -146,26 +149,6 @@ namespace ta { namespace agent { namespace subsys {
             LIST_CONNECT_IMPL( on_start );
             LIST_CONNECT_IMPL( on_stop );
 
-//            l->on_new_connection_connect(
-//                std::bind( &impl::cb_on_new_connection, this,
-//                           ph::_1, l->weak_from_this( ) ) );
-
-//            l->on_stop_connection_connect(
-//                std::bind( &impl::on_stop_connection, this,
-//                           ph::_1, l->weak_from_this( ) ) );
-
-//            l->on_accept_failed_connect(
-//                std::bind( &impl::cb_on_accept_failed, this,
-//                           ph::_1, l->weak_from_this( ) ) );
-
-//            l->on_start_connect(
-//                std::bind( &impl::cb_on_start, this,
-//                           l->weak_from_this( ) ) );
-
-//            l->on_stop_connect(
-//                std::bind( &impl::cb_on_stop, this,
-//                           l->weak_from_this( ) ) );
-
 #undef LIST_CONNECT_IMPL1
 #undef LIST_CONNECT_IMPL
 
@@ -219,6 +202,7 @@ namespace ta { namespace agent { namespace subsys {
                 if( next ) {
                     connect_signals( next );
                     next->start( );
+                    vtrc::unique_shared_lock _(listeners_lock_);
                     listeners_[ep] = next;
                 }
             }
@@ -226,10 +210,17 @@ namespace ta { namespace agent { namespace subsys {
 
         void start_all( )
         {
+            vtrc::shared_lock _(listeners_lock_);
             for( auto &ep: endpoints_ ) {
                 auto inf = utilities::get_endpoint_info( ep );
                 create_from_endpoint_info( inf, ep );
             }
+        }
+
+        void del_listener( const std::string &name )
+        {
+            vtrc::shared_lock _(listeners_lock_);
+            listeners_.erase( name );
         }
 
     };
@@ -264,6 +255,11 @@ namespace ta { namespace agent { namespace subsys {
             epi.flags |= utilities::endpoint_info::FLAG_DUMMY;
         }
         impl_->create_from_endpoint_info( epi, name );
+    }
+
+    void listeners::del_listener( const std::string &name )
+    {
+        impl_->del_listener( name );
     }
 
     const std::string &listeners::name( ) const

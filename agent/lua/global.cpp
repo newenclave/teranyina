@@ -70,6 +70,19 @@ namespace ta { namespace agent { namespace luawork {
             return log_write_impl( L, true );
         }
 
+        int rm_listener( lua_State *L )
+        {
+            LUA_CALL_PREFIX_APP( L );
+            for( int i=0; i<ls.get_top( ); ++i ) {
+                auto o = ls.get_opt<std::string>( i );
+                if( !o.empty( ) ) {
+                    LOGINF << "Delete endpoint: " << o;
+                    app->subsystem<subsys::listeners>( ).del_listener( o );
+                }
+            }
+            return 0;
+        }
+
         int add_listener( lua_State *L )
         {
             LUA_CALL_PREFIX_APP( L );
@@ -104,9 +117,10 @@ namespace ta { namespace agent { namespace luawork {
 
         t.add( "log", new_function( &log_write ) );
         t.add( "logs", new_function( &log_write2 ) );
-//        t.add( "listener", new_table( )->add(
-//                   "add", new_function( &add_listener ) )
-//              );
+        t.add( "listener", new_table( )
+               ->add( "add", new_function( &add_listener ) )
+               ->add( "del", new_function( &rm_listener ) )
+              );
 
         ls.set_object( table_name, &t );
     }

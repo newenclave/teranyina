@@ -52,6 +52,7 @@ namespace subsys {
                                    const std::vector<std::string> &def );
 
         void add_listener( const std::string &name, bool ssl, bool dummy );
+        void del_listener( const std::string &name );
 
         const std::string &name( ) const;
 
