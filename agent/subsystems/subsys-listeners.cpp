@@ -175,6 +175,11 @@ namespace ta { namespace agent { namespace subsys {
                                    << "But it is not a socket. Ignoring.";
                             return;
                         }
+                    } else {
+                        std::error_code ec( errno, std::system_category( ));
+                        LOGDBG << "::stat( ) for '"
+                               << inf.addpess << "' failed. "
+                               << ec.message( );
                     }
 #endif
                     next = local::create( *app_->get_application( ),
@@ -227,7 +232,6 @@ namespace ta { namespace agent { namespace subsys {
         }
 
     };
-
 
     listeners::listeners( application *app )
         :impl_(new impl(app))
