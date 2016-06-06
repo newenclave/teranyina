@@ -23,23 +23,76 @@ namespace ta { namespace agent { namespace subsys {
 
     namespace {
 
+#define DISPATCH_CLIENT_CALL_PREFIX( dispatcher, client )            \
+    dispatcher.post( [this, controller, request, response, done ] {  \
+        vcomm::closure_holder _(done);                               \
+        connection_sptr lck = client.lock( );                        \
+        if( lck ) {
+
+#define DISPATCH_CLIENT_CALL_POSTFIX  } } )
+
         const std::string subsys_name( "lua" );
+
         namespace vcomm = vtrc::common;
+        namespace gpb = google::protobuf;
 
         using level = agent::logger::level;
         using connection_wptr = vtrc::common::connection_iface_wptr;
+        using connection_sptr = vtrc::common::connection_iface_sptr;
 
         class svc_impl: public proto::scripting::instance {
 
             lua::impl       *impl_;
             connection_wptr  cl_;
+            ta::lua::state   state_;
+
+            boost::asio::io_service::strand dispatcher_;
 
         public:
 
-            svc_impl( lua::impl *imp, connection_wptr cl )
-                :impl_(imp)
-                ,cl_(cl)
-            { }
+            svc_impl( lua::impl *imp, connection_wptr cl );
+
+            void run_function( gpb::RpcController* controller,
+                               const std::string &func )
+            {
+                if( !func.empty( ) ) {
+                    int res = state_.exec_function( func.c_str( ) );
+                    if( 0 != res ) {
+                        controller->SetFailed( state_.pop_error( ) );
+                    }
+                }
+            }
+
+            void execute_buf( gpb::RpcController* controller,
+                              const std::string &buf,
+                              const std::string &name,
+                              const std::string &func )
+            {
+                int res = state_.load_buffer( buf.c_str( ), buf.size( ),
+                                              name.c_str( ) );
+                if( 0 != res ) {
+                    controller->SetFailed( state_.pop_error( ) );
+                } else {
+                    run_function( controller, func );
+                }
+            }
+
+            void execute_file( gpb::RpcController* controller,
+                               const std::string &path,
+                               const std::string &func )
+            {
+                int res = state_.load_file( path.c_str( ) );
+                if( 0 != res ) {
+                    controller->SetFailed( state_.pop_error( ) );
+                } else {
+                    run_function( controller, func );
+                }
+            }
+
+            void init( ::google::protobuf::RpcController* controller,
+                       const ::ta::proto::scripting::init_req* request,
+                       ::ta::proto::scripting::init_res* response,
+                       ::google::protobuf::Closure* done ) override;
 
             void execute_buffer(
                     ::google::protobuf::RpcController* controller,
@@ -51,6 +104,8 @@ namespace ta { namespace agent { namespace subsys {
                     const ::ta::proto::scripting::execute_file_req* request,
                     ::ta::proto::scripting::execute_file_res* response,
                     ::google::protobuf::Closure* done) override;
+
+
 
             static std::string name( )
             {
@@ -117,48 +172,56 @@ namespace ta { namespace agent { namespace subsys {
             app_->unregister_service_factory( svc_impl::name( ) );
         }
 
-        void execute_buffer( const std::string &buf,
-                             const std::string &name, const std::string &func )
-        {
-            state_.check_call_error( state_.load_buffer( buf.c_str( ),
-                                                         buf.size( ),
-                                                         name.c_str( ) ) );
-            if( !func.empty( ) ) {
-                state_.exec_function( func.c_str( ) );
-            }
-        }
-
-        void execute_file( const std::string &path, const std::string &func )
-        {
-            state_.check_call_error( state_.load_file( path.c_str( ) ) );
-            if( !func.empty( ) ) {
-                state_.exec_function( func.c_str( ) );
-            }
-        }
-
     };
 
     namespace {
 
+        svc_impl::svc_impl( lua::impl *imp, connection_wptr cl )
+            :impl_(imp)
+            ,cl_(cl)
+            ,dispatcher_(impl_->app_->get_io_service( ))
+        { }
+
+        void svc_impl::init(
+                ::google::protobuf::RpcController* controller,
+                const ::ta::proto::scripting::init_req* request,
+                ::ta::proto::scripting::init_res* response,
+                ::google::protobuf::Closure* done )
+        {
+            DISPATCH_CLIENT_CALL_PREFIX( dispatcher_, cl_ )
+            {
+                luawork::init_globals( state_.get_state( ), impl_->app_ );
+            }
+            DISPATCH_CLIENT_CALL_POSTFIX;
+        }
+
         void svc_impl::execute_buffer(
-            ::google::protobuf::RpcController*          /*controller*/,
+            ::google::protobuf::RpcController* controller,
             const ::ta::proto::scripting::execute_buffer_req* request,
-            ::ta::proto::scripting::execute_buffer_res* /*response*/,
+            ::ta::proto::scripting::execute_buffer_res* response,
             ::google::protobuf::Closure* done )
         {
-            vcomm::closure_holder _(done);
-            impl_->execute_buffer( request->buffer( ), request->name( ),
-                                   request->function( ) );
+            DISPATCH_CLIENT_CALL_PREFIX( dispatcher_, cl_ )
+            {
+                execute_buf( controller,
+                             request->buffer( ), request->name( ),
+                             request->function( ) );
+            }
+            DISPATCH_CLIENT_CALL_POSTFIX;
         }
 
         void svc_impl::execute_file(
-                ::google::protobuf::RpcController*        /*controller*/,
+                ::google::protobuf::RpcController* controller,
                 const ::ta::proto::scripting::execute_file_req* request,
-                ::ta::proto::scripting::execute_file_res* /*response*/,
-                ::google::protobuf::Closure* done)
+                ::ta::proto::scripting::execute_file_res* response,
+                ::google::protobuf::Closure* done )
         {
-            vcomm::closure_holder _(done);
-            impl_->execute_file( request->path( ), request->function( ) );
+            DISPATCH_CLIENT_CALL_PREFIX( dispatcher_, cl_ )
+            {
+                execute_file( controller, request->path( ),
+                              request->function( ) );
+            }
+            DISPATCH_CLIENT_CALL_POSTFIX;
         }
 
 

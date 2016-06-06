@@ -15,11 +15,15 @@ message execute_file_req {
     optional string function    = 3;
 }
 
+message init_req { }
+message init_res { }
+
 message execute_buffer_res { }
 message execute_file_res { }
 
 
 service instance {
+    rpc init(init_req) returns (init_res);
     rpc execute_buffer(execute_buffer_req) returns (execute_buffer_res);
     rpc execute_file(execute_file_req) returns (execute_file_res);
 }

@@ -1,5 +1,5 @@
-#ifndef FR_INTERFACE_FILE_H
-#define FR_INTERFACE_FILE_H
+#ifndef TA_INTERFACE_FILE_H
+#define TA_INTERFACE_FILE_H
 
 #include <string>
 #include <stdint.h>
