@@ -13,6 +13,8 @@
 #include "common/lua-wrapper/lua-wrapper.hpp"
 #endif
 
+#include "google/protobuf/descriptor.h"
+
 #define LOG(lev) log_(lev, "lua")
 #define LOGINF   LOG(level::info)
 #define LOGDBG   LOG(level::debug)
