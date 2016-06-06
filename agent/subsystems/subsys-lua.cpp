@@ -259,7 +259,7 @@ namespace ta { namespace agent { namespace subsys {
         return new_inst;
     }
 
-    const std::string &lua::name( ) const noexcept
+    const std::string &lua::name( ) const NOEXCEPT
     {
         return subsys_name;
     }

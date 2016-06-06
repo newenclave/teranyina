@@ -60,12 +60,12 @@ namespace ta { namespace utilities {
 
         bool is_ssl( ) const NOEXCEPT
         {
-            return flags & FLAG_SSL;
+            return !!(flags & FLAG_SSL);
         }
 
         bool is_dummy( ) const NOEXCEPT
         {
-            return flags & FLAG_DUMMY;
+            return !!(flags & FLAG_DUMMY);
         }
 
         operator bool( ) const NOEXCEPT
