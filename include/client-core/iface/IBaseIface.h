@@ -14,8 +14,7 @@ namespace ta { namespace client { namespace interfaces {
         virtual       vtrc::common::rpc_channel *channel( )       = 0;
         virtual const vtrc::common::rpc_channel *channel( ) const = 0;
     };
-}
 
-}}
+}}}
 
 #endif // TA_IBASEIFACE_H
