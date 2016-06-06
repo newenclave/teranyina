@@ -89,6 +89,13 @@ namespace ta { namespace agent { namespace luawork {
             for( int i=0; i<ls.get_top( ); ++i ) {
                 auto o = ls.get_object( i + 1 );
                 auto name  = object_by_path( L, o.get( ), "name" );
+                if( !name ) {
+                    LOGERR << "Invalid parameter for " << o->str( )
+                        << ". 'table' expected but '"
+                        << objects::base::type2string( o->type_id( ) )
+                        << "' reached.";
+                    continue;
+                }
                 auto ossl   = object_by_path( L, o.get( ), "ssl" );
                 auto odummy = object_by_path( L, o.get( ), "dummy" );
                 if( name->type_id( ) == objects::base::TYPE_STRING ) {
