@@ -219,7 +219,11 @@ namespace ta { namespace agent { namespace subsys {
         void del_listener( const std::string &name )
         {
             vtrc::shared_lock _(listeners_lock_);
-            listeners_.erase( name );
+            auto l = listeners_.find( name );
+            if( l != listeners_.end( ) ) {
+                l->second->stop( );
+                listeners_.erase( l );
+            }
         }
 
     };
