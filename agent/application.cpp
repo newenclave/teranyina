@@ -438,48 +438,20 @@ namespace ta { namespace agent {
         } );
 
         impl_->pools_.get_rpc_pool( ).assign_exception_handler( [this]( ) {
-            auto cc = vcomm::call_context::get( );
             try {
                 throw;
             } catch( const std::exception &ex ) {
-                if( cc ) {
-                    get_logger( )( logger::level::error, "io thread" )
+                get_logger( )( logger::level::error, "rpc thread" )
                         << "Exception: "
                         << std::hex << "0x " << std::this_thread::get_id( )
                         << ": " << ex.what( )
-                        << "; call context: "
-                        << cc->get_lowlevel_message( )->call( ).service_id( )
-                        << "."
-                        << cc->get_lowlevel_message( )->call( ).method_id( )
-                            ;
-                } else {
-                    get_logger( )( logger::level::error, "rpc thread" )
-                            << "Exception: "
-                            << std::hex << "0x " << std::this_thread::get_id( )
-                            << ": " << ex.what( )
-                            << "; call context: null"
-                               ;
-                }
                            ;
             } catch( ... ) {
-                if( cc ) {
-                    get_logger( )( logger::level::error, "rpc thread" )
-                        << "Bad exception: "
-                        << std::hex << "0x " << std::this_thread::get_id( )
-                        << "; call context: "
-                        << cc->get_lowlevel_message( )->call( ).service_id( )
-                        << "."
-                        << cc->get_lowlevel_message( )->call( ).method_id( )
-                        ;
-
-                } else {
-                    get_logger( )( logger::level::error, "rpc thread" )
-                        << "Bad exception: "
-                        << std::hex << "0x " << std::this_thread::get_id( )
-                        << "; call context: null"
-                           ;
-                }
-                //std::terminate( );
+                get_logger( )( logger::level::error, "rpc thread" )
+                    << "Bad exception: "
+                    << std::hex << "0x " << std::this_thread::get_id( )
+                       ;
+                 //std::terminate( );
             }
         } );
 
