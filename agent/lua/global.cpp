@@ -91,7 +91,7 @@ namespace ta { namespace agent { namespace luawork {
                 auto name  = object_by_path( L, o.get( ), "name" );
                 if( !name ) {
                     LOGERR << "Invalid parameter for " << o->str( )
-                        << ". 'table' expected but '"
+                        << ". 'table {name=...}' expected but '"
                         << objects::base::type2string( o->type_id( ) )
                         << "' was obtained.";
                     continue;
