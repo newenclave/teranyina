@@ -43,15 +43,15 @@ namespace ta { namespace agent { namespace subsys {
         using socket_map       = std::map<std::string, socket_data_sptr>;
         using string_vector    = std::vector<std::string>;
 
-        application::service_wrapper_sptr create_service(
-                                      ta::agent::application * /*app*/,
-                                      vtrc::common::connection_iface_wptr/*cl*/)
-        {
-            ///auto inst = std::make_shared<impl_type_here>( app, cl );
-            ///return app->wrap_service( cl, inst );
+//        application::service_wrapper_sptr create_service(
+//                                      ta::agent::application * /*app*/,
+//                                      vtrc::common::connection_iface_wptr/*cl*/)
+//        {
+//            ///auto inst = std::make_shared<impl_type_here>( app, cl );
+//            ///return app->wrap_service( cl, inst );
 
-            return application::service_wrapper_sptr( );
-        }
+//            return application::service_wrapper_sptr( );
+//        }
     }
 
     struct multicast::impl {
