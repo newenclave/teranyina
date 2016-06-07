@@ -31,7 +31,7 @@ namespace ta { namespace agent { namespace subsys {
         namespace vcomm = vtrc::common;
         namespace gpb = google::protobuf;
 
-        using level = agent::logger::level;
+        using level           = agent::logger::level;
         using connection_wptr = vtrc::common::connection_iface_wptr;
         using connection_sptr = vtrc::common::connection_iface_sptr;
 
