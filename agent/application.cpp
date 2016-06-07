@@ -443,8 +443,8 @@ namespace ta { namespace agent {
                 throw;
             } catch( const std::exception &ex ) {
                 if( cc ) {
-                    get_logger( )( logger::level::error )
-                        << "Exception at rpc thread: "
+                    get_logger( )( logger::level::error, "io thread" )
+                        << "Exception: "
                         << std::hex << "0x " << std::this_thread::get_id( )
                         << ": " << ex.what( )
                         << "; call context: "
@@ -453,8 +453,8 @@ namespace ta { namespace agent {
                         << cc->get_lowlevel_message( )->call( ).method_id( )
                             ;
                 } else {
-                    get_logger( )( logger::level::error )
-                            << "Exception at rpc thread: "
+                    get_logger( )( logger::level::error, "rpc thread" )
+                            << "Exception: "
                             << std::hex << "0x " << std::this_thread::get_id( )
                             << ": " << ex.what( )
                             << "; call context: null"
@@ -463,8 +463,8 @@ namespace ta { namespace agent {
                            ;
             } catch( ... ) {
                 if( cc ) {
-                    get_logger( )( logger::level::error )
-                        << "Bad exception at rpc thread: "
+                    get_logger( )( logger::level::error, "rpc thread" )
+                        << "Bad exception: "
                         << std::hex << "0x " << std::this_thread::get_id( )
                         << "; call context: "
                         << cc->get_lowlevel_message( )->call( ).service_id( )
@@ -473,8 +473,8 @@ namespace ta { namespace agent {
                         ;
 
                 } else {
-                    get_logger( )( logger::level::error )
-                        << "Bad exception at rpc thread: "
+                    get_logger( )( logger::level::error, "rpc thread" )
+                        << "Bad exception: "
                         << std::hex << "0x " << std::this_thread::get_id( )
                         << "; call context: null"
                            ;

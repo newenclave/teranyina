@@ -160,6 +160,15 @@ namespace ta { namespace agent { namespace subsys {
             using namespace vserv::listeners;
             static const char *true_false[2] = { "off", " on" };
 
+            {
+                vtrc::shared_lock _(listeners_lock_);
+                if( listeners_.find( ep ) != listeners_.end( ) ) {
+                    LOGWRN << "Listener '" << ep << "' already exists. "
+                           << "Ignoring...";
+                    return;
+                }
+            }
+
             if( inf ) {
                 vserv::listener_sptr next;
                 if( inf.is_local( ) ) {

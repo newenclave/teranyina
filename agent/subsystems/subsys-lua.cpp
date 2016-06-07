@@ -67,6 +67,7 @@ namespace ta { namespace agent { namespace subsys {
                 auto cl = client( );
                 dispatcher_.post( [this, method, ctrl, req, res, done, cl]( ) {
                     auto lck = cl.lock( );
+                    vcomm::closure_holder _(done);
                     if( lck ) {
                         service( )->CallMethod( method, ctrl, req, res, done );
                     }
@@ -222,9 +223,8 @@ namespace ta { namespace agent { namespace subsys {
                 ::google::protobuf::RpcController* /*controller*/,
                 const ::ta::proto::scripting::init_req* /*request*/,
                 ::ta::proto::scripting::init_res* /*response*/,
-                ::google::protobuf::Closure* done )
+                ::google::protobuf::Closure* /*done */)
         {
-            vcomm::closure_holder _(done);
             luawork::init_globals( state_.get_state( ), impl_->app_ );
         }
 
@@ -232,9 +232,8 @@ namespace ta { namespace agent { namespace subsys {
             ::google::protobuf::RpcController* controller,
             const ::ta::proto::scripting::execute_buffer_req* request,
             ::ta::proto::scripting::execute_buffer_res* response,
-            ::google::protobuf::Closure* done )
+            ::google::protobuf::Closure* /*done*/ )
         {
-            vcomm::closure_holder _(done);
             execute_buf( controller,
                          request->buffer( ), request->name( ),
                          request->function( ) );
@@ -244,9 +243,8 @@ namespace ta { namespace agent { namespace subsys {
                 ::google::protobuf::RpcController* controller,
                 const ::ta::proto::scripting::execute_file_req* request,
                 ::ta::proto::scripting::execute_file_res* /*response*/,
-                ::google::protobuf::Closure* done )
+                ::google::protobuf::Closure* /*done*/ )
         {
-            vcomm::closure_holder _(done);
             execute_file( controller, request->path( ),
                           request->function( ) );
         }
@@ -255,9 +253,8 @@ namespace ta { namespace agent { namespace subsys {
                 ::google::protobuf::RpcController* controller,
                 const ::ta::proto::scripting::execute_function_req* request,
                 ::ta::proto::scripting::execute_function_res* /*response*/,
-                ::google::protobuf::Closure* done)
+                ::google::protobuf::Closure* /*done*/)
         {
-            vcomm::closure_holder _(done);
             run_function( controller, request->name( ) );
         }
 
