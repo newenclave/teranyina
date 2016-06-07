@@ -16,6 +16,8 @@
 
 #include "openssl/rsa.h"
 
+#include "vtrc-common/protocol/vtrc-rpc-lowlevel.pb.h"
+
 namespace ta { namespace agent {
 
     namespace {
@@ -417,6 +419,70 @@ namespace ta { namespace agent {
         impl_->init_subsystems( );
 
         start_all( );
+
+        impl_->pools_.get_io_pool( ).assign_exception_handler( [this]( ) {
+            try {
+                throw;
+            } catch( const std::exception &ex ) {
+                get_logger( )( logger::level::error )
+                        << "Exception at io thread: "
+                        << std::hex << "0x " << std::this_thread::get_id( )
+                        << ": " << ex.what( );
+                           ;
+            } catch( ... ) {
+                get_logger( )( logger::level::error )
+                        << "Bad exception at io thread: "
+                        << std::hex << "0x " << std::this_thread::get_id( );
+                std::terminate( );
+            }
+        } );
+
+        impl_->pools_.get_rpc_pool( ).assign_exception_handler( [this]( ) {
+            auto cc = vcomm::call_context::get( );
+            try {
+                throw;
+            } catch( const std::exception &ex ) {
+                if( cc ) {
+                    get_logger( )( logger::level::error )
+                        << "Exception at rpc thread: "
+                        << std::hex << "0x " << std::this_thread::get_id( )
+                        << ": " << ex.what( )
+                        << "; call context: "
+                        << cc->get_lowlevel_message( )->call( ).service_id( )
+                        << "."
+                        << cc->get_lowlevel_message( )->call( ).method_id( )
+                            ;
+                } else {
+                    get_logger( )( logger::level::error )
+                            << "Exception at rpc thread: "
+                            << std::hex << "0x " << std::this_thread::get_id( )
+                            << ": " << ex.what( )
+                            << "; call context: null"
+                               ;
+                }
+                           ;
+            } catch( ... ) {
+                if( cc ) {
+                    get_logger( )( logger::level::error )
+                        << "Bad exception at rpc thread: "
+                        << std::hex << "0x " << std::this_thread::get_id( )
+                        << "; call context: "
+                        << cc->get_lowlevel_message( )->call( ).service_id( )
+                        << "."
+                        << cc->get_lowlevel_message( )->call( ).method_id( )
+                        ;
+
+                } else {
+                    get_logger( )( logger::level::error )
+                        << "Bad exception at rpc thread: "
+                        << std::hex << "0x " << std::this_thread::get_id( )
+                        << "; call context: null"
+                           ;
+                }
+                //std::terminate( );
+            }
+        } );
+
 
         impl_->pools_.get_io_pool( ).add_threads( impl_->io_count_ - 1 );
         impl_->pools_.get_rpc_pool( ).add_threads( impl_->rpc_count_ );

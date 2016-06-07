@@ -8,6 +8,7 @@
 #include "boost/asio.hpp"
 
 #include "vtrc-common/vtrc-closure-holder.h"
+#include "vtrc-common/vtrc-exception.h"
 
 #if LUA_FOUND
 #include "common/lua-wrapper/lua-wrapper.hpp"
@@ -42,7 +43,7 @@ namespace ta { namespace agent { namespace subsys {
         using connection_wptr = vtrc::common::connection_iface_wptr;
         using connection_sptr = vtrc::common::connection_iface_sptr;
 
-        class service_wrapper: public application::service_wrapper_impl {
+        class lua_service_wrapper: public application::service_wrapper_impl {
 
             boost::asio::io_service::strand dispatcher_;
 
@@ -51,9 +52,8 @@ namespace ta { namespace agent { namespace subsys {
             typedef application::service_wrapper_impl super_type;
             using service_sptr = super_type::service_sptr;
 
-            service_wrapper( application *app,
-                             connection_wptr c,
-                             service_sptr serv )
+            lua_service_wrapper( application *app, connection_wptr c,
+                                 service_sptr serv )
                 :super_type(app, c, serv)
                 ,dispatcher_(app->get_rpc_service( ))
             { }
@@ -80,8 +80,6 @@ namespace ta { namespace agent { namespace subsys {
             lua::impl       *impl_;
             connection_wptr  cl_;
             ta::lua::state   state_;
-
-            boost::asio::io_service::strand dispatcher_;
 
         public:
 
@@ -192,7 +190,7 @@ namespace ta { namespace agent { namespace subsys {
             /// is always !cl.expired( ) here
             if( app_->is_ctrl_connection( cl.lock( ).get( ) ) ) {
                 auto inst = std::make_shared<svc_impl>( this, cl );
-                return app_->wrap_service( cl, inst );
+                return std::make_shared<lua_service_wrapper>( app_, cl, inst );
             } else {
                 return application::service_wrapper_sptr( );
             }
@@ -218,20 +216,16 @@ namespace ta { namespace agent { namespace subsys {
         svc_impl::svc_impl( lua::impl *imp, connection_wptr cl )
             :impl_(imp)
             ,cl_(cl)
-            ,dispatcher_(impl_->app_->get_rpc_service( ))
         { }
 
         void svc_impl::init(
-                ::google::protobuf::RpcController* controller,
-                const ::ta::proto::scripting::init_req* request,
-                ::ta::proto::scripting::init_res* response,
+                ::google::protobuf::RpcController* /*controller*/,
+                const ::ta::proto::scripting::init_req* /*request*/,
+                ::ta::proto::scripting::init_res* /*response*/,
                 ::google::protobuf::Closure* done )
         {
-            DISPATCH_CLIENT_CALL_PREFIX( dispatcher_, cl_ )
-            {
-                luawork::init_globals( state_.get_state( ), impl_->app_ );
-            }
-            DISPATCH_CLIENT_CALL_POSTFIX;
+            vcomm::closure_holder _(done);
+            luawork::init_globals( state_.get_state( ), impl_->app_ );
         }
 
         void svc_impl::execute_buffer(
@@ -240,40 +234,31 @@ namespace ta { namespace agent { namespace subsys {
             ::ta::proto::scripting::execute_buffer_res* response,
             ::google::protobuf::Closure* done )
         {
-            DISPATCH_CLIENT_CALL_PREFIX( dispatcher_, cl_ )
-            {
-                execute_buf( controller,
-                             request->buffer( ), request->name( ),
-                             request->function( ) );
-            }
-            DISPATCH_CLIENT_CALL_POSTFIX;
+            vcomm::closure_holder _(done);
+            execute_buf( controller,
+                         request->buffer( ), request->name( ),
+                         request->function( ) );
         }
 
         void svc_impl::execute_file(
                 ::google::protobuf::RpcController* controller,
                 const ::ta::proto::scripting::execute_file_req* request,
-                ::ta::proto::scripting::execute_file_res* response,
+                ::ta::proto::scripting::execute_file_res* /*response*/,
                 ::google::protobuf::Closure* done )
         {
-            DISPATCH_CLIENT_CALL_PREFIX( dispatcher_, cl_ )
-            {
-                execute_file( controller, request->path( ),
-                              request->function( ) );
-            }
-            DISPATCH_CLIENT_CALL_POSTFIX;
+            vcomm::closure_holder _(done);
+            execute_file( controller, request->path( ),
+                          request->function( ) );
         }
 
         void svc_impl::execute_function(
                 ::google::protobuf::RpcController* controller,
                 const ::ta::proto::scripting::execute_function_req* request,
-                ::ta::proto::scripting::execute_function_res* response,
+                ::ta::proto::scripting::execute_function_res* /*response*/,
                 ::google::protobuf::Closure* done)
         {
-            DISPATCH_CLIENT_CALL_PREFIX( dispatcher_, cl_ )
-            {
-                run_function( controller, request->name( ) );
-            }
-            DISPATCH_CLIENT_CALL_POSTFIX;
+            vcomm::closure_holder _(done);
+            run_function( controller, request->name( ) );
         }
 
     }
