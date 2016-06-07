@@ -22,7 +22,9 @@ namespace ta { namespace agent { namespace luawork {
     namespace  {
         const char *table_name        = "ta";
         const char *app_name          = "tahide.application";
+
         using namespace ::ta::lua;
+        using namespace ::ta::lua::objects;
 
         application *get_app( lua::state &ls )
         {
@@ -119,8 +121,6 @@ namespace ta { namespace agent { namespace luawork {
         lua::state ls( L );
         ls.set( app_name, app );
         objects::table t;
-
-        using namespace ::ta::lua::objects;
 
         t.add( "log", new_function( &log_write ) );
         t.add( "logs", new_function( &log_write2 ) );

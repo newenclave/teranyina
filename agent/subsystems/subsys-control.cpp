@@ -51,7 +51,7 @@ namespace ta { namespace agent { namespace subsys {
                      ::google::protobuf::Closure* done) override
             {
                 closure_holder _(done);
-                LOGINF << "Shutting down agent.";
+                LOGINF << "Shutting down agent...";
                 app_->quit( );
             }
 
@@ -68,8 +68,9 @@ namespace ta { namespace agent { namespace subsys {
         {
 
             if( app->is_ctrl_connection( cl.lock( ).get( ) ) ) {
-                app->get_logger( )(common::logger::level::debug, "control")
-                        << "Create service ";
+                app->get_logger( )( level::debug, "control")
+                            << "Create service ";
+
                 auto inst = std::make_shared<ctrl_impl>( app );
                 return app->wrap_service( cl, inst );
             } else {

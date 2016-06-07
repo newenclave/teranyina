@@ -42,6 +42,39 @@ namespace ta { namespace agent { namespace subsys {
         using connection_wptr = vtrc::common::connection_iface_wptr;
         using connection_sptr = vtrc::common::connection_iface_sptr;
 
+        class service_wrapper: public application::service_wrapper_impl {
+
+            boost::asio::io_service::strand dispatcher_;
+
+        public:
+
+            typedef application::service_wrapper_impl super_type;
+            using service_sptr = super_type::service_sptr;
+
+            service_wrapper( application *app,
+                             connection_wptr c,
+                             service_sptr serv )
+                :super_type(app, c, serv)
+                ,dispatcher_(app->get_rpc_service( ))
+            { }
+
+            void call_method( const method_type *method,
+                                 google::protobuf::RpcController* ctrl,
+                                 const google::protobuf::Message* req,
+                                 google::protobuf::Message* res,
+                                 google::protobuf::Closure* done ) override
+            {
+                auto cl = client( );
+                dispatcher_.post( [this, method, ctrl, req, res, done, cl]( ) {
+                    auto lck = cl.lock( );
+                    if( lck ) {
+                        service( )->CallMethod( method, ctrl, req, res, done );
+                    }
+                });
+            }
+
+        };
+
         class svc_impl: public proto::scripting::instance {
 
             lua::impl       *impl_;

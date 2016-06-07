@@ -60,6 +60,16 @@ namespace ta { namespace agent {
 
             typedef super_type::method_type  method_type;
 
+            vtrc::common::connection_iface_wptr &client( )
+            {
+                return client_;
+            }
+
+            const vtrc::common::connection_iface_wptr &client( ) const
+            {
+                return client_;
+            }
+
             service_wrapper_impl( application *app,
                                   vtrc::common::connection_iface_wptr c,
                                   service_sptr serv );
