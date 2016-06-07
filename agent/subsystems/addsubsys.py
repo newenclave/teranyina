@@ -52,7 +52,7 @@ def source_file( ):
 #include "subsys-%ss-name%.h"
 #include "../application.h"
 
-#define LOG(lev) log_(lev) << "[%ss-name%] "
+#define LOG(lev) log_(lev, "%ss-name%")
 #define LOGINF   LOG(level::info)
 #define LOGDBG   LOG(level::debug)
 #define LOGERR   LOG(level::error)
@@ -115,7 +115,7 @@ namespace ta { namespace agent { namespace subsys {
         return new_inst;
     }
 
-    const std::string &%ss-name%::name( ) const noexcept
+    const std::string &%ss-name%::name( ) const NOEXCEPT
     {
         return subsys_name;
     }

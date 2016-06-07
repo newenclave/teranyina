@@ -26,14 +26,6 @@ namespace ta { namespace agent { namespace subsys {
 
     namespace {
 
-#define DISPATCH_CLIENT_CALL_PREFIX( dispatcher, client )            \
-    dispatcher.post( [this, controller, request, response, done ] {  \
-        vcomm::closure_holder _(done);                               \
-        connection_sptr lck = client.lock( );                        \
-        if( lck ) {
-
-#define DISPATCH_CLIENT_CALL_POSTFIX  } } )
-
         const std::string subsys_name( "lua" );
 
         namespace vcomm = vtrc::common;
