@@ -164,7 +164,7 @@ namespace ta { namespace utilities {
         for(size_t b(0), e(length); b!=e; ++b) {
             tmp->append(int_to_hex(c[b]));
         }
-        return tmp;
+        return std::move(tmp);
     }
 
     h2b_result bin2hex( std::string const &input )
@@ -223,7 +223,7 @@ namespace ta { namespace utilities {
             tmp.push_back(next);
         }
         res->swap(tmp);
-        return res;
+        return std::move(res);
     }
 
     endpoint_info get_endpoint_info( const std::string &ep )
