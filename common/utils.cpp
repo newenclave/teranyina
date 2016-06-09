@@ -145,14 +145,10 @@ namespace ta { namespace utilities {
 
         struct hi_lo_struct {
             char line[3];
-            unsigned char h :4;
-            unsigned char l :4;
-            hi_lo_struct( ): h(0), l(0) { line[2] = 0; }
+            hi_lo_struct( ) { line[2] = 0; }
             const char * operator( )(const char in_) {
-                h = (in_ >> 4);
-                l = (in_ & 0xF);
-                line[0] = hexes_[h];
-                line[1] = hexes_[l];
+                line[0] = hexes_[(in_ >> 4) & 0x0F];
+                line[1] = hexes_[(in_ & 0xF)];
                 return line;
             }
         } int_to_hex;

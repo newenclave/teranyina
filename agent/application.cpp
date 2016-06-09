@@ -1,22 +1,21 @@
 #include <iostream>
 #include <fstream>
 
-#include "boost/asio/io_service.hpp"
-
 #include "application.h"
-#include "vtrc-common/vtrc-pool-pair.h"
 
+#include "vtrc-common/vtrc-pool-pair.h"
+#include "vtrc-common/protocol/vtrc-rpc-lowlevel.pb.h"
 #include "vtrc-mutex.h"
 
-#include "logger.h"
-
 #include "boost/program_options.hpp"
+#include "boost/asio/io_service.hpp"
 
 #include "subsystems/subsys-list.hxx"
 
 #include "openssl/rsa.h"
+#include "logger.h"
 
-#include "vtrc-common/protocol/vtrc-rpc-lowlevel.pb.h"
+#include "common/utils.h"
 
 namespace ta { namespace agent {
 
@@ -454,7 +453,6 @@ namespace ta { namespace agent {
                  //std::terminate( );
             }
         } );
-
 
         impl_->pools_.get_io_pool( ).add_threads( impl_->io_count_ - 1 );
         impl_->pools_.get_rpc_pool( ).add_threads( impl_->rpc_count_ );
