@@ -147,6 +147,23 @@ namespace ta {
             Trait::destroy( value_ );
         }
 
+        template <typename ...Args>
+        static
+        result ok( Args&& ...args )
+        {
+            return result( std::forward<decltype(args)>(args)... );
+        }
+
+        template <typename ...Args>
+        static
+        result fail( Args&& ...args )
+        {
+            result res;
+            res.error_ = std::make_shared<E>(
+                         std::forward<decltype(args)>(args)... );
+            return std::move( res );
+        }
+
         void swap( result &other )
         {
             std::swap( value_, other.value_ );
@@ -176,23 +193,6 @@ namespace ta {
         operator bool ( ) const
         {
             return error_.get( ) == nullptr;
-        }
-
-        template <typename ...Args>
-        static
-        result ok( Args&& ...args )
-        {
-            return result( std::forward<decltype(args)>(args)... );
-        }
-
-        template <typename ...Args>
-        static
-        result fail( Args&& ...args )
-        {
-            result res;
-            res.error_ = std::make_shared<E>(
-                        std::forward<decltype(args)>(args)... );
-            return std::move( res );
         }
 
         E *error( )
