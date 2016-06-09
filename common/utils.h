@@ -19,9 +19,11 @@ namespace ta { namespace utilities {
         }
     };
 
-    result_type<std::string> bin2hex( void const *bytes, size_t length );
-    result_type<std::string> bin2hex( std::string const &input );
-    result_type<std::string> hex2bin( std::string const &input );
+    using h2b_result = result<std::string, std::string>;
+
+    h2b_result bin2hex( void const *bytes, size_t length );
+    h2b_result bin2hex( std::string const &input );
+    h2b_result hex2bin( std::string const &input );
 
     namespace console {
         std::ostream &light ( std::ostream &s );

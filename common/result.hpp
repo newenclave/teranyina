@@ -92,7 +92,8 @@ namespace ta {
             static
             value_type create( Args&&...args )
             {
-                return std::move(value_type( std::forward( args )... ));
+                return std::move(value_type(
+                            std::forward<decltype(args)>( args )... ));
             }
 
             static
@@ -126,7 +127,8 @@ namespace ta {
             static
             value_type create( Args&&...args )
             {
-                return std::make_shared<T>( std::forward( args )... );
+                return std::make_shared<T>(
+                            std::forward<decltype(args)>( args )... );
             }
 
             static
@@ -168,7 +170,7 @@ namespace ta {
 
         template <typename ...Args>
         result( Args&& ...args )
-            :value_(Trait::create(std::forward(args)...))
+            :value_(Trait::create(std::forward<decltype(args)>(args)...))
         { }
 
         result &operator = ( const result &other )
@@ -219,6 +221,23 @@ namespace ta {
         operator bool ( ) const
         {
             return error_.get( ) == nullptr;
+        }
+
+        template <typename ...Args>
+        static
+        result ok( Args&& ...args )
+        {
+            return result( std::forward<decltype(args)>(args)... );
+        }
+
+        template <typename ...Args>
+        static
+        result fail( Args&& ...args )
+        {
+            result res;
+            res.error_ = std::make_shared<E>(
+                        std::forward<decltype(args)>(args)... );
+            return std::move( res );
         }
 
         E &error( )

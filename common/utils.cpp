@@ -128,14 +128,13 @@ namespace ta { namespace utilities {
         }
     }
 
-    result_type<std::string> bin2hex( void const *bytes, size_t length )
+    h2b_result bin2hex( void const *bytes, size_t length )
     {
 
-        using result_type = result_type<std::string>;
-        using error_type  = result_type::error_type;
+        using result_type = h2b_result;
 
         if( (NULL == bytes) || (0 == length) ) {
-            return result_type("", error_type("nullptr"));
+            return h2b_result::fail("nullptr");
         }
 
         static
@@ -158,25 +157,24 @@ namespace ta { namespace utilities {
             }
         } int_to_hex;
 
-        result_type tmp;
+        result_type tmp("asda");
 
-        tmp.result.reserve( length * 2 + 1);
+        tmp->reserve( length * 2 + 1);
         char const * c = static_cast<char const *>(bytes);
         for(size_t b(0), e(length); b!=e; ++b) {
-            tmp.result.append(int_to_hex(c[b]));
+            tmp->append(int_to_hex(c[b]));
         }
         return tmp;
     }
 
-    result_type<std::string> bin2hex( std::string const &input )
+    h2b_result bin2hex( std::string const &input )
     {
         return bin2hex( input.c_str( ), input.size( ) );
     }
 
-    result_type<std::string> hex2bin( std::string const &input )
+    h2b_result hex2bin( std::string const &input )
     {
-        using result_type = result_type<std::string>;
-        using error_type  = result_type::error_type;
+        using result_type = h2b_result;
 
         struct {
             unsigned char operator ( ) ( const char in_ ) {
@@ -211,8 +209,7 @@ namespace ta { namespace utilities {
             unsigned char h = hex_to_int( *b );
 
             if( h == 0xFF ) {
-                res.err = error_type( "Bad serialized string" );
-                return res;
+                return h2b_result::fail( "Bad serialized string" );
             }
 
             next = (h << 4);
@@ -225,7 +222,7 @@ namespace ta { namespace utilities {
             next |= (l & 0xF);
             tmp.push_back(next);
         }
-        res.result.swap(tmp);
+        res->swap(tmp);
         return res;
     }
 
