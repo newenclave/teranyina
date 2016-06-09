@@ -119,7 +119,8 @@ namespace ta { namespace agent {
         template <typename T, typename ... Args >
         void add_subsystem( const Args & ... pars )
         {
-            subsystem_sptr subsys ( T::create( this, pars ... ) );
+            subsystem_sptr subsys ( T::create( this,
+                                    std::forward<decltype(pars)>(pars) ... ) );
             add_subsys( TA_TYPE_ID(T), subsys );
         }
 
