@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <ostream>
 
-#include "result.hpp"
+#include "common/result.hpp"
 
 namespace ta { namespace utilities {
 
@@ -19,7 +19,7 @@ namespace ta { namespace utilities {
         }
     };
 
-    using h2b_result = result<std::string, std::string>;
+    using h2b_result = result<std::string, const char *>;
 
     h2b_result bin2hex( void const *bytes, size_t length );
     h2b_result bin2hex( std::string const &input );
