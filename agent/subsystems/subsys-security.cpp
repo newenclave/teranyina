@@ -2,7 +2,7 @@
 #include "subsys-security.h"
 #include "../application.h"
 
-#include "common/ssl-wrapper.h"
+#include "common/ssl-wrapper.hpp"
 #include "common/utils.h"
 
 #include "vtrc-common/vtrc-random-device.h"
