@@ -152,12 +152,26 @@ namespace ta {
             return result( std::forward<Args>(args)... );
         }
 
+        static
+        result ok( )
+        {
+            return result( );
+        }
+
         template <typename ...Args>
         static
         result fail( Args&& ...args )
         {
             result res;
             res.error_ = std::make_shared<E>( std::forward<Args>(args)... );
+            return std::move( res );
+        }
+
+        static
+        result fail( )
+        {
+            result res;
+            res.error_ = std::make_shared<E>( );
             return std::move( res );
         }
 
