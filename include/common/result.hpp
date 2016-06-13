@@ -195,10 +195,10 @@ namespace ta {
             return error_.get( ) == nullptr;
         }
 
-        E *error( )
-        {
-            return error_.get( );
-        }
+//        E *error( )
+//        {
+//            return error_.get( );
+//        }
 
         const E *error( ) const
         {
