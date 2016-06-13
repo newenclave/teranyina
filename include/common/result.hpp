@@ -102,7 +102,7 @@ namespace ta {
     class result {
 
         typename Trait::value_type value_;
-        std::shared_ptr<E> error_;
+        std::shared_ptr<E const> error_;
 
     public:
 
