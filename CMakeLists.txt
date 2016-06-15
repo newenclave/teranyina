@@ -14,6 +14,13 @@ find_file( VTRC_IMPORT_CMAKE
                   "${CMAKE_CURRENT_SOURCE_DIR}/../vtrc/vtrc-import.cmake"
                   "${CMAKE_CURRENT_SOURCE_DIR}/vtrc/vtrc-import.cmake" )
 
+if( VTRC_IMPORT_CMAKE )
+    set( VTRC_IMPORT_CMAKE "${VTRC_IMPORT_CMAKE}/vtrc-import.cmake" )
+endif( VTRC_IMPORT_CMAKE )
+
+#message( "Found! " ${CMAKE_BINARY_DIR} )
+#message( "Found! " ${CMAKE_CURRENT_BINARY_DIR} )
+
 set( TA_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 if( VTRC_IMPORT )
@@ -151,8 +158,4 @@ add_subdirectory( agent )
 if(LUA_FOUND)
 #    add_subdirectory( lua-client )
 endif(LUA_FOUND)
-
-#if( NOT WIN32 )
-#    add_subdirectory( agent )
-#endif( )
 
