@@ -10,7 +10,10 @@ cmake_minimum_required(VERSION 2.8)
 
 set( INTERNAL_PROJECT_NAME teranyina )
 
-set( VTRC_IMPORT_CMAKE "${CMAKE_CURRENT_SOURCE_DIR}/../vtrc/vtrc-import.cmake")
+find_file( VTRC_IMPORT_CMAKE
+                  "${CMAKE_CURRENT_SOURCE_DIR}/../vtrc/vtrc-import.cmake"
+                  "${CMAKE_CURRENT_SOURCE_DIR}/vtrc/vtrc-import.cmake" )
+
 set( TA_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 if( VTRC_IMPORT )
@@ -84,23 +87,26 @@ set( src )
 
 set( LUA_FOUND 0 )
 
-if( DISABLE_LUA )
-    message( "DISABLE_LUA " ${DISABLE_LUA} )
+if( NOT LUA_SRC )
+    find_file( LUA_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/lua/src/lua.h" )
+    if( NOT LUA_HEADER )
+        execute_process( COMMAND "git" "submodule" "init"
+                         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+        execute_process( COMMAND "git" "submodule" "update" "lua"
+                         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+    endif( NOT LUA_HEADER )
+    set( LUA_SRC "${CMAKE_CURRENT_SOURCE_DIR}/lua/src/" )
+endif( NOT LUA_SRC )
+
+if( LUA_SRC )
+
+    add_subdirectory( lua-build )
+    set( LUA_FOUND 1 )
+    ADD_DEFINITIONS(-DLUA_FOUND=1)
+    ADD_DEFINITIONS(-DLUA_WRAPPER_TOP_NAMESPACE=ta)
+
 else( )
-    set( DISABLE_LUA 0 )
-endif( )
-
-if( NOT DISABLE_LUA )
-
-    if( LUA_SRC )
-
-        add_subdirectory( lua-build )
-        set( LUA_FOUND 1 )
-        ADD_DEFINITIONS(-DLUA_FOUND=1)
-        ADD_DEFINITIONS(-DLUA_WRAPPER_TOP_NAMESPACE=ta)
-    else( )
-        message( FATAL_ERROR "Lua was not found." )
-    endif( )
+    message( FATAL_ERROR "Lua was not found." )
 endif( )
 
 if(MSVC)
