@@ -146,8 +146,11 @@ endif( )
 #         "${CMAKE_CXX_LINK_EXECUTABLE} -static-libgcc -static-libstdc++")
 #endif( STATIC_GLIBC )
 
-configure_file ("${PROJECT_SOURCE_DIR}/teranyina-config.h.in"
-                "${TA_INCLUDE_DIRS}/teranyina-config.h" )
+configure_file (  "${PROJECT_SOURCE_DIR}/teranyina-config.h.in"
+                  "${TA_INCLUDE_DIRS}/teranyina-config.h" )
+
+file( COPY        "${TA_INCLUDE_DIRS}/teranyina-config.h"
+      DESTINATION "${CMAKE_CURRENT_BINARY_DIR}" )
 
 add_subdirectory( common )
 add_subdirectory( protocol )
