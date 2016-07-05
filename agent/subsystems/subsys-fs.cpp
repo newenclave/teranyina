@@ -19,12 +19,13 @@
 #include "../files.h"
 
 #ifndef _MSC_VER
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
+#   include <sys/types.h>
+#   include <unistd.h>
 #else
 
 #endif
+
+#include <sys/stat.h>
 
 #define LOG(lev) log_(lev, "fs")
 #define LOGINF   LOG(level::info)
@@ -188,8 +189,10 @@ namespace ta { namespace agent { namespace subsys {
                 response->set_atime  ( ss.st_atime   );
                 response->set_mtime  ( ss.st_mtime   );
                 response->set_ctime  ( ss.st_ctime   );
+#ifndef _MSC_VER
                 response->set_blocks ( ss.st_blocks  );
                 response->set_blksize( ss.st_blksize );
+#endif
                 response->set_size   ( ss.st_size    );
                 response->set_rdev   ( ss.st_rdev    );
                 response->set_gid    ( ss.st_gid     );
