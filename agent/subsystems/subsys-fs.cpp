@@ -18,6 +18,14 @@
 
 #include "../files.h"
 
+#ifndef _MSC_VER
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#else
+
+#endif
+
 #define LOG(lev) log_(lev, "fs")
 #define LOGINF   LOG(level::info)
 #define LOGDBG   LOG(level::debug)
@@ -158,6 +166,39 @@ namespace ta { namespace agent { namespace subsys {
 
                 bfs::path p( path_from_request( request, hdl ) );
                 response->set_is_exist( bfs::exists( p ) );
+            }
+
+            void get_stat(::google::protobuf::RpcController* /*controller*/,
+                         const ::ta::proto::fs::handle_path* request,
+                         ::ta::proto::fs::element_stat* response,
+                         ::google::protobuf::Closure* done) override
+            {
+                vcomm::closure_holder holder(done);
+
+                handle_type hdl;
+                bfs::path p( path_from_request( request, hdl ) );
+
+                struct stat ss = { 0 };
+                int res = ::stat( p.string( ).c_str( ), &ss );
+
+                if( -1 == res ) {
+                    vcomm::throw_system_error( errno, "::stat" );
+                }
+
+                response->set_atime  ( ss.st_atime   );
+                response->set_mtime  ( ss.st_mtime   );
+                response->set_ctime  ( ss.st_ctime   );
+                response->set_blocks ( ss.st_blocks  );
+                response->set_blksize( ss.st_blksize );
+                response->set_size   ( ss.st_size    );
+                response->set_rdev   ( ss.st_rdev    );
+                response->set_gid    ( ss.st_gid     );
+                response->set_uid    ( ss.st_uid     );
+                response->set_nlink  ( ss.st_nlink   );
+                response->set_mode   ( ss.st_mode    );
+                response->set_ino    ( ss.st_ino     );
+                response->set_dev    ( ss.st_dev     );
+
             }
 
             void file_size(::google::protobuf::RpcController* /*controller*/,

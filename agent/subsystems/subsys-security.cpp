@@ -73,21 +73,30 @@ namespace ta { namespace agent { namespace subsys {
 
             auto seed = rd.generate_block( 128 );
             RAND_seed( seed.c_str( ), seed.size( ));
+            if( RAND_status( ) ) {
+                LOGINF << "The PRNG has been seeded with enough data";
+            } else {
+                LOGWRN << "The PRNG has not been seeded with enough data";
+            }
 
-#if 0
-            rsa_wrapper rw(rsa_wrapper::generate_keys( 2048 ));
+#if 1
+            rsa_wrapper rw(rsa_wrapper::generate_keys( 1024 ));
+            EVP_PKEY * pkey = EVP_PKEY_new( );
+            EVP_PKEY_assign_RSA( pkey, rw.get( ) );
 
+            bio_wrapper bw;
+            EVP_PKEY_print_public( bw.get( ), pkey, EVP_PKEY_RSA, NULL );
+            //EVP_PKEY_print_private(bw.get( ), pkey, 6, NULL);
+
+            //bw.flush( );
+
+            LOGINF << "\n" << bw.read_all( ) << "\n";
             LOGINF << "\n" << rw.pem_pubkey( );
 
             std::string pass = "123";
 
             LOGINF << "\n" << rw.pem_prikey( EVP_aes_256_cbc( ), pass );
 #endif
-            if( RAND_status( ) ) {
-                LOGINF << "init finish; random status = ok";
-            } else {
-                LOGWRN << "init finish; random status = not enough";
-            }
         }
 
     };

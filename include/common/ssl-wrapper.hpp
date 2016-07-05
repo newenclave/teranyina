@@ -142,8 +142,8 @@ namespace ta { namespace utilities {
         { }
 
         bio_wrapper( )
-            :b_(NULL)
-            ,own_(false)
+            :b_(make_new(BIO_s_mem( )))
+            ,own_(true)
         { }
 
         bio_wrapper( BIO *b, bool o = true )
@@ -335,6 +335,8 @@ namespace ta { namespace utilities {
     class rsa_wrapper {
 
         RSA *rsa_;
+        rsa_wrapper (const rsa_wrapper&);
+        rsa_wrapper& operator = (const rsa_wrapper&);
 
     public:
         typedef std::function<void(int, int)>              gen_callback;
