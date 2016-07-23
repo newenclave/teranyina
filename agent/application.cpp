@@ -398,6 +398,8 @@ namespace ta { namespace agent {
     {
         po::options_description desc;
 
+        vcomm::thread_pool::set_thread_prefix( "M" );
+
         get_options( desc );
         impl_->get_common_options( desc );
 
@@ -457,7 +459,7 @@ namespace ta { namespace agent {
         impl_->pools_.get_io_pool( ).add_threads( impl_->io_count_ - 1 );
         impl_->pools_.get_rpc_pool( ).add_threads( impl_->rpc_count_ );
 
-        impl_->pools_.get_io_pool( ).attach( );
+        impl_->pools_.get_io_pool( ).attach( "M" );
 
         impl_->pools_.join_all( );
 

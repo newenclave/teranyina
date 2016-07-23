@@ -8,6 +8,8 @@
 #include "boost/asio/strand.hpp"
 #include "boost/algorithm/string.hpp"
 
+#include "vtrc-common/vtrc-pool-pair.h"
+
 namespace ta { namespace agent {
 
     namespace bpt = boost::posix_time;
@@ -42,10 +44,11 @@ namespace ta { namespace agent {
     void fill_record_info( log_record_info &info,
                            logger::level lvl, const std::string &name )
     {
-        info.level = static_cast<int>(lvl);
-        info.name  = name;
-        info.when  = bpt::microsec_clock::local_time( );
-        info.tid   = std::this_thread::get_id( );
+        info.level   = static_cast<int>(lvl);
+        info.name    = name;
+        info.when    = bpt::microsec_clock::local_time( );
+        info.tid     = std::this_thread::get_id( );
+        info.tprefix = vtrc::common::thread_pool::get_thread_prefix( );
     }
 
     void logger::send_data( level lev, const std::string &name,

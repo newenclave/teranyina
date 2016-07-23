@@ -20,6 +20,7 @@ namespace ta { namespace agent {
         int                      level;
         boost::posix_time::ptime when;
         std::string              name;
+        std::string              tprefix;
         std::thread::id          tid;
     };
 

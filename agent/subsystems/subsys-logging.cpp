@@ -194,7 +194,8 @@ namespace ta { namespace agent { namespace subsys {
                 for( auto &s: data ) {
                     *inf.o_ << loginf.when
                             << " [" << agent::logger::level2str(lvl) << "]"
-                            << " [" << loginf.name << "] "
+                            << " " << loginf.tprefix
+                            << "[" << loginf.name << "] "
                             << s << std::endl;
                 }
             }
@@ -211,13 +212,14 @@ namespace ta { namespace agent { namespace subsys {
                 for( auto &s: data ) {
                     oss << loginf.when
                         << " [" << agent::logger::level2str(lvl) << "]"
-                        << " [" << loginf.name << "] "
+                        << " " << loginf.tprefix
+                        << "[" << loginf.name << "] "
                         << s << "\n";
                 }
             }
             inf.length_    += oss.tellp( );
             (*inf.stream_) << oss.str( );
-            inf.stream_->flush( );
+            //inf.stream_->flush( );
         }
 
         /// dispatcher!
