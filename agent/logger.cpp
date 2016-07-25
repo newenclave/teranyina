@@ -8,7 +8,7 @@
 #include "boost/asio/strand.hpp"
 #include "boost/algorithm/string.hpp"
 
-#include "vtrc-common/vtrc-pool-pair.h"
+#include "application.h"
 
 namespace ta { namespace agent {
 
@@ -48,7 +48,7 @@ namespace ta { namespace agent {
         info.name    = name;
         info.when    = bpt::microsec_clock::local_time( );
         info.tid     = std::this_thread::get_id( );
-        info.tprefix = vtrc::common::thread_pool::get_thread_prefix( );
+        info.tprefix = application::thread_ptrfix( );
     }
 
     void logger::send_data( level lev, const std::string &name,

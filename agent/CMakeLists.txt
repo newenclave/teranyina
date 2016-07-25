@@ -29,6 +29,10 @@ list( APPEND internal
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
 include_directories( ${${INTERNAL_PROJECT_NAME}_protocol_INCLUDE_DIRS}  )
 
+include( ../cxx11_check.cmake )
+get_compiler_thread_local( THREAD_LOCAL_VALUE )
+add_definitions( -DTHREAD_LOCAL=${THREAD_LOCAL_VALUE} )
+
 if( LUA_FOUND )
     include_directories( ${LUA_INCLUDE_DIR} )
     target_link_libraries( ${exe_name} ${LUA_LIBRARIES} )

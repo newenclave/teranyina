@@ -145,6 +145,17 @@ namespace ta { namespace agent { namespace subsys {
             return path;
         }
 
+        std::string thread_id( std::thread::id id )
+        {
+            std::ostringstream oss;
+#ifdef _WIN32
+            oss << id;
+#else
+            oss << std::hex << id;
+#endif
+            return oss.str( );
+        }
+
     }
 
     struct logging::impl {
@@ -193,9 +204,9 @@ namespace ta { namespace agent { namespace subsys {
             if( (lvl >= inf.minl_) && (lvl <= inf.maxl_) ) {
                 for( auto &s: data ) {
                     *inf.o_ << loginf.when
+                            << " " << loginf.tprefix << thread_id( loginf.tid )
                             << " [" << agent::logger::level2str(lvl) << "]"
-                            << " " << loginf.tprefix
-                            << "[" << loginf.name << "] "
+                            << " [" << loginf.name << "] "
                             << s << std::endl;
                 }
             }
@@ -211,9 +222,9 @@ namespace ta { namespace agent { namespace subsys {
             if( (lvl >= inf.min_) && (lvl <= inf.max_) ) {
                 for( auto &s: data ) {
                     oss << loginf.when
+                        << " " << loginf.tprefix << thread_id( loginf.tid )
                         << " [" << agent::logger::level2str(lvl) << "]"
-                        << " " << loginf.tprefix
-                        << "[" << loginf.name << "] "
+                        << " [" << loginf.name << "] "
                         << s << "\n";
                 }
             }

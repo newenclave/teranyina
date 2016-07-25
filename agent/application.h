@@ -169,6 +169,8 @@ namespace ta { namespace agent {
         agent::logger       &get_logger( )       NOEXCEPT;
         const agent::logger &get_logger( ) const NOEXCEPT;
 
+        static const std::string &thread_ptrfix( );
+
         void start_all( );
         void stop_all( );
 

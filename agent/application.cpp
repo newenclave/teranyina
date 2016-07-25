@@ -69,6 +69,7 @@ namespace ta { namespace agent {
             std::cout << "Usage: ./teranyina_agent <options>\n"
                       << "Options: \n" << desc;
         }
+        THREAD_LOCAL std::string s_thread_prefix;
     }
 
     struct application::impl: public vtrc::server::application {
@@ -394,11 +395,31 @@ namespace ta { namespace agent {
         return impl_->logger_;
     }
 
+    const std::string &application::thread_ptrfix( )
+    {
+        return s_thread_prefix;
+    }
+
+    vcomm::thread_pool::thread_decorator create_decorator( std::string pref )
+    {
+        using tc_type = vcomm::thread_pool::call_decorator_type;
+        return [ pref ]( tc_type t ) {
+            switch ( t ) {
+            case vcomm::thread_pool::CALL_PROLOGUE:
+                s_thread_prefix = pref;
+                break;
+            case vcomm::thread_pool::CALL_EPILOGUE:
+                s_thread_prefix = "";
+                break; /// do not add default: here
+            }
+        };
+    }
+
     void application::run( int argc, const char *argv[ ] )
     {
         po::options_description desc;
 
-        vcomm::thread_pool::set_thread_prefix( "M" );
+        s_thread_prefix = "M";
 
         get_options( desc );
         impl_->get_common_options( desc );
@@ -456,13 +477,14 @@ namespace ta { namespace agent {
             }
         } );
 
-        impl_->pools_.get_io_pool( ).add_threads( impl_->io_count_ - 1 );
-        impl_->pools_.get_rpc_pool( ).add_threads( impl_->rpc_count_ );
+        auto &pools( impl_->pools_ );
 
-        impl_->pools_.get_io_pool( ).attach( "M" );
-
-        impl_->pools_.join_all( );
-
+        pools.get_io_pool( ).assign_thread_decorator( create_decorator( "I" ));
+        pools.get_rpc_pool( ).assign_thread_decorator( create_decorator( "R" ));
+        pools.get_io_pool( ).add_threads( impl_->io_count_ - 1 );
+        pools.get_rpc_pool( ).add_threads( impl_->rpc_count_ );
+        pools.get_io_pool( ).attach( create_decorator( "M" ) );
+        pools.join_all( );
     }
 
 }}

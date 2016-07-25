@@ -17,9 +17,9 @@ find_file( VTRC_IMPORT_CMAKE
                "${CMAKE_CURRENT_SOURCE_DIR}/../vtrc/"
                "${CMAKE_CURRENT_SOURCE_DIR}/vtrc/" )
 
-if( VTRC_IMPORT_CMAKE )
-    set( VTRC_IMPORT_CMAKE ${VTRC_IMPORT_CMAKE} )
-endif( VTRC_IMPORT_CMAKE )
+#if( VTRC_IMPORT_CMAKE )
+#    set( VTRC_IMPORT_CMAKE ${VTRC_IMPORT_CMAKE} )
+#endif( VTRC_IMPORT_CMAKE )
 
 #message( "Found! " ${CMAKE_BINARY_DIR} )
 #message( "Found! " ${CMAKE_CURRENT_BINARY_DIR} )
