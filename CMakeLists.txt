@@ -10,29 +10,36 @@ cmake_minimum_required(VERSION 2.8)
 
 set( INTERNAL_PROJECT_NAME teranyina )
 
+set( TA_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include")
+
+############################ VTRC library ############################
 find_file( VTRC_IMPORT_CMAKE
            NAMES
                "vtrc-import.cmake"
            PATHS
-               "${CMAKE_CURRENT_SOURCE_DIR}/../vtrc/"
+              #"${CMAKE_CURRENT_SOURCE_DIR}/../vtrc/"
                "${CMAKE_CURRENT_SOURCE_DIR}/vtrc/" )
-
-#if( VTRC_IMPORT_CMAKE )
-#    set( VTRC_IMPORT_CMAKE ${VTRC_IMPORT_CMAKE} )
-#endif( VTRC_IMPORT_CMAKE )
-
-#message( "Found! " ${CMAKE_BINARY_DIR} )
-#message( "Found! " ${CMAKE_CURRENT_BINARY_DIR} )
-
-set( TA_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 if( VTRC_IMPORT )
     set( VTRC_IMPORT_CMAKE ${VTRC_IMPORT} )
 endif( )
 
-message( "VTRC import file path: " ${VTRC_IMPORT_CMAKE} )
+if( NOT VTRC_IMPORT_CMAKE )
+    message( "INITING submodule VTRC" )
+    execute_process( COMMAND "git" "submodule" "init"
+                     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+    execute_process( COMMAND "git" "submodule" "update" "vtrc"
+                     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+    execute_process( COMMAND "git" "pull"
+                     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/vtrc")
+endif( NOT VTRC_IMPORT_CMAKE )
+
+add_subdirectory( vtrc )
+set( VTRC_IMPORT_CMAKE "${CMAKE_CURRENT_SOURCE_DIR}/vtrc/vtrc-import.cmake")
 
 include( ${VTRC_IMPORT_CMAKE} )
+######################################################################
+
 include( cxx11_check.cmake )
 
 check_cxx11( CXX11_ENABLED )
